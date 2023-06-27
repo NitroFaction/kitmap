@@ -1,0 +1,8 @@
+name: Kitmap
+main: Kitmap\Main
+
+src-namespace-prefix: Kitmap
+
+author: MaXoooZ
+api: [ 5.0.0 ]
+version: 2.0.0
