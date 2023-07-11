@@ -3,16 +3,14 @@
 namespace Kitmap\command\util\market;
 
 use CortexPE\Commando\BaseCommand;
-use ErrorException;
-use Exception;
-use muqsit\invmenu\InvMenu;
-use muqsit\invmenu\transaction\DeterministicInvMenuTransaction;
-use muqsit\invmenu\type\InvMenuTypeIds;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Rank;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
+use muqsit\invmenu\InvMenu;
+use muqsit\invmenu\transaction\DeterministicInvMenuTransaction;
+use muqsit\invmenu\type\InvMenuTypeIds;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
@@ -20,278 +18,263 @@ use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\nbt\BigEndianNbtSerializer;
-use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
+use pocketmine\utils\Utils;
 
-class Market extends BaseCommand
-{
-    public function __construct(PluginBase $plugin)
-    {
-        parent::__construct(
-            $plugin,
-            "market",
-            "Les commandes relatant à l'hôtel des ventes",
-        );
+class Market extends BaseCommand {
+	public function __construct(PluginBase $plugin) {
+		parent::__construct(
+			$plugin,
+			"market",
+			"Les commandes relatant à l'hôtel des ventes",
+		);
 
-        $this->setAliases(["hdv", "auctionhouse", "ah"]);
-        $this->setPermissions([DefaultPermissions::ROOT_USER]);
-    }
+		$this->setAliases([ "hdv", "auctionhouse", "ah" ]);
+		$this->setPermissions([ DefaultPermissions::ROOT_USER ]);
+	}
 
-    public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
-    {
-        if ($sender instanceof Player) {
-            $session = Session::get($sender);
+	public static function serialize(Item $item, string $seller = null) : string {
+		$data = CompoundTag::create()->setTag("Item", new ListTag([ $item->nbtSerialize() ], NBT::TAG_Compound));
 
-            if ($session->data["staff_mod"][0]) {
-                $sender->sendMessage(Util::PREFIX . "Vous ne pouvez pas accèder à l'hotel de vente en étant en staff mod");
-                return;
-            } elseif ($session->inCooldown("combat")) {
-                $sender->sendMessage(Util::PREFIX . "Cette commande est interdite en combat");
-                return;
-            }
+		if (!is_null($seller)) {
+			$data = $data->setString("Seller", $seller);
+		}
 
-            $menu = InvMenu::create(InvMenuTypeIds::TYPE_DOUBLE_CHEST);
-            $menu->setName("Hôtel Des Ventes");
+		return Utils::assumeNotFalse(zlib_encode((new BigEndianNbtSerializer())->write(new TreeRoot($data)), ZLIB_ENCODING_GZIP), "zlib_encode() failed unexpectedly");
+	}
 
-            $page = 1;
+	public function onRun(CommandSender $sender, string $aliasUsed, array $args) : void {
+		if ($sender instanceof Player) {
+			$session = Session::get($sender);
 
-            $menu->setListener(InvMenu::readonly(function (DeterministicInvMenuTransaction $transaction) use ($menu, $page): void {
-                $player = $transaction->getPlayer();
-                $item = $transaction->getItemClicked();
+			if ($session->data["staff_mod"][0]) {
+				$sender->sendMessage(Util::PREFIX . "Vous ne pouvez pas accèder à l'hotel de vente en étant en staff mod");
+				return;
+			} elseif ($session->inCooldown("combat")) {
+				$sender->sendMessage(Util::PREFIX . "Cette commande est interdite en combat");
+				return;
+			}
 
-                if (is_null($item->getNamedTag()->getTag("id"))) {
-                    $page = $menu->getInventory()->getItem(45)->getCount();
+			$menu = InvMenu::create(InvMenuTypeIds::TYPE_DOUBLE_CHEST);
+			$menu->setName("Hôtel Des Ventes");
 
-                    if ($item->getCustomName() === "§r§ePage Suivante") {
-                        $this->addAuctionHouseItems($menu, ($page + 1));
-                    } elseif ($item->getCustomName() === "§r§ePage Précédente" && $page > 1) {
-                        $this->addAuctionHouseItems($menu, ($page - 1));
-                    } elseif ($item->getCustomName() === "§r§eRéactualiser") {
-                        $this->addAuctionHouseItems($menu, $page);
-                    } elseif ($item->getCustomName() === "§r§eMes Ventes En Cours") {
-                        $this->myItems($player);
-                    }
-                    return;
-                }
+			$page = 1;
 
-                $this->confirm($player, $item, 0);
-            }));
+			$menu->setListener(InvMenu::readonly(function(DeterministicInvMenuTransaction $transaction) use ($menu, $page) : void {
+				$player = $transaction->getPlayer();
+				$item = $transaction->getItemClicked();
 
-            $this->addAuctionHouseItems($menu, $page);
-            $menu->send($sender);
-        }
-    }
+				if (is_null($item->getNamedTag()->getTag("id"))) {
+					$page = $menu->getInventory()->getItem(45)->getCount();
 
-    private function addAuctionHouseItems(InvMenu $menu, int $page): void
-    {
-        $menu->getInventory()->clearAll();
+					if ($item->getCustomName() === "§r§ePage Suivante") {
+						$this->addAuctionHouseItems($menu, ($page + 1));
+					} elseif ($item->getCustomName() === "§r§ePage Précédente" && $page > 1) {
+						$this->addAuctionHouseItems($menu, ($page - 1));
+					} elseif ($item->getCustomName() === "§r§eRéactualiser") {
+						$this->addAuctionHouseItems($menu, $page);
+					} elseif ($item->getCustomName() === "§r§eMes Ventes En Cours") {
+						$this->myItems($player);
+					}
+					return;
+				}
 
-        foreach (Util::arrayToPage(array_reverse(Cache::$market), $page, 45)[1] as $id => $data) {
-            $nbt = self::deserialize($id, $data);
-            $item = self::readItem($nbt);
+				$this->confirm($player, $item, 0);
+			}));
 
-            $item->getNamedTag()->setString("id", $id);
-            $item->getNamedTag()->setInt("menu_item", 0);
+			$this->addAuctionHouseItems($menu, $page);
+			$menu->send($sender);
+		}
+	}
 
-            $menu->getInventory()->addItem($item);
-        }
+	private function addAuctionHouseItems(InvMenu $menu, int $page) : void {
+		$menu->getInventory()->clearAll();
 
-        $item = VanillaItems::DIAMOND()->setCount($page)->setCustomName("§r§aPage Actuel");
-        $menu->getInventory()->setItem(45, $item);
+		foreach (Util::arrayToPage(array_reverse(Cache::$market), $page, 45)[1] as $id => $data) {
+			$nbt = self::deserialize($data);
+			$item = self::readItem($nbt);
 
-        $item = VanillaItems::PAPER()->setCustomName("§r§aPage Précédente");
-        $menu->getInventory()->setItem(48, $item);
+			$item->getNamedTag()->setString("id", $id);
+			$item->getNamedTag()->setInt("menu_item", 0);
 
-        $item = VanillaItems::ENDER_PEARL()->setCustomName("§r§aRéactualiser");
-        $menu->getInventory()->setItem(49, $item);
+			$menu->getInventory()->addItem($item);
+		}
 
-        $item = VanillaItems::PAPER()->setCustomName("§r§aPage Suivante");
-        $menu->getInventory()->setItem(50, $item);
+		$item = VanillaItems::DIAMOND()->setCount($page)->setCustomName("§r§ePage Actuel");
+		$menu->getInventory()->setItem(45, $item);
 
-        $item = VanillaBlocks::CHEST()->asItem()->setCustomName("§r§aMes Ventes En Cours");
-        $menu->getInventory()->setItem(53, $item);
-    }
+		$item = VanillaItems::PAPER()->setCustomName("§r§ePage Précédente");
+		$menu->getInventory()->setItem(48, $item);
 
-    private static function deserialize(string $id, string $contents): CompoundTag
-    {
-        try {
-            $decompressed = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => zlib_decode($contents));
-        } catch (ErrorException $e) {
-            self::handleCorruptedItemData($id);
-            throw new Exception("Failed to decompress raw market item data" . $e->getMessage(), 0, $e);
-        }
+		$item = ExtraVanillaItems::ENDER_PEARL()->setCustomName("§r§eRéactualiser");
+		$menu->getInventory()->setItem(49, $item);
 
-        try {
-            return (new BigEndianNbtSerializer())->read($decompressed)->mustGetCompoundTag();
-        } catch (NbtDataException $e) {
-            self::handleCorruptedItemData($id);
-            throw new Exception("Failed to decode NBT data (MARKET) " . $e->getMessage(), 0, $e);
-        }
-    }
+		$item = VanillaItems::PAPER()->setCustomName("§r§ePage Suivante");
+		$menu->getInventory()->setItem(50, $item);
 
-    private static function handleCorruptedItemData(string $id): void
-    {
-        Main::getInstance()->getLogger()->warning("Corrupted item data in market, removing item with id " . $id);
-        unset(Cache::$market[$id]);
-    }
+		$item = VanillaBlocks::CHEST()->asItem()->setCustomName("§r§eMes Ventes En Cours");
+		$menu->getInventory()->setItem(53, $item);
+	}
 
-    private static function readItem(CompoundTag $nbt): Item
-    {
-        $items = $nbt->getListTag("Item");
+	public static function deserialize(string $contents) : CompoundTag {
+		$decompressed = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => zlib_decode($contents));
+		return (new BigEndianNbtSerializer())->read($decompressed)->mustGetCompoundTag();
+	}
 
-        if ($items !== null) {
-            /** @var CompoundTag $item */
-            foreach ($items->getIterator() as $item) {
-                return Item::nbtDeserialize($item);
-            }
-        }
-        return VanillaItems::AIR();
-    }
+	public static function readItem(CompoundTag $nbt) : Item {
+		$items = $nbt->getListTag("Item");
 
-    private function myItems(Player $player): void
-    {
-        $menu = InvMenu::create(InvMenuTypeIds::TYPE_DOUBLE_CHEST);
-        $menu->setName("Hôtel Des Ventes");
+		if ($items !== null) {
+			/** @var CompoundTag $item */
+			foreach ($items->getIterator() as $item) {
+				return Item::nbtDeserialize($item);
+			}
+		}
+		return VanillaItems::AIR();
+	}
 
-        $menu->setListener(InvMenu::readonly(function (DeterministicInvMenuTransaction $transaction): void {
-            $player = $transaction->getPlayer();
-            $item = $transaction->getItemClicked();
+	private function myItems(Player $player) : void {
+		$menu = InvMenu::create(InvMenuTypeIds::TYPE_DOUBLE_CHEST);
+		$menu->setName("Hôtel Des Ventes");
 
-            $this->confirm($player, $item, 1);
-        }));
+		$menu->setListener(InvMenu::readonly(function(DeterministicInvMenuTransaction $transaction) : void {
+			$player = $transaction->getPlayer();
+			$item = $transaction->getItemClicked();
 
-        foreach (self::getAuctionHousePlayerItems($player) as $id => $value) {
-            $item = self::readItem($value);
+			$this->confirm($player, $item, 1);
+		}));
 
-            $item->getNamedTag()->setString("id", $id);
-            $item->getNamedTag()->setInt("menu_item", 0);
+		foreach (self::getAuctionHousePlayerItems($player) as $id => $value) {
+			$item = self::readItem($value);
 
-            $menu->getInventory()->addItem($item);
-        }
+			$item->getNamedTag()->setString("id", $id);
+			$item->getNamedTag()->setInt("menu_item", 0);
 
-        $menu->send($player);
-    }
+			$menu->getInventory()->addItem($item);
+		}
 
-    private function confirm(Player $player, Item $item, int $type): void
-    {
-        $menu = InvMenu::create(InvMenuTypeIds::TYPE_CHEST);
-        $menu->setName("Hôtel Des Ventes");
+		$menu->send($player);
+	}
 
-        $menu->setListener(InvMenu::readonly(function (DeterministicInvMenuTransaction $transaction) use ($item, $type): void {
-            $player = $transaction->getPlayer();
+	private function confirm(Player $player, Item $item, int $type) : void {
+		$menu = InvMenu::create(InvMenuTypeIds::TYPE_CHEST);
+		$menu->setName("Hôtel Des Ventes");
 
-            if ($transaction->getItemClicked()->getCustomName() === "§r§eConfirmer") {
-                $this->checkAuctionHouse($player, $item, $type);
-            }
+		$menu->setListener(InvMenu::readonly(function(DeterministicInvMenuTransaction $transaction) use ($item, $type) : void {
+			$player = $transaction->getPlayer();
 
-            $player->removeCurrentWindow();
-        }));
+			if ($transaction->getItemClicked()->getCustomName() === "§r§eConfirmer") {
+				$this->checkAuctionHouse($player, $item, $type);
+			}
 
-        $confirm = VanillaBlocks::STAINED_GLASS_PANE()->setColor(DyeColor::GREEN())->asItem()->setCustomName("§r§aConfirmer");
-        $cancel = VanillaBlocks::STAINED_GLASS_PANE()->setColor(DyeColor::RED())->asItem()->setCustomName("§r§aAnnuler");
+			$player->removeCurrentWindow();
+		}));
 
-        foreach ([0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21] as $slot) $menu->getInventory()->setItem($slot, $confirm);
-        foreach ([5, 6, 7, 8, 14, 15, 16, 17, 23, 24, 25, 26] as $slot) $menu->getInventory()->setItem($slot, $cancel);
+		$confirm = VanillaBlocks::STAINED_GLASS_PANE()->setColor(DyeColor::GREEN())->asItem()->setCustomName("§r§aConfirmer");
+		$cancel = VanillaBlocks::STAINED_GLASS_PANE()->setColor(DyeColor::RED())->asItem()->setCustomName("§r§cAnnuler");
 
-        $item->getNamedTag()->setInt("menu_item", 0);
-        $menu->getInventory()->setItem(13, $item);
+		foreach ([ 0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21 ] as $slot) $menu->getInventory()->setItem($slot, $confirm);
+		foreach ([ 5, 6, 7, 8, 14, 15, 16, 17, 23, 24, 25, 26 ] as $slot) $menu->getInventory()->setItem($slot, $cancel);
 
-        $menu->send($player);
-    }
+		$item->getNamedTag()->setInt("menu_item", 0);
+		$menu->getInventory()->setItem(13, $item);
 
-    private function checkAuctionHouse(Player $player, Item $item, int $type): void
-    {
-        $session = Session::get($player);
+		$menu->send($player);
+	}
 
-        if (is_null($item->getNamedTag()->getTag("id")) || is_null($item->getNamedTag()->getTag("price"))) {
-            return;
-        }
+	private function checkAuctionHouse(Player $player, Item $item, int $type) : void {
+		$session = Session::get($player);
 
-        $price = $item->getNamedTag()->getInt("price");
-        $id = $item->getNamedTag()->getInt("id");
-        $seller = strtolower($item->getNamedTag()->getString("seller"));
+		if (is_null($item->getNamedTag()->getTag("id")) || is_null($item->getNamedTag()->getTag("price"))) {
+			return;
+		}
 
-        if ($price > $session->data["money"] && $type === 0) {
-            $player->sendMessage(Util::PREFIX . "Vous n'avez pas assez d'argent pour acheter cela");
-            return;
-        } elseif (!$player->getInventory()->canAddItem($item)) {
-            $player->sendMessage(Util::PREFIX . "Vous n'avez pas assez de place dans votre inventaire");
-            return;
-        } elseif (!isset(Cache::$market[$id])) {
-            $player->sendMessage(Util::PREFIX . "Cet item n'est plus disponible dans l'hotel des ventes");
-            return;
-        }
+		$price = $item->getNamedTag()->getInt("price");
+		$id = $item->getNamedTag()->getInt("id");
+		$seller = strtolower($item->getNamedTag()->getString("seller"));
 
-        if ($type === 0) {
-            if (!isset(Cache::$players["upper_name"][$seller])) {
-                $player->sendMessage(Util::PREFIX . "Une erreur est survenue lors de l'achat de l'item");
-                return;
-            }
+		if ($price > $session->data["money"] && $type === 0) {
+			$player->sendMessage(Util::PREFIX . "Vous n'avez pas assez d'argent pour acheter cela");
+			return;
+		} elseif (!$player->getInventory()->canAddItem($item)) {
+			$player->sendMessage(Util::PREFIX . "Vous n'avez pas assez de place dans votre inventaire");
+			return;
+		} elseif (!isset(Cache::$market[$id])) {
+			$player->sendMessage(Util::PREFIX . "Cet item n'est plus disponible dans l'hotel des ventes");
+			return;
+		}
 
-            $target = Main::getInstance()->getServer()->getPlayerExact($seller);
+		if ($type === 0) {
+			if (!isset(Cache::$players["upper_name"][$seller])) {
+				$player->sendMessage(Util::PREFIX . "Une erreur est survenue lors de l'achat de l'item");
+				return;
+			}
 
-            if ($target instanceof Player) {
-                $rank = Rank::getEqualRank($target->getName());
-                $tax = Rank::getRankValue($rank, "tax");
+			$target = Main::getInstance()->getServer()->getPlayerExact($seller);
 
-                $_price = $price * (1 - $tax / 100);
+			if ($target instanceof Player) {
+				$rank = Rank::getEqualRank($target->getName());
+				$tax = Rank::getRankValue($rank, "tax");
 
-                Session::get($target)->addValue("money", $_price);
-                $target->sendMessage(Util::PREFIX . "Un joueur vient d'acheter un item à vous dans l'hotel des ventes");
-            } else {
-                $file = Util::getFile("players/" . $seller);
+				$_price = $price * (1 - $tax / 100);
 
-                $rank = Rank::getEqualRank($seller);
-                $tax = Rank::getRankValue($rank, "tax");
+				Session::get($target)->addValue("money", $_price);
+				$target->sendMessage(Util::PREFIX . "Un joueur vient d'acheter un item à vous dans l'hotel des ventes");
+			} else {
+				$file = Util::getFile("data/players/" . $seller);
 
-                $_price = $price * (1 - $tax / 100);
+				$rank = Rank::getEqualRank($seller);
+				$tax = Rank::getRankValue($rank, "tax");
 
-                $file->set("money", $file->get("money") + $_price);
-                $file->save();
-            }
+				$_price = $price * (1 - $tax / 100);
 
-            Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter l'item de " . $seller . ". Prix: " . $price . "; Item: " . $item->getVanillaName());
-            $session->addValue("money", $price, true);
-        }
+				$file->set("money", $file->get("money") + $_price);
+				$file->save();
+			}
 
-        $item->getNamedTag()->removeTag("price");
-        $item->getNamedTag()->removeTag("id");
-        $item->getNamedTag()->removeTag("seller");
-        $item->getNamedTag()->removeTag("menu_item");
+			Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter l'item de " . $seller . ". Prix: " . $price . "; Item: " . $item->getVanillaName());
+			$session->addValue("money", $price, true);
+		}
 
-        if (($lore = $item->getLore()) >= 5) {
-            $item->setLore(array_splice($lore, 0, -5));
-        }
+		$item->getNamedTag()->removeTag("price");
+		$item->getNamedTag()->removeTag("id");
+		$item->getNamedTag()->removeTag("seller");
+		$item->getNamedTag()->removeTag("menu_item");
 
-        Util::addItem($player, $item);
-        unset(Cache::$market[$id]);
+		if (($lore = $item->getLore()) >= 5) {
+			$item->setLore(array_splice($lore, 0, -5));
+		}
 
-        if ($type === 0) {
-            $player->sendMessage(Util::PREFIX . "Vous venez d'acheter un item à l'hotel des ventes pour §e" . $price . " §fpièces");
-        } elseif ($type === 1) {
-            $player->sendMessage(Util::PREFIX . "Vous venez de supprimer un de vos items dans l'hotel des ventes");
-        }
-    }
+		Util::addItem($player, $item);
+		unset(Cache::$market[$id]);
 
-    public static function getAuctionHousePlayerItems(Player $player): array
-    {
-        $result = [];
+		if ($type === 0) {
+			$player->sendMessage(Util::PREFIX . "Vous venez d'acheter un item à l'hotel des ventes pour §e" . $price . " §fpièces");
+		} elseif ($type === 1) {
+			$player->sendMessage(Util::PREFIX . "Vous venez de supprimer un de vos items dans l'hotel des ventes");
+		}
+	}
 
-        foreach (Cache::$market as $id => $data) {
-            $nbt = self::deserialize($id, $data);
+	public static function getAuctionHousePlayerItems(Player $player) : array {
+		$result = [];
 
-            if ($nbt->getString("Seller") === $player->getName()) {
-                $result[$id] = $nbt;
-            }
-        }
-        return $result;
-    }
+		foreach (Cache::$market as $id => $data) {
+			$nbt = self::deserialize($data);
 
-    protected function prepare(): void
-    {
-        $this->registerSubCommand(new MarketSellSub());
-    }
+			if ($nbt->getString("Seller") === $player->getName()) {
+				$result[$id] = $nbt;
+			}
+		}
+		return $result;
+	}
+
+	protected function prepare() : void {
+		$this->registerSubCommand(new MarketSellSub());
+	}
 }

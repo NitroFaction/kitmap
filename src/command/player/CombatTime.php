@@ -10,35 +10,31 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
-class CombatTime extends BaseCommand
-{
-    public function __construct(PluginBase $plugin)
-    {
-        parent::__construct(
-            $plugin,
-            "combattime",
-            "Vous donne le temps restant ou vous êtes en combat"
-        );
+class CombatTime extends BaseCommand {
+	public function __construct(PluginBase $plugin) {
+		parent::__construct(
+			$plugin,
+			"combattime",
+			"Vous donne le temps restant ou vous êtes en combat"
+		);
 
-        $this->setPermissions([DefaultPermissions::ROOT_USER]);
-    }
+		$this->setPermissions([ DefaultPermissions::ROOT_USER ]);
+	}
 
-    public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
-    {
-        if ($sender instanceof Player) {
-            $session = Session::get($sender);
+	public function onRun(CommandSender $sender, string $aliasUsed, array $args) : void {
+		if ($sender instanceof Player) {
+			$session = Session::get($sender);
 
-            if (!$session->inCooldown("combat")) {
-                $sender->sendMessage(Util::PREFIX . "Vous n'êtes actuellement pas en combat");
-                return;
-            }
+			if (!$session->inCooldown("combat")) {
+				$sender->sendMessage(Util::PREFIX . "Vous n'êtes actuellement pas en combat");
+				return;
+			}
 
-            $data = $session->getCooldownData("combat");
-            $sender->sendMessage(Util::PREFIX . "Vous êtes eKitmap en combat §e" . ($data[0] - time()) . " §fseconde(s)");
-        }
-    }
+			$data = $session->getCooldownData("combat");
+			$sender->sendMessage(Util::PREFIX . "Vous êtes eKitmap en combat §e" . ($data[0] - time()) . " §fseconde(s)");
+		}
+	}
 
-    protected function prepare(): void
-    {
-    }
+	protected function prepare() : void {
+	}
 }

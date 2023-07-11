@@ -10,40 +10,35 @@ use Kitmap\Session;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 
-class Logs extends FactionCommand
-{
-    public function __construct()
-    {
-        parent::__construct(
-            Main::getInstance(),
-            "logs",
-            "Récupére les logs de votre faction"
-        );
+class Logs extends FactionCommand {
+	public function __construct() {
+		parent::__construct(
+			Main::getInstance(),
+			"logs",
+			"Récupére les logs de votre faction"
+		);
 
-        $this->setPermissions([DefaultPermissions::ROOT_USER]);
-    }
+		$this->setPermissions([ DefaultPermissions::ROOT_USER ]);
+	}
 
-    public function onNormalRun(Player $sender, Session $session, ?string $faction, array $args): void
-    {
-        self::showLogsForm($sender, $faction);
-    }
+	public function onNormalRun(Player $sender, Session $session, ?string $faction, array $args) : void {
+		self::showLogsForm($sender, $faction);
+	}
 
-    public static function showLogsForm(Player $player, string $faction): void
-    {
-        $logs = Cache::$factions[$faction]["logs"] ?? [];
-        $content = "";
+	public static function showLogsForm(Player $player, string $faction) : void {
+		$logs = Cache::$factions[$faction]["logs"] ?? [];
+		$content = "";
 
-        foreach ($logs as $key => $value) {
-            $content .= "§e" . date("d-m h:i", $key) . "§f: " . $value . "\n";
-        }
+		foreach ($logs as $key => $value) {
+			$content .= "§e" . date("d-m h:i", $key) . "§f: " . $value . "\n";
+		}
 
-        $form = new SimpleForm(null);
-        $form->setTitle("Logs de faction");
-        $form->setContent($content);
-        $player->sendForm($form);
-    }
+		$form = new SimpleForm(null);
+		$form->setTitle("Logs de faction");
+		$form->setContent($content);
+		$player->sendForm($form);
+	}
 
-    protected function prepare(): void
-    {
-    }
+	protected function prepare() : void {
+	}
 }
