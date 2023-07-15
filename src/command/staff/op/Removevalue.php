@@ -15,46 +15,50 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
-class Removevalue extends BaseCommand {
-	public function __construct(PluginBase $plugin) {
-		parent::__construct(
-			$plugin,
-			"removevalue",
-			"Supprime n'importe quel valeur dans les data d'un joueur"
-		);
+class Removevalue extends BaseCommand
+{
+    public function __construct(PluginBase $plugin)
+    {
+        parent::__construct(
+            $plugin,
+            "removevalue",
+            "Supprime n'importe quel valeur dans les data d'un joueur"
+        );
 
-		$this->setPermissions([ DefaultPermissions::ROOT_OPERATOR ]);
-	}
+        $this->setPermissions([DefaultPermissions::ROOT_OPERATOR]);
+    }
 
-	public function onRun(CommandSender $sender, string $aliasUsed, array $args) : void {
-		$data = $args["valeur"];
-		$amount = intval($args["montant"]);
+    public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
+    {
+        $data = $args["valeur"];
+        $amount = intval($args["montant"]);
 
-		/** @noinspection PhpDeprecationInspection */
-		if (($target = Main::getInstance()->getServer()->getPlayerByPrefix($args["joueur"])) instanceof Player) {
-			$target = $target->getName();
-		} else {
-			$target = strtolower($args["joueur"]);
+        /** @noinspection PhpDeprecationInspection */
+        if (($target = Main::getInstance()->getServer()->getPlayerByPrefix($args["joueur"])) instanceof Player) {
+            $target = $target->getName();
+        } else {
+            $target = strtolower($args["joueur"]);
 
-			if (!isset(Cache::$players["upper_name"][$target])) {
-				$sender->sendMessage(Util::PREFIX . "Ce joueur ne s'est jamais connecté au serveur (verifiez bien les caractères)");
-				return;
-			}
-		}
+            if (!isset(Cache::$players["upper_name"][$target])) {
+                $sender->sendMessage(Util::PREFIX . "Ce joueur ne s'est jamais connecté au serveur (verifiez bien les caractères)");
+                return;
+            }
+        }
 
-		if (0 > $amount) {
-			$sender->sendMessage(Util::PREFIX . "Le montant que vous avez inscrit est invalide");
-			return;
-		}
+        if (0 > $amount) {
+            $sender->sendMessage(Util::PREFIX . "Le montant que vous avez inscrit est invalide");
+            return;
+        }
 
-		$sender->sendMessage(Util::PREFIX . "Vous venez de retirer §e" . $amount . " §f" . $data . " au joueur §e" . $target);
-		Addvalue::addValue($sender->getName(), $target, $data, -$amount);
-	}
+        $sender->sendMessage(Util::PREFIX . "Vous venez de retirer §e" . $amount . " §f" . $data . " au joueur §e" . $target);
+        Addvalue::addValue($sender->getName(), $target, $data, -$amount);
+    }
 
-	protected function prepare() : void {
-		$this->registerArgument(0, new TargetArgument("joueur"));
-		$this->registerArgument(0, new RawStringArgument("joueur"));
-		$this->registerArgument(1, new IntegerArgument("montant"));
-		$this->registerArgument(2, new OptionArgument("valeur", [ "money", "pack", "kill", "gem", "killstreak", "death" ]));
-	}
+    protected function prepare(): void
+    {
+        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new RawStringArgument("joueur"));
+        $this->registerArgument(1, new IntegerArgument("montant"));
+        $this->registerArgument(2, new OptionArgument("valeur", ["money", "pack", "kill", "gem", "killstreak", "death"]));
+    }
 }

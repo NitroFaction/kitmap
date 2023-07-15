@@ -1,608 +1,615 @@
 {
-	"sanction-webhook": "https://discord.com/api/webhooks/1098211190418702376/fA-qlgI798kBWKp8VNsojK-94dZMwxALWW_bc0q0evI4N5XynAw_BLg86ypOz2O0Qa2p",
-	"nick-webhook": "https://discord.com/api/webhooks/1098211248887316492/KhwbPe9vj4_Lcml8I9-zzWl2jtjODxyxEsPLb9K_ctkiU_Kw-xVphZqY4b9WC7mONspl",
-	"ranks": {
-		"joueur": {
-			"gamertag": "§7[{fac}] {name}",
-			"chat": "§7[{fac}] §7{name}:§7 {msg}",
-			"outpost": 5000,
-			"tax": 5,
-			"pack": 0,
-			"enderchest": 10,
-			"hdv": 10,
-			"pv": 2
-		},
-		"champion": {
-			"gamertag": "§e[§7{fac}§e] §7{name}",
-			"chat": "§e[§7{fac}§e][Champion] §7{name}§e:§7 {msg}",
-			"outpost": 5000,
-			"tax": 4,
-			"pack": 1,
-			"enderchest": 13,
-			"hdv": 15,
-			"pv": 4
-		},
-		"prince": {
-			"gamertag": "§c[§7{fac}§c] §7{name}",
-			"chat": "§c[§7{fac}§c][Prince] §7{name}§c:§7 {msg}",
-			"outpost": 5500,
-			"tax": 3,
-			"pack": 2,
-			"enderchest": 17,
-			"hdv": 20,
-			"pv": 6
-		},
-		"elite": {
-			"gamertag": "§c[{fac}] {name}",
-			"chat": "§c[§7{fac}§c][Elite] §c{name}:§7 {msg}",
-			"outpost": 6000,
-			"tax": 2,
-			"pack": 4,
-			"enderchest": 22,
-			"hdv": 25,
-			"pv": 8
-		},
-		"roi": {
-			"gamertag": "§6[{fac}] {name}",
-			"chat": "§6[§7{fac}§6][Roi] §6{name}:§7 {msg}",
-			"outpost": 6500,
-			"tax": 1,
-			"pack": 5,
-			"enderchest": 27,
-			"hdv": 30,
-			"pv": 10
-		},
-		"createur": {
-			"gamertag": "§f[§b{fac}§f] §b{name}",
-			"chat": "§f[§b{fac}§f][§bCréateur§f] §f{name}:§7 {msg}"
-		},
-		"guide": {
-			"gamertag": "§a[{fac}] {name}",
-			"chat": "§a[{fac}][Guide] §a{name}:§a {msg}"
-		},
-		"moderateur": {
-			"gamertag": "§e[{fac}] {name}",
-			"chat": "§e[{fac}][Modo] §e{name}:§e {msg}"
-		},
-		"sm": {
-			"gamertag": "§6[{fac}] {name}",
-			"chat": "§6[{fac}][SuperModo] §6{name}:§6 {msg}"
-		},
-		"administrateur": {
-			"gamertag": "§c[{fac}] {name}",
-			"chat": "§c[{fac}][Admin] §c{name}:§c {msg}"
-		},
-		"fondateur": {
-			"gamertag": "§4[{fac}] {name}",
-			"chat": "§4[{fac}][Fonda] §4{name}:§4 {msg}"
-		}
-	},
-	"unicodes": {
-		"0": "",
-		"1": "",
-		"2": "",
-		"3": "",
-		"4": "",
-		"5": "",
-		"6": "",
-		"7": "",
-		"8": "",
-		"9": "",
-		"a": "",
-		"b": "",
-		"c": "",
-		"d": "",
-		"e": "",
-		"f": "",
-		"g": "",
-		"h": "",
-		"i": "",
-		"j": "",
-		"k": "",
-		"l": "",
-		"m": "",
-		"n": "",
-		"o": "",
-		"p": "",
-		"q": "",
-		"r": "",
-		"s": "",
-		"t": "",
-		"u": "",
-		"v": "",
-		"w": "",
-		"x": "",
-		"y": "",
-		"z": ""
-	},
-	"commands": [
-		"about",
-		"ban-ip",
-		"banlist",
-		"ban",
-		"clear",
-		"checkperm",
-		"defaultgamemode",
-		"extractplugin",
-		"gamerule",
-		"genplugin",
-		"help",
-		"kick",
-		"kill",
-		"listperms",
-		"makeplugin",
-		"me",
-		"tell",
-		"msg",
-		"w",
-		"suicide",
-		"list",
-		"pardon",
-		"pardon-ip",
-		"particle",
-		"save-all",
-		"save-off",
-		"enchant",
-		"save-on",
-		"seed",
-		"spawnpoint",
-		"title",
-		"unban",
-		"unban-ip"
-	],
-	"welcome-messages": [
-		"Bienvenue à toi @{player} ! Passe du bon temps sur le serveur !",
-		"Hey @{player} ! Je te souhaite la bienvenue parmi nous",
-		"Salut @{player} nous sommes content de taccueillir aujourdhui et jespère que tu te plairas ici",
-		"Heureux de te rencontrer @{player} fais comme chez toi",
-		"Bienvenue sur le serveur @{player} ! Tu nous amène des pizzas ?"
-	],
-	"words-list": [
-		"trollyrique",
-		"jamel",
-		"hafid",
-		"karim",
-		"banane",
-		"empty",
-		"minecraft",
-		"kitmap",
-		"discord",
-		"nitrofaction",
-		"anticonstitutionnellement",
-		"rigole",
-		"idee",
-		"respectueux",
-		"iris",
-		"tortue",
-		"spawn",
-		"messi",
-		"ronaldo",
-		"mbappe",
-		"myma",
-		"nitropablo",
-		"ganni",
-		"claim",
-		"skyblock",
-		"trap",
-		"money",
-		"piece",
-		"faction",
-		"livre",
-		"cookie",
-		"fruit",
-		"block",
-		"craft",
-		"pomme",
-		"nitro",
-		"voiture",
-		"ordinateur",
-		"smartphone",
-		"bouteille",
-		"tasse",
-		"train",
-		"tarte",
-		"sandwich",
-		"plage",
-		"lait",
-		"araignee",
-		"pieds",
-		"oignon",
-		"banane",
-		"tapis",
-		"chien",
-		"crayon",
-		"valise",
-		"fromage",
-		"animal",
-		"route",
-		"casque",
-		"moustache",
-		"chaussure",
-		"radio",
-		"journal",
-		"livre",
-		"internet",
-		"minecraft",
-		"uniforme",
-		"bibliotheque",
-		"sport",
-		"terrasse",
-		"famille",
-		"faction",
-		"pierre",
-		"terre",
-		"coffre",
-		"victoire",
-		"france",
-		"quebec",
-		"belgique",
-		"ecole",
-		"arabe",
-		"arbre",
-		"nature",
-		"hamburger",
-		"table",
-		"bureau",
-		"temple",
-		"argent",
-		"football",
-		"champignon",
-		"fleur",
-		"armoire",
-		"coiffeur",
-		"pain"
-	],
-	"partneritems": {
-		"ninjastar": "nether_star:\n§r§7Faites un clic droit sur cet item pour\npour vous téléporter au dernier joueur que vous avez frappé ou\nqui vous a frappé durant les 15 dernières secondes\n\n§r§7Obtenable dans les §epacks:§r§dNinjaStar:1",
-		"repairstick": "stick:\n§r§7Faites un clic droit sur cet item pour\nque 1 pièce au hasard de votre inventaire\nse répare\n\n§r§7Obtenable dans les §epacks:§r§aRepairStick:1",
-		"rocket": "red_dye:\n§r§7Faites un clic droit sur cet item pour\nvous expulser dans les airs\n\n§r§7Obtenable dans les §epacks:§r§cRocket:1",
-		"focusmode": "golden_nugget:\n§r§7Faites un clic droit sur cet item pour\nque le dernier joueur que vous avez frappé prenne\n15% de dégats de plus lorsque vous le frappez\nles 10 prochaine secondes\n\n§r§7Obtenable dans les §epacks:§r§2FocusMode:1",
-		"resistance": "iron_ingot:\n§r§7Faites un clic droit sur cet item pour\nobtenir resistance III pendant 5 à 10 secondes\n\n§r§7Obtenable dans les §epacks:§r§6Resistance III:1",
-		"strength": "blaze_powder:\n§r§7Faites un clic droit sur cet item pour\nobtenir force II pendant 5 à 10 secondes\n\n§r§7Obtenable dans les §epacks:§r§cForce II:1",
-		"timewarp": "feather:\n§r§7Faites un clic droit sur cet item pour\nactiver un timer de 3 secondes qui vous teleportera à lemplacement de\nvotre dernière perle des 15 dernières secondes\n\n§r§7Obtenable dans les §epacks:§r§bTime-Warp:1",
-		"switchball": "snowball:\n§r§7Lancer sur un autre joueur\npour inverser sa position et la votre\n\n§r§7Obtenable dans les §epacks:§r§cSwitchBall:1",
-		"antibackball": "egg:\n§r§7Lancer sur un autre joueur\npour le freeze pendant 2 secondes\net le mettre en combat\n\n§r§7Obtenable dans les §epacks:§r§eAntiBackBall:1",
-		"antibuild": "blaze_rod:\n§r§7Frappez un joueur pour quil ne puisse\nplus placer de blocs pendant 15 secondes\n\n§r§7Obtenable dans les §epacks:§r§4AntiBuild:2",
-		"partneritemblocker": "redstone:\n§r§7Frappez un joueur et il ne pourra\nplus utiliser de partener items pendant 30 secondes\n\n§r§7Obtenable dans les §epacks:§r§cPartnerItem Blocker:2",
-		"antipearl": "ender_pearl:\n§r§7Frappez un joueur et il ne pourra plus\nutiliser de pearl pendant 30 secondes\n\n§r§7Obtenable dans les §epacks:§r§bAntiPearl:2",
-		"pumpkinaxe": "golden_axe:\n§r§7Frappez un joueur et son casque sera\nchanger par une citrouille pendant 5 secondes\n\n§r§7Obtenable dans les §epacks:§r§6Pumpkin Axe:2"
-	},
-	"default-data": {
-		"faction": null,
-		"money": 10000,
-		"gem": 0,
-		"kill": 0,
-		"death": 0,
-		"killstreak": 0,
-		"played_time": 0,
-		"pack": 0,
-		"faction_chat": false,
-		"scoreboard": true,
-		"night_vision": false,
-		"cobblestone": true,
-		"coordinates": false,
-		"border": false,
-		"cooldown": [],
-		"ip": [],
-		"uuid": [],
-		"did": [],
-		"ssi": [],
-		"cid": [],
-		"staff_mod": [
-			false,
-			null,
-			null
-		],
-		"boost": [
-			-1,
-			false
-		]
-	},
-	"saves": [
-		"ip",
-		"uuid",
-		"did",
-		"ssi",
-		"cid"
-	],
-	"atouts": {
-		"Vitesse": {
-			"id": 1,
-			"gem": 50,
-			"price": 3000000,
-			"texture": "speed_effect"
-		},
-		"Jump Boost": {
-			"id": 8,
-			"gem": 50,
-			"price": 3000000,
-			"texture": "jump_boost_effect"
-		},
-		"Force": {
-			"id": 5,
-			"gem": 75,
-			"price": 5000000,
-			"texture": "strength_effect"
-		},
-		"Resistance": {
-			"id": 11,
-			"gem": 75,
-			"price": 5000000,
-			"texture": "resistance_effect"
-		}
-	},
-	"events": {
-		"nexus": {
-			"description": "§r§fInformations:\n\nTuez lentité qui apparaît dans la place au centre,\nlorsque cette entité naura plus de vie elle donnera\n§e30 §fitems aléatoire provenant des lots de §epack §f!\n\nHoraires:\n\nCet event se lance toutes les 2h à partir de 13h jusquà 23h",
-			"item": 272,
-			"xyz": [
-				"-19.5:64:142.5",
-				"-55.5:64:159.5",
-				"-73.5:64:147.5",
-				"-54.5:64:138.5",
-				"-35.5:65:157.5"
-			],
-			"slot": 11
-		},
-		"koth": {
-			"description": "§r§fInformations:\n\nRestez le plus longtemps possible sur la platforme de §e5x5 §fau\nbout de 3minutes dessus vous remportez §e25k §fpièces,\nentre §e15 §fet §e25 §fde power pour votre faction et §e2 §fpacks !\n\nHoraires:\n\nCet event se lance toutes les heures à partir de 12h30 jusquà 23h30",
-			"item": 267,
-			"xyz": [
-				"159.5:64:-38.5",
-				"134.5:69:-64.5",
-				"120.5:64:-45.5",
-				"134.5:69:-58.5"
-			],
-			"slot": 12
-		},
-		"domination": {
-			"description": "§r§fInformations:\n\nCet event dure 15 minutes, vous devez capturé les §e3 §fzones\navec votre faction et obtenir le plus de point, les §e3 §ffactions\nobtiendrons du power à la fin de levent.\n\nHoraires:\n\nCet event se lance tous les jours à 18h et à 21h sauf si il ny a pas plus de §e30 §fjoueurs",
-			"item": 276,
-			"xyz": [
-				"-108.5:64:32.5",
-				"-138.5:64:-6.5",
-				"-155.5:86:45.5",
-				"-133.5:102:33.5",
-				"-145.5:109:31.5",
-				"-140.5:85:5.5",
-				"-128.5:64:49.5",
-				"-125.5:65:19.5"
-			],
-			"slot": 14
-		},
-		"outpost": {
-			"description": "§r§fInformations:\n\nCapturez avec laide de votre faction la platforme !\nLorsque loutpost est capturé par une faction, celle-ci\ngagne §e8 §fpowers tous les 5 minutes et les joueurs\nconnectés de la faction gagnent entre §e5k §fet §e7.5k §fpièces !\n\nHoraires:\n\nCet event est 24h sur 24 lancé",
-			"item": 743,
-			"xyz": [
-				"86.5:64:141.5",
-				"90.5:64:170.5",
-				"109.5:64:181.5",
-				"132.5:64:158.5",
-				"112.5:65:152.5"
-			],
-			"slot": 22
-		}
-	},
-	"top": {
-		"6.5:64:-10.5:map": "played_time",
-		"3.5:64:-10.5:map": "money",
-		"-2.5:64:-10.5:map": "kill",
-		"-5.5:64:-10.5:map": "death"
-	},
-	"zones": {
-		"spawn": "99:0:100:-100:255:-99:map",
-		"koth": "147:66:-63:143:72:-59:map",
-		"outpost": "109:64:156:115:70:162:map",
-		"vip_claim": "221:0:221:-221:258:-221:map"
-	},
-	"floatings": {
-		"112.5:66:159.5:map": "outpost",
-		"145.5:70:-60.5:map": "koth",
-		"38.5:64:42.5:map": "mine",
-		"21.5:63:42.5:map": "pack",
-		"-122.5:65.5:30.5:map": "domination",
-		"-137.5:86.5:17.5:map": "domination",
-		"-145.5:110.5:39.5:map": "domination"
-	},
-	"domination": {
-		"Alpha": {
-			"minX": -125,
-			"maxX": -121,
-			"minZ": 28,
-			"maxZ": 32,
-			"y": 63
-		},
-		"Bravo": {
-			"minX": -140,
-			"maxX": -136,
-			"minZ": 15,
-			"maxZ": 19,
-			"y": 84
-		},
-		"Charlie": {
-			"minX": -148,
-			"maxX": -144,
-			"minZ": 37,
-			"maxZ": 41,
-			"y": 108
-		}
-	},
-	"permissions": {
-		"delete": "Supprimer la faction §c(Risqué)",
-		"leader": "Promouvoir chef un membre §c(Risqué)",
-		"permissions": "Modifier les permissions §c(Risqué)",
-		"invite": "Inviter des joueurs",
-		"kick": "Expulser des membres",
-		"sethome": "Définir la position du f home",
-		"delhome": "Supprimer le f home",
-		"claim": "Récupérer un claim",
-		"unclaim": "Supprimer son claim",
-		"logs": "Accèder aux logs",
-		"rename": "Renommer la faction",
-		"home": "Se téléporter au f home",
-		"place": "Placer des blocs",
-		"break": "Casser des blocs",
-		"chest": "Ouvrir des coffres",
-		"fence-gates": "Ouvrir les portillons",
-		"trapdoor": "Ouvrir les traps",
-		"door": "Ouvrir les portes",
-		"demote": "Rétrograder des membres",
-		"promote": "Promouvoir des membres"
-	},
-	"faction_ranks": {
-		"leader": "Chef",
-		"officier": "Officier",
-		"member": "Membre",
-		"recruit": "Recrue"
-	},
-	"sanctions": {
-		"ban": {
-			"Cheat": [
-				1728000,
-				-1
-			],
-			"Refus de verification": [
-				604800,
-				1728000
-			],
-			"DDoS / Dox": [
-				604800,
-				2592000,
-				-1
-			],
-			"Full Back": [
-				36000,
-				43200,
-				57600,
-				72000
-			],
-			"Camping": [
-				36000,
-				43200,
-				57600,
-				72000
-			],
-			"Hosting": [
-				36000,
-				43200,
-				57600,
-				72000
-			],
-			"Usebug": [
-				43200,
-				64800,
-				86400,
-				108000
-			],
-			"Freekill": [
-				43200,
-				64800,
-				86400,
-				108000
-			],
-			"Insiding": [
-				43200,
-				64800,
-				86400,
-				108000
-			],
-			"Trap Inapproprié": [
-				43200,
-				64800,
-				86400,
-				108000
-			],
-			"Echanges Interdits": [
-				1728000,
-				-1
-			],
-			"Duplication / Usage de bugs": [
-				1728000,
-				-1
-			],
-			"Contournement de bannissement": [
-				-1
-			],
-			"Arnaque": [
-				259200,
-				432000,
-				604800
-			],
-			"Trahison": [
-				86400,
-				432000,
-				604800
-			]
-		},
-		"mute": {
-			"Gros-Mots": [
-				900,
-				1800,
-				3600
-			],
-			"Provocations": [
-				900,
-				1800,
-				3600
-			],
-			"Spam": [
-				900,
-				1800,
-				3600,
-				7200
-			],
-			"Discriminations": [
-				3600,
-				7200,
-				10800,
-				18000
-			],
-			"Flood": [
-				900,
-				1800,
-				3600
-			],
-			"Dox (et menace)": [
-				86400,
-				604800,
-				2592000,
-				-1
-			]
-		},
-		"kick": {
-			"Nick Inapproprié": [],
-			"Full Back": [],
-			"Camping": [],
-			"Hosting": []
-		}
-	},
-	"interval": {
-		"300": "question",
-		"500": "save"
-	},
-	"planning": {
-		"18:00": "domination start",
-		"21:00": "domination start"
-	},
-	"clean-save-data": [
-		"firstPlayed",
-		"lastPlayed",
-		"SpawnZ",
-		"SpawnY",
-		"SpawnX",
-		"SpawnLevel",
-		"Level",
-		"LastKnownXUID",
-		"Skin",
-		"Pos",
-		"Rotation",
-		"Motion",
-		"EnderChestInventory",
-		"CustomName",
-		"CustomNameVisible",
-		"OnGround",
-		"Fire",
-		"FallDistance",
-		"Air"
-	]
+  "sanction-webhook": "https://discord.com/api/webhooks/1098211190418702376/fA-qlgI798kBWKp8VNsojK-94dZMwxALWW_bc0q0evI4N5XynAw_BLg86ypOz2O0Qa2p",
+  "nick-webhook": "https://discord.com/api/webhooks/1098211248887316492/KhwbPe9vj4_Lcml8I9-zzWl2jtjODxyxEsPLb9K_ctkiU_Kw-xVphZqY4b9WC7mONspl",
+  "ranks": {
+    "joueur": {
+      "gamertag": "§7[{fac}] {name}",
+      "chat": "§7[{fac}] §7{name}:§7 {msg}",
+      "outpost": 5000,
+      "tax": 5,
+      "pack": 0,
+      "enderchest": 10,
+      "hdv": 10,
+      "pv": 2
+    },
+    "champion": {
+      "gamertag": "§e[§7{fac}§e] §7{name}",
+      "chat": "§e[§7{fac}§e][Champion] §7{name}§e:§7 {msg}",
+      "outpost": 5000,
+      "tax": 4,
+      "pack": 1,
+      "enderchest": 13,
+      "hdv": 15,
+      "pv": 4
+    },
+    "prince": {
+      "gamertag": "§c[§7{fac}§c] §7{name}",
+      "chat": "§c[§7{fac}§c][Prince] §7{name}§c:§7 {msg}",
+      "outpost": 5500,
+      "tax": 3,
+      "pack": 2,
+      "enderchest": 17,
+      "hdv": 20,
+      "pv": 6
+    },
+    "elite": {
+      "gamertag": "§c[{fac}] {name}",
+      "chat": "§c[§7{fac}§c][Elite] §c{name}:§7 {msg}",
+      "outpost": 6000,
+      "tax": 2,
+      "pack": 4,
+      "enderchest": 22,
+      "hdv": 25,
+      "pv": 8
+    },
+    "roi": {
+      "gamertag": "§6[{fac}] {name}",
+      "chat": "§6[§7{fac}§6][Roi] §6{name}:§7 {msg}",
+      "outpost": 6500,
+      "tax": 1,
+      "pack": 5,
+      "enderchest": 27,
+      "hdv": 30,
+      "pv": 10
+    },
+    "createur": {
+      "gamertag": "§f[§b{fac}§f] §b{name}",
+      "chat": "§f[§b{fac}§f][§bCréateur§f] §f{name}:§7 {msg}"
+    },
+    "guide": {
+      "gamertag": "§a[{fac}] {name}",
+      "chat": "§a[{fac}][Guide] §a{name}:§a {msg}"
+    },
+    "moderateur": {
+      "gamertag": "§e[{fac}] {name}",
+      "chat": "§e[{fac}][Modo] §e{name}:§e {msg}"
+    },
+    "sm": {
+      "gamertag": "§6[{fac}] {name}",
+      "chat": "§6[{fac}][SuperModo] §6{name}:§6 {msg}"
+    },
+    "administrateur": {
+      "gamertag": "§c[{fac}] {name}",
+      "chat": "§c[{fac}][Admin] §c{name}:§c {msg}"
+    },
+    "fondateur": {
+      "gamertag": "§4[{fac}] {name}",
+      "chat": "§4[{fac}][Fonda] §4{name}:§4 {msg}"
+    }
+  },
+  "unicodes": {
+    "0": "",
+    "1": "",
+    "2": "",
+    "3": "",
+    "4": "",
+    "5": "",
+    "6": "",
+    "7": "",
+    "8": "",
+    "9": "",
+    "a": "",
+    "b": "",
+    "c": "",
+    "d": "",
+    "e": "",
+    "f": "",
+    "g": "",
+    "h": "",
+    "i": "",
+    "j": "",
+    "k": "",
+    "l": "",
+    "m": "",
+    "n": "",
+    "o": "",
+    "p": "",
+    "q": "",
+    "r": "",
+    "s": "",
+    "t": "",
+    "u": "",
+    "v": "",
+    "w": "",
+    "x": "",
+    "y": "",
+    "z": ""
+  },
+  "commands": [
+    "about",
+    "ban-ip",
+    "banlist",
+    "ban",
+    "clear",
+    "checkperm",
+    "defaultgamemode",
+    "extractplugin",
+    "gamerule",
+    "genplugin",
+    "help",
+    "kick",
+    "kill",
+    "listperms",
+    "makeplugin",
+    "me",
+    "tell",
+    "msg",
+    "w",
+    "suicide",
+    "list",
+    "pardon",
+    "pardon-ip",
+    "particle",
+    "save-all",
+    "save-off",
+    "enchant",
+    "save-on",
+    "seed",
+    "spawnpoint",
+    "title",
+    "unban",
+    "unban-ip"
+  ],
+  "welcome-messages": [
+    "Bienvenue à toi @{player} ! Passe du bon temps sur le serveur !",
+    "Hey @{player} ! Je te souhaite la bienvenue parmi nous",
+    "Salut @{player} nous sommes content de taccueillir aujourdhui et jespère que tu te plairas ici",
+    "Heureux de te rencontrer @{player} fais comme chez toi",
+    "Bienvenue sur le serveur @{player} ! Tu nous amène des pizzas ?"
+  ],
+  "words-list": [
+    "trollyrique",
+    "jamel",
+    "hafid",
+    "karim",
+    "banane",
+    "empty",
+    "minecraft",
+    "kitmap",
+    "discord",
+    "nitrofaction",
+    "anticonstitutionnellement",
+    "rigole",
+    "idee",
+    "respectueux",
+    "iris",
+    "tortue",
+    "spawn",
+    "messi",
+    "ronaldo",
+    "mbappe",
+    "myma",
+    "nitropablo",
+    "ganni",
+    "claim",
+    "skyblock",
+    "trap",
+    "money",
+    "piece",
+    "faction",
+    "livre",
+    "cookie",
+    "fruit",
+    "block",
+    "craft",
+    "pomme",
+    "nitro",
+    "voiture",
+    "ordinateur",
+    "smartphone",
+    "bouteille",
+    "tasse",
+    "train",
+    "tarte",
+    "sandwich",
+    "plage",
+    "lait",
+    "araignee",
+    "pieds",
+    "oignon",
+    "banane",
+    "tapis",
+    "chien",
+    "crayon",
+    "valise",
+    "fromage",
+    "animal",
+    "route",
+    "casque",
+    "moustache",
+    "chaussure",
+    "radio",
+    "journal",
+    "livre",
+    "internet",
+    "minecraft",
+    "uniforme",
+    "bibliotheque",
+    "sport",
+    "terrasse",
+    "famille",
+    "faction",
+    "pierre",
+    "terre",
+    "coffre",
+    "victoire",
+    "france",
+    "quebec",
+    "belgique",
+    "ecole",
+    "arabe",
+    "arbre",
+    "nature",
+    "hamburger",
+    "table",
+    "bureau",
+    "temple",
+    "argent",
+    "football",
+    "champignon",
+    "fleur",
+    "armoire",
+    "coiffeur",
+    "stop",
+    "bresil",
+    "pain",
+    "homme",
+    "femme",
+    "antipearl",
+    "rocket",
+    "spotify",
+    "paradis"
+  ],
+  "partneritems": {
+    "ninjastar": "nether_star:\n§r§7Faites un clic droit sur cet item pour\npour vous téléporter au dernier joueur que vous avez frappé ou\nqui vous a frappé durant les 15 dernières secondes\n\n§r§7Obtenable dans les §epacks:§r§dNinjaStar:1",
+    "repairstick": "stick:\n§r§7Faites un clic droit sur cet item pour\nque 1 pièce au hasard de votre inventaire\nse répare\n\n§r§7Obtenable dans les §epacks:§r§aRepairStick:1",
+    "rocket": "red_dye:\n§r§7Faites un clic droit sur cet item pour\nvous expulser dans les airs\n\n§r§7Obtenable dans les §epacks:§r§cRocket:1",
+    "focusmode": "golden_nugget:\n§r§7Faites un clic droit sur cet item pour\nque le dernier joueur que vous avez frappé prenne\n15% de dégats de plus lorsque vous le frappez\nles 10 prochaine secondes\n\n§r§7Obtenable dans les §epacks:§r§2FocusMode:1",
+    "resistance": "iron_ingot:\n§r§7Faites un clic droit sur cet item pour\nobtenir resistance III pendant 5 à 10 secondes\n\n§r§7Obtenable dans les §epacks:§r§6Resistance III:1",
+    "strength": "blaze_powder:\n§r§7Faites un clic droit sur cet item pour\nobtenir force II pendant 5 à 10 secondes\n\n§r§7Obtenable dans les §epacks:§r§cForce II:1",
+    "timewarp": "feather:\n§r§7Faites un clic droit sur cet item pour\nactiver un timer de 3 secondes qui vous teleportera à lemplacement de\nvotre dernière perle des 15 dernières secondes\n\n§r§7Obtenable dans les §epacks:§r§bTime-Warp:1",
+    "switchball": "snowball:\n§r§7Lancer sur un autre joueur\npour inverser sa position et la votre\n\n§r§7Obtenable dans les §epacks:§r§cSwitchBall:1",
+    "antibackball": "egg:\n§r§7Lancer sur un autre joueur\npour le freeze pendant 2 secondes\net le mettre en combat\n\n§r§7Obtenable dans les §epacks:§r§eAntiBackBall:1",
+    "antibuild": "blaze_rod:\n§r§7Frappez un joueur pour quil ne puisse\nplus placer de blocs pendant 15 secondes\n\n§r§7Obtenable dans les §epacks:§r§4AntiBuild:2",
+    "partneritemblocker": "redstone:\n§r§7Frappez un joueur et il ne pourra\nplus utiliser de partener items pendant 30 secondes\n\n§r§7Obtenable dans les §epacks:§r§cPartnerItem Blocker:2",
+    "antipearl": "ender_pearl:\n§r§7Frappez un joueur et il ne pourra plus\nutiliser de pearl pendant 30 secondes\n\n§r§7Obtenable dans les §epacks:§r§bAntiPearl:2",
+    "pumpkinaxe": "golden_axe:\n§r§7Frappez un joueur et son casque sera\nchanger par une citrouille pendant 5 secondes\n\n§r§7Obtenable dans les §epacks:§r§6Pumpkin Axe:2"
+  },
+  "default-data": {
+    "faction": null,
+    "money": 10000,
+    "gem": 0,
+    "kill": 0,
+    "death": 0,
+    "killstreak": 0,
+    "played_time": 0,
+    "pack": 0,
+    "faction_chat": false,
+    "scoreboard": true,
+    "night_vision": false,
+    "cobblestone": true,
+    "coordinates": false,
+    "border": false,
+    "cooldown": [],
+    "ip": [],
+    "uuid": [],
+    "did": [],
+    "ssi": [],
+    "cid": [],
+    "staff_mod": [
+      false,
+      null,
+      null
+    ],
+    "boost": [
+      -1,
+      false
+    ]
+  },
+  "saves": [
+    "ip",
+    "uuid",
+    "did",
+    "ssi",
+    "cid"
+  ],
+  "atouts": {
+    "Vitesse": {
+      "id": 1,
+      "gem": 50,
+      "price": 3000000,
+      "texture": "speed_effect"
+    },
+    "Jump Boost": {
+      "id": 8,
+      "gem": 50,
+      "price": 3000000,
+      "texture": "jump_boost_effect"
+    },
+    "Force": {
+      "id": 5,
+      "gem": 75,
+      "price": 5000000,
+      "texture": "strength_effect"
+    },
+    "Resistance": {
+      "id": 11,
+      "gem": 75,
+      "price": 5000000,
+      "texture": "resistance_effect"
+    }
+  },
+  "events": {
+    "nexus": {
+      "description": "§r§fInformations:\n\nTuez lentité qui apparaît dans la place au centre,\nlorsque cette entité naura plus de vie elle donnera\n§e30 §fitems aléatoire provenant des lots de §epack §f!\n\nHoraires:\n\nCet event se lance toutes les 2h à partir de 13h jusquà 23h",
+      "item": 272,
+      "xyz": [
+        "-19.5:64:142.5",
+        "-55.5:64:159.5",
+        "-73.5:64:147.5",
+        "-54.5:64:138.5",
+        "-35.5:65:157.5"
+      ],
+      "slot": 11
+    },
+    "koth": {
+      "description": "§r§fInformations:\n\nRestez le plus longtemps possible sur la platforme de §e5x5 §fau\nbout de 3minutes dessus vous remportez §e25k §fpièces,\nentre §e15 §fet §e25 §fde power pour votre faction et §e2 §fpacks !\n\nHoraires:\n\nCet event se lance toutes les heures à partir de 12h30 jusquà 23h30",
+      "item": 267,
+      "xyz": [
+        "159.5:64:-38.5",
+        "134.5:69:-64.5",
+        "120.5:64:-45.5",
+        "134.5:69:-58.5"
+      ],
+      "slot": 12
+    },
+    "domination": {
+      "description": "§r§fInformations:\n\nCet event dure 15 minutes, vous devez capturé les §e3 §fzones\navec votre faction et obtenir le plus de point, les §e3 §ffactions\nobtiendrons du power à la fin de levent.\n\nHoraires:\n\nCet event se lance tous les jours à 18h et à 21h sauf si il ny a pas plus de §e30 §fjoueurs",
+      "item": 276,
+      "xyz": [
+        "-108.5:64:32.5",
+        "-138.5:64:-6.5",
+        "-155.5:86:45.5",
+        "-133.5:102:33.5",
+        "-145.5:109:31.5",
+        "-140.5:85:5.5",
+        "-128.5:64:49.5",
+        "-125.5:65:19.5"
+      ],
+      "slot": 14
+    },
+    "outpost": {
+      "description": "§r§fInformations:\n\nCapturez avec laide de votre faction la platforme !\nLorsque loutpost est capturé par une faction, celle-ci\ngagne §e8 §fpowers tous les 5 minutes et les joueurs\nconnectés de la faction gagnent entre §e5k §fet §e7.5k §fpièces !\n\nHoraires:\n\nCet event est 24h sur 24 lancé",
+      "item": 743,
+      "xyz": [
+        "86.5:64:141.5",
+        "90.5:64:170.5",
+        "109.5:64:181.5",
+        "132.5:64:158.5",
+        "112.5:65:152.5"
+      ],
+      "slot": 22
+    }
+  },
+  "top": {
+    "6.5:64:-10.5:map": "played_time",
+    "3.5:64:-10.5:map": "money",
+    "-2.5:64:-10.5:map": "kill",
+    "-5.5:64:-10.5:map": "death"
+  },
+  "zones": {
+    "spawn": "83:-64:-111:-74:355:37:map",
+    "koth": "175:60:-86:169:70:-80:map",
+    "outpost": "65:60:-184:59:70:-190:map"
+  },
+  "floatings": {
+    "62.5:63.5:-186.5:map": "outpost",
+    "172.5:63.5:-82.5:map": "koth",
+    "38.5:64:42.5:map": "mine",
+    "-0.5:65:-55.5:map": "pack",
+    "-144.5:63.5:-17.5:map": "domination",
+    "-170.5:67.5:-12.5:map": "domination",
+    "-193.5:63.5:-16.5:map": "domination"
+  },
+  "domination": {
+    "Alpha": {
+      "minX": -196,
+      "maxX": -192,
+      "minZ": -19,
+      "maxZ": -15,
+      "y": 61
+    },
+    "Bravo": {
+      "minX": -173,
+      "maxX": -169,
+      "minZ": -15,
+      "maxZ": -11,
+      "y": 65
+    },
+    "Charlie": {
+      "minX": -147,
+      "maxX": -143,
+      "minZ": -20,
+      "maxZ": -16,
+      "y": 61
+    }
+  },
+  "permissions": {
+    "delete": "Supprimer la faction §c(Risqué)",
+    "leader": "Promouvoir chef un membre §c(Risqué)",
+    "permissions": "Modifier les permissions §c(Risqué)",
+    "invite": "Inviter des joueurs",
+    "kick": "Expulser des membres",
+    "sethome": "Définir la position du f home",
+    "delhome": "Supprimer le f home",
+    "claim": "Récupérer un claim",
+    "unclaim": "Supprimer son claim",
+    "logs": "Accèder aux logs",
+    "rename": "Renommer la faction",
+    "home": "Se téléporter au f home",
+    "place": "Placer des blocs",
+    "break": "Casser des blocs",
+    "chest": "Ouvrir des coffres",
+    "fence-gates": "Ouvrir les portillons",
+    "trapdoor": "Ouvrir les traps",
+    "door": "Ouvrir les portes",
+    "demote": "Rétrograder des membres",
+    "promote": "Promouvoir des membres"
+  },
+  "faction_ranks": {
+    "leader": "Chef",
+    "officier": "Officier",
+    "member": "Membre",
+    "recruit": "Recrue"
+  },
+  "sanctions": {
+    "ban": {
+      "Cheat": [
+        1728000,
+        -1
+      ],
+      "Refus de verification": [
+        604800,
+        1728000
+      ],
+      "DDoS / Dox": [
+        604800,
+        2592000,
+        -1
+      ],
+      "Full Back": [
+        36000,
+        43200,
+        57600,
+        72000
+      ],
+      "Camping": [
+        36000,
+        43200,
+        57600,
+        72000
+      ],
+      "Hosting": [
+        36000,
+        43200,
+        57600,
+        72000
+      ],
+      "Usebug": [
+        43200,
+        64800,
+        86400,
+        108000
+      ],
+      "Freekill": [
+        43200,
+        64800,
+        86400,
+        108000
+      ],
+      "Insiding": [
+        43200,
+        64800,
+        86400,
+        108000
+      ],
+      "Trap Inapproprié": [
+        43200,
+        64800,
+        86400,
+        108000
+      ],
+      "Echanges Interdits": [
+        1728000,
+        -1
+      ],
+      "Duplication / Usage de bugs": [
+        1728000,
+        -1
+      ],
+      "Contournement de bannissement": [
+        -1
+      ],
+      "Arnaque": [
+        259200,
+        432000,
+        604800
+      ],
+      "Trahison": [
+        86400,
+        432000,
+        604800
+      ]
+    },
+    "mute": {
+      "Gros-Mots": [
+        900,
+        1800,
+        3600
+      ],
+      "Provocations": [
+        900,
+        1800,
+        3600
+      ],
+      "Spam": [
+        900,
+        1800,
+        3600,
+        7200
+      ],
+      "Discriminations": [
+        3600,
+        7200,
+        10800,
+        18000
+      ],
+      "Flood": [
+        900,
+        1800,
+        3600
+      ],
+      "Dox (et menace)": [
+        86400,
+        604800,
+        2592000,
+        -1
+      ]
+    },
+    "kick": {
+      "Nick Inapproprié": [],
+      "Full Back": [],
+      "Camping": [],
+      "Hosting": []
+    }
+  },
+  "interval": {
+    "300": "question",
+    "500": "save"
+  },
+  "planning": {
+    "18:00": "domination start",
+    "21:00": "domination start"
+  },
+  "clean-save-data": [
+    "firstPlayed",
+    "lastPlayed",
+    "SpawnZ",
+    "SpawnY",
+    "SpawnX",
+    "SpawnLevel",
+    "Level",
+    "LastKnownXUID",
+    "Skin",
+    "Pos",
+    "Rotation",
+    "Motion",
+    "EnderChestInventory",
+    "CustomName",
+    "CustomNameVisible",
+    "OnGround",
+    "Fire",
+    "FallDistance",
+    "Air"
+  ]
 }

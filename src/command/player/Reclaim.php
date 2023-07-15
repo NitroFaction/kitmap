@@ -14,123 +14,130 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
-class Reclaim extends BaseCommand {
-	public function __construct(PluginBase $plugin) {
-		parent::__construct(
-			$plugin,
-			"reclaim",
-			"Recupere ses récompenses journalières ou un remboursement"
-		);
+class Reclaim extends BaseCommand
+{
+    public function __construct(PluginBase $plugin)
+    {
+        parent::__construct(
+            $plugin,
+            "reclaim",
+            "Recupere ses récompenses journalières ou un remboursement"
+        );
 
-		$this->setPermissions([ DefaultPermissions::ROOT_USER ]);
-	}
+        $this->setPermissions([DefaultPermissions::ROOT_USER]);
+    }
 
-	public function onRun(CommandSender $sender, string $aliasUsed, array $args) : void {
-		if ($sender instanceof Player) {
-			$session = Session::get($sender);
-			$file = Util::getFile("data/inventories/" . strtolower($sender->getName()));
+    public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
+    {
+        if ($sender instanceof Player) {
+            $session = Session::get($sender);
+            $file = Util::getFile("data/inventories/" . strtolower($sender->getName()));
 
-			$inventorys = $file->getAll()["reclaim"] ?? [];
+            $inventorys = $file->getAll()["reclaim"] ?? [];
 
-			if (count($inventorys) > 0) {
-				$this->sendRefundForm($sender);
-				return;
-			} elseif ($session->inCooldown("reclaim")) {
-				$format = Util::formatDurationFromSeconds($session->getCooldownData("reclaim")[0] - time());
-				$sender->sendMessage(Util::PREFIX . "Vous ne pourrez avoir vos pack(s) journalier que dans: §e" . $format);
-				return;
-			}
+            if (count($inventorys) > 0) {
+                $this->sendRefundForm($sender);
+                return;
+            } else if ($session->inCooldown("reclaim")) {
+                $format = Util::formatDurationFromSeconds($session->getCooldownData("reclaim")[0] - time());
+                $sender->sendMessage(Util::PREFIX . "Vous ne pourrez avoir vos pack(s) journalier que dans: §e" . $format);
+                return;
+            }
 
-			$rank = Rank::getEqualRank($sender->getName());
-			$pack = Rank::getRankValue($rank, "pack");
+            $rank = Rank::getEqualRank($sender->getName());
+            $pack = Rank::getRankValue($rank, "pack");
 
-			if ($pack === 0) {
-				$sender->sendMessage(Util::PREFIX . "Vous n'avez pas la permission de faire cela");
-				return;
-			}
+            if ($pack === 0) {
+                $sender->sendMessage(Util::PREFIX . "Vous n'avez pas la permission de faire cela");
+                return;
+            }
 
-			$session->addValue("pack", $pack);
-			$session->setCooldown("reclaim", 60 * 60 * 24);
+            $session->addValue("pack", $pack);
+            $session->setCooldown("reclaim", 60 * 60 * 24);
 
-			$sender->sendMessage(Util::PREFIX . "Vous venez de recevoir §e" . $pack . " §fpack(s) grace à votre reclaim !");
-			Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §e" . $sender->getName() . " §fvient de recevoir §e" . $pack . " §fpack(s) grace à son reclaim !");
-		}
-	}
+            $sender->sendMessage(Util::PREFIX . "Vous venez de recevoir §e" . $pack . " §fpack(s) grace à votre reclaim !");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §e" . $sender->getName() . " §fvient de recevoir §e" . $pack . " §fpack(s) grace à son reclaim !");
+        }
+    }
 
-	private function sendRefundForm(Player $player) : void {
-		$file = Util::getFile("data/inventories/" . strtolower($player->getName()));
-		$inventorys = $file->getAll()["reclaim"] ?? [];
+    private function sendRefundForm(Player $player): void
+    {
+        $file = Util::getFile("data/inventories/" . strtolower($player->getName()));
+        $inventorys = $file->getAll()["reclaim"] ?? [];
 
-		$form = new SimpleForm(function(Player $player, mixed $data) {
-			if (!is_string($data)) {
-				return;
-			}
+        $form = new SimpleForm(function (Player $player, mixed $data) {
+            if (!is_string($data)) {
+                return;
+            }
 
-			$this->informationForm($player, $data);
-		});
+            $this->informationForm($player, $data);
+        });
 
-		foreach ($inventorys as $key => $value) {
-			$form->addButton("Mort par §e" . $value["killer"], -1, "", $key);
-		}
+        foreach ($inventorys as $key => $value) {
+            $form->addButton("Mort par §e" . $value["killer"], -1, "", $key);
+        }
 
-		$form->setTitle("Remboursement");
-		$form->setContent(Util::PREFIX . "Cliquez sur le bouton de choix");
-		$player->sendForm($form);
-	}
+        $form->setTitle("Remboursement");
+        $form->setContent(Util::PREFIX . "Cliquez sur le bouton de choix");
+        $player->sendForm($form);
+    }
 
-	private function informationForm(Player $player, string $inventory) : void {
-		$file = Util::getFile("data/inventories/" . strtolower($player->getName()));
+    private function informationForm(Player $player, string $inventory): void
+    {
+        $file = Util::getFile("data/inventories/" . strtolower($player->getName()));
 
-		$data = $file->getAll()["reclaim"][$inventory] ?? [];
+        $data = $file->getAll()["reclaim"][$inventory] ?? [];
 
-		$nbt = Util::deserializePlayerData($player->getName(), $data["data"] ?? "");
-		$items = $this->getItems($nbt);
+        $nbt = Util::deserializePlayerData($player->getName(), $data["data"] ?? "");
+        $items = $this->getItems($nbt);
 
-		$form = new SimpleForm(function(Player $player, mixed $button) use ($file, $inventory) {
-			if ($button === 0) {
-				$data = $file->getAll()["reclaim"][$inventory] ?? [];
-				$nbt = Util::deserializePlayerData($player->getName(), $data["data"] ?? "");
+        $form = new SimpleForm(function (Player $player, mixed $button) use ($file, $inventory) {
+            if ($button === 0) {
+                $data = $file->getAll()["reclaim"][$inventory] ?? [];
+                $nbt = Util::deserializePlayerData($player->getName(), $data["data"] ?? "");
 
-				foreach ($this->getItems($nbt) as $item) {
-					Util::addItem($player, $item);
-				}
+                foreach ($this->getItems($nbt) as $item) {
+                    Util::addItem($player, $item);
+                }
 
-				$session = Session::get($player);
-				$session->addValue("death", 1, true);
+                $session = Session::get($player);
+                $session->addValue("death", 1, true);
 
-				$player->sendMessage(Util::PREFIX . "Vous venez de récupérer votre inventaire que vous avez perdu le §e" . $data["date"]);
-				$player->sendMessage(Util::PREFIX . "Une mort a été soustraite de votre compteur de mort");
-				$player->sendMessage(Util::PREFIX . "Vous venez de récupérer votre xp");
+                $player->sendMessage(Util::PREFIX . "Vous venez de récupérer votre inventaire que vous avez perdu le §e" . $data["date"]);
+                $player->sendMessage(Util::PREFIX . "Une mort a été soustraite de votre compteur de mort");
+                $player->sendMessage(Util::PREFIX . "Vous venez de récupérer votre xp");
 
-				$player->getXpManager()->setCurrentTotalXp($data["xp"] + $player->getXpManager()->getCurrentTotalXp());
+                $player->getXpManager()->setCurrentTotalXp($data["xp"] + $player->getXpManager()->getCurrentTotalXp());
 
-				if ($data["killstreak"] > $session->data["killstreak"]) {
-					$session->data["killstreak"] = $data["killstreak"];
-					$player->sendMessage(Util::PREFIX . "Votre killstreak a été restoré");
-				}
+                if ($data["killstreak"] > $session->data["killstreak"]) {
+                    $session->data["killstreak"] = $data["killstreak"];
+                    $player->sendMessage(Util::PREFIX . "Votre killstreak a été restoré");
+                }
 
-				$data = $file->getAll();
-				unset($data["reclaim"][$inventory]);
+                $data = $file->getAll();
+                unset($data["reclaim"][$inventory]);
 
-				$file->setAll($data);
-				$file->save();
-			}
-		});
+                $file->setAll($data);
+                $file->save();
+            }
+        });
 
-		$form->setTitle("Remboursement");
-		$form->setContent("§fL'inventaire contient §e" . count($items) . " §fitems\nVerifiez que votre inventaire a assez de place pour récupérer les items");
-		$form->addButton("Récupérer l'inventaire");
-		$form->addButton("Récupérer plus tard");
-		$player->sendForm($form);
-	}
+        $form->setTitle("Remboursement");
+        $form->setContent("§fL'inventaire contient §e" . count($items) . " §fitems\nVerifiez que votre inventaire a assez de place pour récupérer les items");
+        $form->addButton("Récupérer l'inventaire");
+        $form->addButton("Récupérer plus tard");
+        $player->sendForm($form);
+    }
 
-	private function getItems(CompoundTag $nbt) : array {
-		$inventory = Util::readInventory($nbt);
-		$armorInventory = Util::readArmorInventory($nbt);
+    private function getItems(CompoundTag $nbt): array
+    {
+        $inventory = Util::readInventory($nbt);
+        $armorInventory = Util::readArmorInventory($nbt);
 
-		return array_merge($inventory, $armorInventory);
-	}
+        return array_merge($inventory, $armorInventory);
+    }
 
-	protected function prepare() : void {
-	}
+    protected function prepare(): void
+    {
+    }
 }

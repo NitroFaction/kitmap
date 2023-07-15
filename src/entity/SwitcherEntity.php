@@ -4,5 +4,6 @@ namespace Kitmap\entity;
 
 use pocketmine\entity\projectile\Snowball;
 
-class SwitcherEntity extends Snowball {
+class SwitcherEntity extends Snowball
+{
 }

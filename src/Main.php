@@ -13,42 +13,46 @@ use muqsit\invmenu\InvMenuHandler;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\SingletonTrait;
 
-class Main extends PluginBase {
-	use SingletonTrait;
+class Main extends PluginBase
+{
+    use SingletonTrait;
 
-	protected function onLoad() : void {
-		date_default_timezone_set("Europe/Paris");
-		self::setInstance($this);
-	}
+    protected function onLoad(): void
+    {
+        date_default_timezone_set("Europe/Paris");
+        self::setInstance($this);
+    }
 
-	protected function onEnable() : void {
-		new Cache();
+    protected function onEnable(): void
+    {
+        new Cache();
 
-		if (!InvMenuHandler::isRegistered()) {
-			InvMenuHandler::register($this);
-		}
-		if (!PacketHooker::isRegistered()) {
-			PacketHooker::register($this);
-		}
+        if (!InvMenuHandler::isRegistered()) {
+            InvMenuHandler::register($this);
+        }
+        if (!PacketHooker::isRegistered()) {
+            PacketHooker::register($this);
+        }
 
-		new Rank();
-		new Commands();
-		new Entities();
+        new Rank();
+        new Commands();
+        new Entities();
 
-		$this->getScheduler()->scheduleRepeatingTask(new PlayerTask(), 20);
-		$this->getServer()->getPluginManager()->registerEvents(new PlayerListener(), $this);
+        $this->getScheduler()->scheduleRepeatingTask(new PlayerTask(), 20);
+        $this->getServer()->getPluginManager()->registerEvents(new PlayerListener(), $this);
 
-		$this->getServer()->getWorldManager()->getDefaultWorld()->setTime(12500);
-		$this->getServer()->getWorldManager()->getDefaultWorld()->stopTime();
+        $this->getServer()->getWorldManager()->getDefaultWorld()->setTime(12500);
+        $this->getServer()->getWorldManager()->getDefaultWorld()->stopTime();
 
-		$this->getServer()->getWorldManager()->loadWorld("mine", true);
-	}
+        $this->getServer()->getWorldManager()->loadWorld("mine");
+    }
 
-	protected function onDisable() : void {
-		Cache::getInstance()->saveAll();
+    protected function onDisable(): void
+    {
+        Cache::getInstance()->saveAll();
 
-		foreach ($this->getServer()->getOnlinePlayers() as $player) {
-			Session::get($player)->saveSessionData();
-		}
-	}
+        foreach ($this->getServer()->getOnlinePlayers() as $player) {
+            Session::get($player)->saveSessionData();
+        }
+    }
 }

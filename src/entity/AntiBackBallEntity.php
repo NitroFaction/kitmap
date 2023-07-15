@@ -4,5 +4,6 @@ namespace Kitmap\entity;
 
 use pocketmine\entity\projectile\Snowball;
 
-class AntiBackBallEntity extends Snowball {
+class AntiBackBallEntity extends Snowball
+{
 }

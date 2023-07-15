@@ -11,34 +11,38 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
-class Reply extends BaseCommand {
-	public function __construct(PluginBase $plugin) {
-		parent::__construct(
-			$plugin,
-			"reply",
-			"Répond au dernier message reçu"
-		);
+class Reply extends BaseCommand
+{
+    public function __construct(PluginBase $plugin)
+    {
+        parent::__construct(
+            $plugin,
+            "reply",
+            "Répond au dernier message reçu"
+        );
 
-		$this->setAliases([ "r" ]);
-		$this->setPermissions([ DefaultPermissions::ROOT_USER ]);
-	}
+        $this->setAliases(["r"]);
+        $this->setPermissions([DefaultPermissions::ROOT_USER]);
+    }
 
-	public function onRun(CommandSender $sender, string $aliasUsed, array $args) : void {
-		if ($sender instanceof Player) {
-			$session = Session::get($sender);
-			$reply = $session->data["reply"];
+    public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
+    {
+        if ($sender instanceof Player) {
+            $session = Session::get($sender);
+            $reply = $session->data["reply"];
 
-			if (is_null($reply)) {
-				$sender->sendMessage(Util::PREFIX . "Vous n'avez aucun message en attente de réponse");
-				return;
-			}
+            if (is_null($reply)) {
+                $sender->sendMessage(Util::PREFIX . "Vous n'avez aucun message en attente de réponse");
+                return;
+            }
 
-			$session->removeCooldown("cmd");
-			$sender->chat("/mp \"" . $reply . "\" " . $args["message"]);
-		}
-	}
+            $session->removeCooldown("cmd");
+            $sender->chat("/mp \"" . $reply . "\" " . $args["message"]);
+        }
+    }
 
-	protected function prepare() : void {
-		$this->registerArgument(0, new TextArgument("message"));
-	}
+    protected function prepare(): void
+    {
+        $this->registerArgument(0, new TextArgument("message"));
+    }
 }

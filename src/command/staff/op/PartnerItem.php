@@ -13,32 +13,36 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
-class PartnerItem extends BaseCommand {
-	public function __construct(PluginBase $plugin) {
-		parent::__construct(
-			$plugin,
-			"partneritem",
-			"Permet de se donner un partner item de son choix"
-		);
+class PartnerItem extends BaseCommand
+{
+    public function __construct(PluginBase $plugin)
+    {
+        parent::__construct(
+            $plugin,
+            "partneritem",
+            "Permet de se donner un partner item de son choix"
+        );
 
-		$this->setAliases([ "pp" ]);
-		$this->setPermissions([ DefaultPermissions::ROOT_OPERATOR ]);
-	}
+        $this->setAliases(["pp"]);
+        $this->setPermissions([DefaultPermissions::ROOT_OPERATOR]);
+    }
 
-	public function onRun(CommandSender $sender, string $aliasUsed, array $args) : void {
-		if ($sender instanceof Player) {
-			$amount = $args["montant"] ?? 1;
+    public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
+    {
+        if ($sender instanceof Player) {
+            $amount = $args["montant"] ?? 1;
 
-			$item = PartnerItems::createItem($args["item"]);
-			$item->setCount($amount);
+            $item = PartnerItems::createItem($args["item"]);
+            $item->setCount($amount);
 
-			Util::addItem($sender, $item);
-			$sender->sendMessage(Util::PREFIX . "Vous venez de recevoir " . $amount . " §e" . $args["item"]);
-		}
-	}
+            Util::addItem($sender, $item);
+            $sender->sendMessage(Util::PREFIX . "Vous venez de recevoir " . $amount . " §e" . $args["item"]);
+        }
+    }
 
-	protected function prepare() : void {
-		$this->registerArgument(0, new OptionArgument("item", array_keys(Cache::$config["partneritems"])));
-		$this->registerArgument(1, new IntegerArgument("montant", true));
-	}
+    protected function prepare(): void
+    {
+        $this->registerArgument(0, new OptionArgument("item", array_keys(Cache::$config["partneritems"])));
+        $this->registerArgument(1, new IntegerArgument("montant", true));
+    }
 }
