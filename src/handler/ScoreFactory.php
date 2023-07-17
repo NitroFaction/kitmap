@@ -1,11 +1,13 @@
 <?php
 
-namespace Kitmap\handler;
+namespace NCore\handler;
 
-use Kitmap\Main;
-use Kitmap\Session;
-use Kitmap\task\repeat\DominationTask;
-use Kitmap\Util;
+use BadFunctionCallException;
+use NCore\Base;
+use NCore\Session;
+use NCore\task\repeat\event\DominationTask;
+use NCore\task\repeat\event\KothPointsTask;
+use OutOfBoundsException;
 use pocketmine\network\mcpe\protocol\RemoveObjectivePacket;
 use pocketmine\network\mcpe\protocol\SetDisplayObjectivePacket;
 use pocketmine\network\mcpe\protocol\SetScorePacket;
@@ -18,28 +20,34 @@ class ScoreFactory
     private const OBJECTIVE_NAME = "objective";
     private const CRITERIA_NAME = "dummy";
 
+    private const MIN_LINES = 1;
+    private const MAX_LINES = 15;
+
     private static array $scoreboards = [];
 
     public static function updateScoreboard(Player $player): void
     {
         $session = Session::get($player);
 
-        if (!$session->data["scoreboard"]) {
+        if (!$session->data["player"]["scoreboard"]) {
             return;
         }
 
         if (self::hasScore($player)) {
             if (DominationTask::$currentDomination) {
-                self::setScore($player, "§eDomination (§7" . date("H:i") . " #8§e)");
+                self::setScore($player, "§eDomination (§7" . strftime("%H:%M") . "§e)");
                 $lines = DominationTask::getScoreboardLines();
+            } else if (is_numeric(KothPointsTask::$currentKothPoints)) {
+                self::setScore($player, "§eNitro (§7" . strftime("%H:%M") . "§e)");
+                $lines = KothPointsTask::getScoreboardLines();
             } else {
-                self::setScore($player, "§eNitro (§7" . date("H:i") . "§e)");
+                self::setScore($player, "§eNitro (§7" . strftime("%H:%M") . "§e)");
 
-                $rank = ($player->getName() === $player->getDisplayName()) ? ucfirst(strtolower($session->data["rank"])) : "Joueur";
-                $faction = Faction::hasFaction($player) ? Faction::getFactionUpperName($session->data["faction"]) : "Aucune";
+                $rank = ($player->getName() === $player->getDisplayName()) ? ucfirst(strtolower($session->data["player"]["rank"])) : "Joueur";
+                $faction = FactionAPI::hasFaction($player) ? FactionAPI::getFactionUpperName($session->data["player"]["faction"]) : "Aucune";
 
-                $money = Util::formatNumberWithSuffix($session->data["money"]);
-                $voteparty = Cache::$data["voteparty"] ?? 0;
+                $money = OtherAPI::format($session->data["player"]["money"]);
+                $voteparty = Cache::$dynamic["voteparty"];
 
                 $lines = [
                     "§f ",
@@ -49,7 +57,7 @@ class ScoreFactory
                     "§fPieces: §e" . $money,
                     "§r ",
                     "§l§eServeur",
-                    "§fConnectés: §e" . count(Main::getInstance()->getServer()->getOnlinePlayers()),
+                    "§fConnectés: §e" . count(Base::getInstance()->getServer()->getOnlinePlayers()),
                     "§fVoteParty: §e" . $voteparty . "§f/§e100",
                     "§7 ",
                     "     §7nitrofaction.fr    "
@@ -60,7 +68,7 @@ class ScoreFactory
                 self::setScoreLine($player, $key + 1, $value);
             }
         } else {
-            self::setScore($player, "§eNitro (§7" . date("H:i") . "§e)");
+            self::setScore($player, "§eNitro (§7" . strftime("%H:%M") . "§e)");
             self::updateScoreboard($player);
         }
     }
@@ -100,19 +108,20 @@ class ScoreFactory
 
     public static function setScoreLine(Player $player, int $line, string $message, int $type = ScorePacketEntry::TYPE_FAKE_PLAYER): void
     {
+        if (!isset(self::$scoreboards[mb_strtolower($player->getXuid())])) {
+            throw new BadFunctionCallException("Cannot set a score to a player without a scoreboard");
+        } else if ($line < self::MIN_LINES || $line > self::MAX_LINES) {
+            throw new OutOfBoundsException("$line is out of range, expected value between " . self::MIN_LINES . " and " . self::MAX_LINES);
+        }
         $entry = new ScorePacketEntry();
-
         $entry->objectiveName = self::$scoreboards[mb_strtolower($player->getXuid())] ?? self::OBJECTIVE_NAME;
         $entry->type = $type;
         $entry->customName = $message;
         $entry->score = $line;
         $entry->scoreboardId = $line;
-
         $pk = new SetScorePacket();
-
         $pk->type = $pk::TYPE_CHANGE;
         $pk->entries[] = $entry;
-
         $player->getNetworkSession()->sendDataPacket($pk);
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace Kitmap\task;
+namespace NCore\task;
 
-use Kitmap\Session;
-use Kitmap\Util;
-use pocketmine\entity\effect\EffectInstance;
+use NCore\handler\OtherAPI;
+use NCore\Session;
+use NCore\Util;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\player\Player;
 use pocketmine\scheduler\Task;
@@ -15,15 +15,8 @@ use pocketmine\world\World;
 
 class TeleportationTask extends Task
 {
-    public function __construct(private readonly Player $player, private readonly Position $position)
+    public function __construct(private Player $player, private Position $position)
     {
-        $session = Session::get($player);
-        $time = Util::getTpTime($player);
-
-        $player->sendMessage(Util::PREFIX . "Vous allez être téléporté dans §e" . max($time, 0) . " §fseconde(s), veuillez ne pas bouger");
-        $player->getEffects()->add(new EffectInstance(VanillaEffects::BLINDNESS(), 20 * ($time + 1), 1, false));
-
-        $session->setCooldown("teleportation", $time, [Util::getPlace($player)]);
     }
 
     public function onRun(): void
@@ -36,7 +29,7 @@ class TeleportationTask extends Task
         if (!$player->isOnline()) {
             $this->getHandler()->cancel();
             return;
-        } else if ($data[1] !== Util::getPlace($player)) {
+        } else if ($data[1] !== OtherAPI::getPlace($player)) {
             $player->sendMessage(Util::PREFIX . "Vous avez bougé lors de la teleportation, elle a donc été annulée");
             $this->cancel($session);
             return;

@@ -1,8 +1,14 @@
-name: Kitmap
-main: Kitmap\Main
+name: Core
+main: NCore\Base
 
-src-namespace-prefix: Kitmap
+src-namespace-prefix: NCore
 
 author: MaXoooZ
-api: [ 5.0.0 ]
-version: 2.0.0
+api: [ 4.0.0 ]
+version: 1.0.0
+
+permissions:
+  staff.group:
+    default: op
+
+depend: [ Util ]

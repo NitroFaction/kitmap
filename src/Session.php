@@ -1,9 +1,10 @@
 <?php
 
-namespace Kitmap;
+namespace NCore;
 
-use Kitmap\command\player\CoinFlip;
-use Kitmap\handler\Cache;
+use NCore\command\player\util\faction\CoinFlip;
+use NCore\handler\Cache;
+use NCore\task\repeat\BaseTask;
 use pocketmine\player\Player;
 use WeakMap;
 
@@ -12,7 +13,7 @@ class Session
     /** @phpstan-var WeakMap<Player, Session> */
     private static WeakMap $sessions;
 
-    public function __construct(private readonly Player $player, public array $data)
+    public function __construct(private Player $player, public array $data)
     {
     }
 
@@ -26,25 +27,28 @@ class Session
     {
         $username = strtolower($player->getName());
 
-        $file = Util::getFile("data/players/" . $username);
+        $file = Util::getFile("players/" . $username);
         $data = $file->getAll();
 
         if ($data === []) {
             $ownings = Util::getFile("ownings");
             $ownings = $ownings->get($player->getXuid());
 
-            $data = array_merge(Cache::$config["default-data"], [
+            $data = array_merge(Cache::$config["default_data"], [
                 "rank" => $ownings["rank"] ?? "joueur",
+                "cosmetics" => $ownings["cosmetics"] ?? [],
+                "tags" => $ownings["tags"] ?? []
             ]);
         }
 
         $data += [
             "reply" => null,
+            "plot" => [false, null, null, false],
             "last_hit" => [null, time()],
             "invite" => [],
             "upper_name" => $player->getName(),
             "xuid" => $player->getXuid(),
-            "play_time" => time()
+            "ping" => []
         ];
 
         [$ip, $uuid] = [
@@ -71,7 +75,12 @@ class Session
             }
         }
 
-        return new Session($player, $data);
+        return new Session($player, [
+            "claim" => [false, "Nature", 0],
+            "play_time" => time(),
+            "skin" => $player->getSkin(),
+            "player" => $data
+        ]);
     }
 
     public function saveSessionData(bool $quit = true): void
@@ -90,13 +99,13 @@ class Session
             }
         }
 
-        $this->data["played_time"] += time() - $this->data["play_time"];
+        $this->data["player"]["played_time"] += time() - $this->data["play_time"];
         $this->data["play_time"] = time();
 
-        Cache::$players["played_time"][$username] = $this->data["played_time"];
+        Cache::$players["played_time"][$username] = $this->data["player"]["played_time"];
 
-        $data = $this->data;
-        $file = Util::getFile("data/players/" . $username);
+        $data = $this->data["player"];
+        $file = Util::getFile("players/" . $username);
 
         $file->setAll($data);
         $file->save();
@@ -104,30 +113,29 @@ class Session
 
     public function removeCooldown(string $key): void
     {
-        unset($this->data["cooldown"][$key]);
+        unset($this->data["player"]["cooldown"][$key]);
     }
 
     public function addValue(string $key, int $value, bool $substraction = false): void
     {
-        $this->data[$key] = ($substraction ? $this->data[$key] - $value : $this->data[$key] + $value);
-
+        $this->data["player"][$key] = ($substraction ? $this->data["player"][$key] - $value : $this->data["player"][$key] + $value);
 
         if (isset(Cache::$players[$key])) {
             $username = strtolower($this->player->getName());
-            Cache::$players[$key][$username] = $this->data[$key];
+            Cache::$players[$key][$username] = $this->data["player"][$key];
         }
     }
 
-    public function setCooldown(string $key, float|int $time, array $value = []): void
+    public function setCooldown(string $key, int $time, array $value = []): void
     {
         if ($key === "combat" && $this->player->isCreative()) {
             return;
         } else if ($key === "combat" && !self::inCooldown("combat")) {
             $this->player->sendMessage(Util::PREFIX . "Vous êtes désormais en combat, vous ne pouvez plus vous téléporter ou vous déconnecter !");
-            Cache::$combatPlayers[$this->player] = true;
+            BaseTask::$combat[] = $this->player->getName();
         }
 
-        $this->data["cooldown"][$key] = array_merge([time() + $time], $value);
+        $this->data["player"]["cooldown"][$key] = array_merge([time() + $time], $value);
     }
 
     public function inCooldown(string $key): bool
@@ -135,12 +143,12 @@ class Session
         if ($key === "combat" && $this->player->isCreative()) {
             return false;
         } else {
-            return isset($this->data["cooldown"][$key]) && $this->data["cooldown"][$key][0] > time();
+            return isset($this->data["player"]["cooldown"][$key]) && $this->data["player"]["cooldown"][$key][0] > time();
         }
     }
 
     public function getCooldownData(string $key): array
     {
-        return $this->data["cooldown"][$key] ?? [time(), null, null, null];
+        return $this->data["player"]["cooldown"][$key] ?? [time(), null, null, null];
     }
 }

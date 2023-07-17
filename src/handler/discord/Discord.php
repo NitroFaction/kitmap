@@ -1,9 +1,9 @@
 <?php
 
-namespace Kitmap\handler\discord;
+namespace NCore\handler\discord;
 
-use Kitmap\Main;
-use Kitmap\task\async\SendMessageTask;
+use NCore\Base;
+use NCore\task\async\SendMessageTask;
 
 class Discord
 {
@@ -25,7 +25,7 @@ class Discord
         }
 
         if (!is_null($content)) {
-            Main::getInstance()->getServer()->getAsyncPool()->submitTask(new SendMessageTask($webhook, $content));
+            Base::getInstance()->getServer()->getAsyncPool()->submitTask(new SendMessageTask($webhook, $content));
         }
     }
 }

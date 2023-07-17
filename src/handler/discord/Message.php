@@ -1,10 +1,10 @@
 <?php
 
-namespace Kitmap\handler\discord;
+namespace NCore\handler\discord;
 
 class Message
 {
-    public function __construct(string $webhookUrl, private readonly string $message)
+    public function __construct(string $webhookUrl, private string $message)
     {
     }
 
