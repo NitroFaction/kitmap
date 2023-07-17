@@ -1,88 +1,88 @@
 <?php
 
-namespace NCore\handler;
+namespace Kitmap\handler;
 
-use NCore\Base;
-use NCore\entity\entities\LogoutEntity;
-use NCore\Util;
-use Webmozart\PathUtil\Path;
+use Kitmap\entity\LogoutEntity;
+use Kitmap\Main;
+use Kitmap\Util;
+use pocketmine\player\Player;
+use pocketmine\utils\SingletonTrait;
+use WeakMap;
 
 class Cache
 {
+    use SingletonTrait;
+
     public static array $players;
+    public static array $data;
     public static array $config;
-    public static array $auctionhouse;
+    public static array $market;
     public static array $bans;
-    public static array $dynamic;
+    public static array $claims;
     public static array $factions;
-    public static array $plots;
 
     /* @var array<string, LogoutEntity> */
     public static array $logouts;
 
-    public static function loadCache(): void
+    /* @var WeakMap<Player, boolean> */
+    public static WeakMap $scoreboardPlayers;
+    /* @var WeakMap<Player, boolean> */
+    public static WeakMap $borderPlayers;
+    /* @var WeakMap<Player, boolean> */
+    public static WeakMap $combatPlayers;
+
+    public function __construct()
     {
-        @mkdir(Base::getInstance()->getDataFolder() . "data/");
-        @mkdir(Base::getInstance()->getDataFolder() . "data/players");
-        @mkdir(Base::getInstance()->getDataFolder() . "data/inventories/");
-        @mkdir(Base::getInstance()->getDataFolder() . "data/skins/");
+        $this->setInstance($this);
 
-        Base::getInstance()->saveResource("config.yml", true);
+        self::$scoreboardPlayers ??= new WeakMap();
+        self::$borderPlayers ??= new WeakMap();
+        self::$combatPlayers ??= new WeakMap();
 
-        Cache::$config = Base::getInstance()->getConfig()->getAll();
-        Cache::$auctionhouse = Util::getFile("auctionhouse")->getAll();
-        Cache::$bans = Util::getFile("bans")->getAll();
-        Cache::$dynamic = Util::getFile("dynamic")->getAll();
-        Cache::$factions = Util::getFile("factions")->getAll();
-        Cache::$plots = Util::getFile("plots")->getAll();
+        @mkdir(Main::getInstance()->getDataFolder() . "data/");
+        @mkdir(Main::getInstance()->getDataFolder() . "data/players");
+        @mkdir(Main::getInstance()->getDataFolder() . "data/inventories/");
 
-        foreach (OtherAPI::listAllFiles(Path::join(Base::getInstance()->getFile(), "resources", "skin")) as $file) {
-            $data = pathinfo($file);
+        Main::getInstance()->saveResource("config.json", true);
 
-            $dirs = explode(DIRECTORY_SEPARATOR, $data["dirname"]);
-            $name = end($dirs);
+        self::$config = Util::getFile("config")->getAll();
+        self::$data = Util::getFile("data/data")->getAll();
+        self::$market = Util::getFile("data/market")->getAll();
+        self::$bans = Util::getFile("data/bans")->getAll();
+        self::$claims = Util::getFile("data/claims")->getAll();
+        self::$factions = Util::getFile("data/factions")->getAll();
 
-            switch ($data["extension"]) {
-                case "json":
-                    SkinAPI::$skins[$name]["geometry"] = file_get_contents($file);
-                    break;
-                case "png":
-                    SkinAPI::$skins[$name]["texture"][$data["filename"]] = SkinAPI::getBytesFromImage($file);
-                    break;
-            }
-        }
-
-        foreach (OtherAPI::listAllFiles(Base::getInstance()->getDataFolder() . "data/players") as $file) {
+        foreach (Util::listAllFiles(Main::getInstance()->getDataFolder() . "data/players") as $file) {
             $path = pathinfo($file);
             $username = $path["filename"];
 
-            $file = Util::getFile("players/" . $username);
+            $file = Util::getFile("data/players/" . $username);
 
-            Cache::$players["money"][$username] = $file->get("money");
-            Cache::$players["kill"][$username] = $file->get("kill");
-            Cache::$players["death"][$username] = $file->get("death");
-            Cache::$players["killstreak"][$username] = $file->get("killstreak");
-            Cache::$players["played_time"][$username] = $file->get("played_time");
-            Cache::$players["upper_name"][$username] = $file->get("upper_name");
+            self::$players["money"][$username] = $file->get("money");
+            self::$players["kill"][$username] = $file->get("kill");
+            self::$players["death"][$username] = $file->get("death");
+            self::$players["killstreak"][$username] = $file->get("killstreak");
+            self::$players["played_time"][$username] = $file->get("played_time");
+            self::$players["upper_name"][$username] = $file->get("upper_name");
 
             foreach (Cache::$config["saves"] as $column) {
-                Cache::$players[$column][$username] = $file->get($column, []);
+                self::$players[$column][$username] = $file->get($column, []);
             }
         }
     }
 
-    public static function saveCache(): void
+    public function saveAll(): void
     {
-        self::save(self::$auctionhouse, "auctionhouse");
-        self::save(self::$bans, "bans");
-        self::save(self::$dynamic, "dynamic");
-        self::save(self::$factions, "factions");
-        self::save(self::$plots, "plots");
+        $this->save(self::$data, "data");
+        $this->save(self::$market, "market");
+        $this->save(self::$bans, "bans");
+        $this->save(self::$bans, "claims");
+        $this->save(self::$factions, "factions");
     }
 
-    private static function save(array $array, string $file): void
+    private function save(array $array, string $file): void
     {
-        $file = Util::getFile($file);
+        $file = Util::getFile("data/" . $file);
 
         $file->setAll($array);
         $file->save();

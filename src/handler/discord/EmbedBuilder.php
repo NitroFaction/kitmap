@@ -1,6 +1,6 @@
 <?php
 
-namespace NCore\handler\discord;
+namespace Kitmap\handler\discord;
 
 class EmbedBuilder
 {

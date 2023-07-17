@@ -1,15 +1,15 @@
 <?php
 
-namespace NCore\task\async;
+namespace Kitmap\task\async;
 
-use NCore\command\player\util\faction\Vote;
+use Kitmap\command\player\Vote;
 use pocketmine\scheduler\AsyncTask;
 
 class VoteRequestTask extends AsyncTask
 {
     private ?int $return = null;
 
-    public function __construct(private string $player, private string $type, private string $url)
+    public function __construct(private readonly string $player, private readonly string $type, private readonly string $url)
     {
     }
 
@@ -22,7 +22,7 @@ class VoteRequestTask extends AsyncTask
         curl_setopt($query, CURLOPT_FRESH_CONNECT, 1);
         curl_setopt($query, CURLOPT_AUTOREFERER, true);
         curl_setopt($query, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($query, CURLOPT_HTTPHEADER, array("User-Agent: VoteReward"));
+        curl_setopt($query, CURLOPT_HTTPHEADER, ["User-Agent: VoteReward"]);
         curl_setopt($query, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($query, CURLOPT_TIMEOUT, 5);
         $return = curl_exec($query);
