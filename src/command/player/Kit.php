@@ -51,7 +51,7 @@ class Kit extends BaseCommand
                 if (!Rank::hasRank($player, $kit["rank"])) {
                     $player->sendMessage(Util::PREFIX . "Vous n'avez pas la permission de prendre ce kit");
                     return;
-                } else if ($session->inCooldown("kit_" . $data) && !$player->hasPermission("pocketmine.group.operator")) {
+                } else if ($session->inCooldown("kit_" . $data) && !$player->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
                     $format = Util::formatDurationFromSeconds($session->getCooldownData("kit_" . $data)[0] - time(), 1);
                     $player->sendMessage(Util::PREFIX . "Vous ne pourrez re-prendre le kit §e" . $data . " §fque dans: §e" . $format);
                     return;
@@ -88,7 +88,7 @@ class Kit extends BaseCommand
 
                 if (!Rank::hasRank($sender, $value["rank"])) {
                     $name .= "\n§cNon débloqué";
-                } else if ($session->inCooldown("kit_" . $key) && !$sender->hasPermission("pocketmine.group.operator")) {
+                } else if ($session->inCooldown("kit_" . $key) && !$sender->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
                     $format = Util::formatDurationFromSeconds($session->getCooldownData("kit_" . $key)[0] - time(), 1);
                     $name .= " §c(Cooldown)\n" . $format;
                 }

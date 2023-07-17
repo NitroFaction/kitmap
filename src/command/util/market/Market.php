@@ -44,13 +44,13 @@ class Market extends BaseCommand
 
     public static function serialize(Item $item, string $seller = null): string
     {
-        $data = CompoundTag::create()->setTag("Item", new ListTag([$item->nbtSerialize()], NBT::TAG_Compound));
+        $nbt = CompoundTag::create()->setTag("Item", new ListTag([$item->nbtSerialize()], NBT::TAG_Compound));
 
         if (!is_null($seller)) {
-            $data = $data->setString("Seller", $seller);
+            $nbt = $nbt->setString("Seller", $seller);
         }
 
-        return Utils::assumeNotFalse(zlib_encode((new BigEndianNbtSerializer())->write(new TreeRoot($data)), ZLIB_ENCODING_GZIP), "zlib_encode() failed unexpectedly");
+        return Util::serializeCompoundTag($nbt);
     }
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
@@ -130,8 +130,7 @@ class Market extends BaseCommand
 
     public static function deserialize(string $contents): CompoundTag
     {
-        $decompressed = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => zlib_decode($contents));
-        return (new BigEndianNbtSerializer())->read($decompressed)->mustGetCompoundTag();
+        return Util::deserializePlayerData("static deserialize()", $contents);
     }
 
     public static function readItem(CompoundTag $nbt): Item

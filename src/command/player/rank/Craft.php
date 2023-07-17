@@ -6,49 +6,17 @@ use CortexPE\Commando\BaseCommand;
 use Kitmap\handler\Rank;
 use Kitmap\Session;
 use Kitmap\Util;
-use muqsit\invmenu\InvMenu;
-use muqsit\invmenu\InvMenuHandler;
-use muqsit\invmenu\type\graphic\InvMenuGraphic;
-use muqsit\invmenu\type\InvMenuType;
-use muqsit\invmenu\type\util\InvMenuTypeBuilders;
-use pocketmine\block\inventory\CraftingTableInventory;
-use pocketmine\block\VanillaBlocks;
+use MaXoooZ\Util\inventory\CraftingTableInvMenu;
 use pocketmine\command\CommandSender;
-use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
-use pocketmine\world\Position;
 
 class Craft extends BaseCommand
 {
-    public const INV_MENU_TYPE_WORKBENCH = "portablecrafting:workbench";
-
     public function __construct(PluginBase $plugin)
     {
-        InvMenuHandler::getTypeRegistry()->register(self::INV_MENU_TYPE_WORKBENCH, new class implements InvMenuType {
-            private InvMenuType $inner;
-
-            public function __construct()
-            {
-                $this->inner = InvMenuTypeBuilders::BLOCK_FIXED()
-                    ->setBlock(VanillaBlocks::CRAFTING_TABLE())->setSize(9)
-                    ->setNetworkWindowType(WindowTypes::WORKBENCH)->build();
-            }
-
-            public function createGraphic(InvMenu $menu, Player $player): ?InvMenuGraphic
-            {
-                return $this->inner->createGraphic($menu, $player);
-            }
-
-            public function createInventory(): CraftingTableInventory
-            {
-                return new CraftingTableInventory(Position::fromObject(Vector3::zero(), null));
-            }
-        });
-
         parent::__construct(
             $plugin,
             "craft",
@@ -71,7 +39,7 @@ class Craft extends BaseCommand
                 return;
             }
 
-            InvMenu::create(self::INV_MENU_TYPE_WORKBENCH)->send($sender);
+            CraftingTableInvMenu::create()->send($sender);
         }
     }
 

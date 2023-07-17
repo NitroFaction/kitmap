@@ -84,6 +84,9 @@ class FloatingText extends FloatingTextEntity
                     $remaining = Util::formatDurationFromSeconds(OutpostTask::$currentOutpost);
                     return Util::PREFIX . "Outpost §e§l«\n§eAucune §ffaction ne contrôle l'outpost\n§fOutpost contrôlé dans §e" . $remaining;
                 }
+            case "blocks":
+                $this->period = null;
+                return Util::PREFIX."Salle des blocs §e§l«\nBienvenue dans la salle des §eblocs §f!\n§fTous les blocs que vous §ecassez §fsont mis\n§fdans votre inventaire pour §e0 §fpièces en illimité";
         }
 
         $this->period = null;

@@ -59,7 +59,7 @@ class LastInventory extends BaseCommand
         $data["save"][$id] = [
             "data" => $contents,
             "xp" => $xp,
-            "date" => date("%A %d %B %H:%M"),
+            "date" => date("Y-m-d H:i"),
             "killstreak" => $killstreak,
             "killer" => $damagerName,
         ];

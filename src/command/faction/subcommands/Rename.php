@@ -76,6 +76,8 @@ class Rename extends FactionCommand
             OutpostTask::$currentFaction = $name;
         }
 
+        Faction::renameWorld("box-" . $faction, "box-" . $name);
+
         unset(Cache::$factions[$faction]);
         Cache::$factions[$name]["logs"][time()] = "§e" . $sender->getName() . " §frenome la faction §e" . $name;
 

@@ -48,6 +48,7 @@ class Delete extends BaseSubCommand
         }
 
         unset(Cache::$factions[$faction]);
+        Faction::deleteBox($faction);
     }
 
     protected function prepare(): void

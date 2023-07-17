@@ -58,6 +58,9 @@ class Create extends FactionCommand
                 "leader" => "leader",
                 "permissions" => "leader",
 
+                "set-spawn" => "officier",
+                "delete-box" => "officier",
+                "lock" => "officier",
                 "invite" => "officier",
                 "kick" => "officier",
                 "sethome" => "officier",
@@ -76,11 +79,18 @@ class Create extends FactionCommand
                 "fence-gates" => "recruit",
                 "trapdoor" => "recruit",
                 "door" => "recruit",
-                "home" => "recruit"
+                "home" => "recruit",
+                "box" => "recruit"
             ],
             "activity" => [],
             "power" => 0,
-            "money" => 0
+            "box" => [
+                "lock" => false,
+                "zone" => [
+                    "min" => 260,
+                    "max" => 267
+                ]
+            ]
         ];
 
         $session->data["faction"] = $name;

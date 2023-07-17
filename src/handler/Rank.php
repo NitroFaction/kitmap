@@ -138,7 +138,7 @@ class Rank
     {
         $session = Session::get($player);
 
-        if (Rank::isStaff($session->data["rank"]) || $player->hasPermission("pocketmine.group.operator")) {
+        if (Rank::isStaff($session->data["rank"]) || $player->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
             $player->addAttachment(Main::getInstance(), self::GROUP_STAFF, true);
             $player->addAttachment(Main::getInstance(), "pocketmine.command.teleport", true);
 

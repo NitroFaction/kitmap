@@ -42,6 +42,7 @@ class Delete extends FactionCommand
         }
 
         unset(Cache::$factions[$faction]);
+        Faction::deleteBox($faction);
     }
 
     protected function prepare(): void

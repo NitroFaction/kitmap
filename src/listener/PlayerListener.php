@@ -10,29 +10,33 @@ use Kitmap\handler\{Cache, Faction, Pack, PartnerItems, Rank, Sanction};
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
-use pocketmine\block\{Fire, inventory\EnderChestInventory, Lava, Liquid, VanillaBlocks};
+use pocketmine\block\{Door, FenceGate, Fire, inventory\EnderChestInventory, Lava, Liquid, Trapdoor, VanillaBlocks};
 use pocketmine\entity\effect\{EffectInstance, VanillaEffects};
 use pocketmine\event\block\{BlockBreakEvent, BlockPlaceEvent, BlockSpreadEvent};
 use pocketmine\event\entity\{EntityDamageByEntityEvent,
     EntityDamageEvent,
     EntityItemPickupEvent,
     EntityShootBowEvent,
+    EntityTeleportEvent,
     EntityTrampleFarmlandEvent,
     ItemSpawnEvent,
-    ProjectileHitEntityEvent};
+    ProjectileHitEntityEvent
+};
 use pocketmine\event\inventory\{CraftItemEvent, InventoryOpenEvent, InventoryTransactionEvent};
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerBucketEvent,
     PlayerChatEvent,
     PlayerDataSaveEvent,
     PlayerDeathEvent,
+    PlayerExhaustEvent,
     PlayerInteractEvent,
     PlayerItemConsumeEvent,
     PlayerItemUseEvent,
     PlayerJoinEvent,
     PlayerPreLoginEvent,
     PlayerQuitEvent,
-    PlayerRespawnEvent};
+    PlayerRespawnEvent
+};
 use pocketmine\event\server\CommandEvent;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\{EnderPearl, PotionType, VanillaItems};
@@ -52,10 +56,10 @@ class PlayerListener implements Listener
         $player = $event->getPlayer();
         $block = $event->getBlock();
 
-        if (!Faction::canBuild($player, $block, "interact")) {
+        if ($event->getAction() === $event::RIGHT_CLICK_BLOCK && !Faction::canBuild($player, $block, "interact")) {
             $event->cancel();
 
-            if ($event->getAction() === $event::RIGHT_CLICK_BLOCK) {
+            if ($block instanceof Door || $block instanceof Trapdoor || $block instanceof FenceGate) {
                 Util::antiBlockGlitch($player);
             }
         } else if (!$player->isSneaking() && $event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK && $block->isSameState(VanillaBlocks::ANVIL())) {
@@ -165,7 +169,7 @@ class PlayerListener implements Listener
         Main::getInstance()->getServer()->broadcastTip("§a+ " . $player->getName() . " +");
 
         if (Faction::hasFaction($player)) {
-            Cache::$factions[$session->data["faction"]]["activity"][date("d-m")] = $player->getName();
+            Cache::$factions[$session->data["faction"]]["activity"][date("H:i")] = $player->getName();
             Faction::broadcastMessage($session->data["faction"], "§e[§fF§e] §fLe joueur de votre faction §e" . $player->getName() . " §fvient de se connecter");
         }
 
@@ -190,14 +194,32 @@ class PlayerListener implements Listener
             Bienvenue::$lastJoin = $player->getName();
         }
 
-        if ($session->data["staff_mod"][0] && $player->getGamemode() === GameMode::SURVIVAL()) {
-            $player->setAllowFlight(true);
-        }
-
         Util::givePlayerPreferences($player);
 
         Rank::updateNameTag($player);
         Rank::addPermissions($player);
+    }
+
+    public function onEntityTeleport(EntityTeleportEvent $event): void
+    {
+        $entity = $event->getEntity();
+
+        $from = $event->getFrom();
+        $to = $event->getTo();
+
+        if (!$entity instanceof Player) {
+            return;
+        }
+
+        if (
+            str_starts_with($from->getWorld()->getFolderName(), "box-") &&
+            !str_starts_with($to->getWorld()->getFolderName(), "box-")
+        ) {
+            if (!Session::get($entity)->data["staff_mod"][0] && !$entity->isCreative()) {
+                $entity->setFlying(false);
+                $entity->setAllowFlight(false);
+            }
+        }
     }
 
     public function onRespawn(PlayerRespawnEvent $event): void
@@ -219,6 +241,16 @@ class PlayerListener implements Listener
         }
 
         Session::get($player)->saveSessionData();
+    }
+
+    public function onExhaust(PlayerExhaustEvent $event): void
+    {
+        $event->cancel();
+
+        $event->getPlayer()->getHungerManager()->setExhaustion(0);
+        $event->getPlayer()->getHungerManager()->setEnabled(false);
+        $event->getPlayer()->getHungerManager()->setFood(18);
+        $event->getPlayer()->getHungerManager()->setSaturation(18);
     }
 
     public function onDeath(PlayerDeathEvent $event): void
@@ -487,17 +519,24 @@ class PlayerListener implements Listener
 
         $session = Session::get($player);
 
-        if (!Faction::canBuild($player, $block, "break")) {
+        if (!$player->isCreative() && $player->getPosition()->getWorld()->getFolderName() === "mine" && $player->getPosition()->getFloorX() > 10000) {
+            $event->cancel();
+
+            $event->setDrops([$block->asItem()->setCount(1)]);
+            $event->setXpDropAmount(0);
+        } else if (!Faction::canBuild($player, $block, "break")) {
             if ($block->isFullCube()) {
                 Util::antiBlockGlitch($player);
             }
 
             $event->cancel();
             return;
-        } else if ($session->data["staff_mod"][0]) {
+        }
+
+        if ($session->data["staff_mod"][0]) {
             $event->cancel();
             return;
-        } else if ($session->data["cobblestone"] === false && ($block->isSameState(VanillaBlocks::COBBLESTONE()) || $block->isSameState(VanillaBlocks::STONE()))) {
+        } else if ($session->data["cobblestone"] === false && ($block->hasSameTypeId(VanillaBlocks::COBBLESTONE()) || $block->hasSameTypeId(VanillaBlocks::STONE()))) {
             $event->setDrops([]);
         }
 
@@ -629,8 +668,13 @@ class PlayerListener implements Listener
             if (
                 $event->getCause() === EntityDamageEvent::CAUSE_FALL ||
                 Util::insideZone($entity->getPosition(), "spawn") ||
-                $entitySession->data["staff_mod"][0]
+                $entitySession->data["staff_mod"][0] ||
+                str_starts_with($entity->getPosition()->getWorld()->getFolderName(), "box-")
             ) {
+                if ($event->getCause() === EntityDamageEvent::CAUSE_VOID) {
+                    $entity->teleport($entity->getPosition()->getWorld()->getSpawnLocation());
+                }
+
                 $event->cancel();
                 return;
             }
@@ -670,7 +714,7 @@ class PlayerListener implements Listener
                     return;
                 }
 
-                if (Faction::hasFaction($damager) && Faction::hasFaction($entity) && $damagerSession->data["faction"] === $entitySession->data["faction"]) {
+                if (Faction::hasFaction($damager) && Faction::hasFaction($entity) && $damagerSession->data["faction"] === $entitySession->data["faction"] || $entity->isFlying() || $entity->getAllowFlight()) {
                     $event->cancel();
                     return;
                 }

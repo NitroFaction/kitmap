@@ -7,6 +7,7 @@ use jojoe77777\FormAPI\SimpleForm;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
+use MaXoooZ\Util\inventory\CustomSizedInvMenu;
 use MaXoooZ\Util\item\ExtraVanillaItems;
 use muqsit\invmenu\InvMenu;
 use muqsit\invmenu\type\InvMenuTypeIds;
@@ -169,6 +170,8 @@ class Pack
         $items[] = ExtraVanillaItems::NETHERITE_DRILL();
         $items[] = ExtraVanillaItems::EMERALD_DRILL();
         $items[] = ExtraVanillaItems::IRIS_DRILL();
+        $items[] = VanillaBlocks::TRAPPED_CHEST()->asItem();
+        $items[] = VanillaBlocks::TRAPPED_CHEST()->asItem();
 
         foreach ($items as $item) {
             $item->getNamedTag()->setInt("menu_item", 0);
@@ -251,7 +254,7 @@ class Pack
 
     private static function previsualizePack(Player $player): void
     {
-        $menu = InvMenu::create(InvMenuTypeIds::TYPE_DOUBLE_CHEST);
+        $menu = CustomSizedInvMenu::create(63);
         $menu->setName("Prévisualisation des packs");
         $menu->setListener(InvMenu::readonly());
 

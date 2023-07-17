@@ -30,7 +30,7 @@ class ScoreFactory
 
         if (self::hasScore($player)) {
             if (DominationTask::$currentDomination) {
-                self::setScore($player, "§eDomination (§7" . date("H:i") . "§e)");
+                self::setScore($player, "§eDomination (§7" . date("H:i") . " #8§e)");
                 $lines = DominationTask::getScoreboardLines();
             } else {
                 self::setScore($player, "§eNitro (§7" . date("H:i") . "§e)");

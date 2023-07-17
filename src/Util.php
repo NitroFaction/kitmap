@@ -2,7 +2,6 @@
 
 namespace Kitmap;
 
-use ErrorException;
 use Kitmap\handler\Cache;
 use Kitmap\handler\ScoreFactory;
 use pocketmine\color\Color;
@@ -11,7 +10,6 @@ use pocketmine\console\ConsoleCommandSender;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
@@ -23,13 +21,14 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
+use pocketmine\permission\DefaultPermissions;
+use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerDataLoadException;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
-use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\particle\DustParticle;
 use pocketmine\world\Position;
@@ -64,7 +63,7 @@ class Util
 
     public static function allSelectorExecute(CommandSender $sender, string $command, array $args): void
     {
-        if (!$sender->hasPermission("pocketmine.group.operator")) {
+        if (!$sender->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
             $sender->sendMessage(Util::PREFIX . "Vous n'avez pas la permission de faire cela");
             return;
         }
@@ -135,6 +134,10 @@ class Util
             Cache::$scoreboardPlayers[$player] = true;
             ScoreFactory::updateScoreboard($player);
         }
+
+        if ($data["staff_mod"][0] && $player->getGamemode() === GameMode::SURVIVAL()) {
+            $player->setAllowFlight(true);
+        }
     }
 
     public static function getItemByName(string $name): Item
@@ -197,13 +200,7 @@ class Util
     public static function deserializePlayerData(string $identifier, string $contents): CompoundTag
     {
         try {
-            $decompressed = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => zlib_decode($contents));
-        } catch (ErrorException $e) {
-            throw new PlayerDataLoadException("Failed to decompress raw player data for \"" . $identifier . "\": " . $e->getMessage(), 0, $e);
-        }
-
-        try {
-            return (new BigEndianNbtSerializer())->read($decompressed)->mustGetCompoundTag();
+            return (new BigEndianNbtSerializer())->read(utf8_decode($contents))->mustGetCompoundTag();
         } catch (NbtDataException $e) {
             throw new PlayerDataLoadException("Failed to decode NBT data for \"" . $identifier . "\": " . $e->getMessage(), 0, $e);
         }
@@ -243,7 +240,7 @@ class Util
     public static function serializeCompoundTag(CompoundTag $tag): string
     {
         $nbt = new BigEndianNbtSerializer();
-        return Utils::assumeNotFalse(zlib_encode($nbt->write(new TreeRoot($tag)), ZLIB_ENCODING_GZIP), "zlib_encode() failed unexpectedly");
+        return utf8_encode($nbt->write(new TreeRoot($tag)));
     }
 
     public static function listAllFiles(string $dir): array
@@ -342,6 +339,25 @@ class Util
         $z = $position->getFloorZ();
 
         return $x >= $minX && $x <= $maxX && $y >= $minY && $y <= $maxY && $z >= $minZ && $z <= $maxZ && $position->getWorld()->getFolderName() === $world;
+    }
+
+    public static function generateBourse(): void
+    {
+        $bourse = [];
+
+        foreach (Cache::$config["bourse"] as $value) {
+            $value = explode(":", $value);
+
+            $sellPrice = mt_rand(intval($value[2]), intval($value[3]));
+            $buyPrice = $sellPrice * 2;
+
+            $value[2] = $sellPrice;
+            $value[3] = $buyPrice;
+
+            $bourse[] = implode(":", $value);
+        }
+
+        Cache::$data["bourse"] = $bourse;
     }
 
     public static function formatNumberWithSuffix(int $value): string

@@ -11,9 +11,13 @@ use pocketmine\block\Chest;
 use pocketmine\block\Door;
 use pocketmine\block\FenceGate;
 use pocketmine\block\Trapdoor;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\io\data\BaseNbtWorldData;
+use pocketmine\world\World;
+use Symfony\Component\Filesystem\Path;
 
 class Faction
 {
@@ -33,6 +37,69 @@ class Faction
     {
         $ranks = array_keys(Cache::$config["faction_ranks"]);
         return $ranks[self::getRankPosition($rank) + 1] ?? $rank;
+    }
+
+    public static function deleteBox(string $key): void
+    {
+        $name = "box-" . $key;
+        $newName = $name . "-deleted-" . time();
+
+        $path = Path::join(Main::getInstance()->getServer()->getDataPath(), "worlds", $name);
+
+        if (is_dir($path)) {
+            self::renameWorld($name, $newName);
+
+            if (($world = Main::getInstance()->getServer()->getWorldManager()->getWorldByName($newName)) instanceof World) {
+                Main::getInstance()->getServer()->getWorldManager()->unloadWorld($world, true);
+            }
+        }
+    }
+
+    public static function renameWorld(string $oldName, string $newName): void
+    {
+        Main::getInstance()->getServer()->getWorldManager()->loadWorld($oldName);
+
+        if (($world = Main::getInstance()->getServer()->getWorldManager()->getWorldByName($oldName)) !== null) {
+            Main::getInstance()->getServer()->getWorldManager()->unloadWorld($world, true);
+        } else {
+            return;
+        }
+
+        $from = Main::getInstance()->getServer()->getDataPath() . "/worlds/" . $oldName;
+        $to = Main::getInstance()->getServer()->getDataPath() . "/worlds/" . $newName;
+
+        rename($from, $to);
+
+        if (Main::getInstance()->getServer()->getWorldManager()->isWorldLoaded($oldName)) {
+            Main::getInstance()->getServer()->getWorldManager()->loadWorld($oldName, true);
+        }
+        $newWorld = Main::getInstance()->getServer()->getWorldManager()->getWorldByName($newName);
+
+        if (!$newWorld instanceof World) {
+            return;
+        }
+        $worldData = $newWorld->getProvider()->getWorldData();
+
+        if (!$worldData instanceof BaseNbtWorldData) {
+            return;
+        }
+        $worldData->getCompoundTag()->setString("LevelName", $newName);
+
+        Main::getInstance()->getServer()->getWorldManager()->unloadWorld($newWorld);
+
+        if (Main::getInstance()->getServer()->getWorldManager()->isWorldLoaded($newName)) {
+            Main::getInstance()->getServer()->getWorldManager()->loadWorld($newName, true);
+        }
+    }
+
+    public static function isBoxLocked(string $key): bool
+    {
+        return self::exists($key) ? Cache::$factions[$key]["box"]["lock"] : false;
+    }
+
+    public static function exists(?string $key): bool
+    {
+        return !is_null($key) && isset(Cache::$factions[strtolower($key)]);
     }
 
     public static function broadcastMessage(string $key, string $message): void
@@ -114,8 +181,21 @@ class Faction
         if ($type === "break" && $session->inCooldown("_antibuild")) {
             $player->sendTip(Util::PREFIX . "Veuillez attendre §e" . ($session->getCooldownData("_antibuild")[0] - time()) . " §fseconde(s) avant de construire");
             return false;
-        } else if ($player->getGamemode() === GameMode::CREATIVE() && $player->hasPermission("pocketmine.group.operator")) {
+        } else if ($player->getGamemode() === GameMode::CREATIVE() && $player->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
             return true;
+        } else if ($player->getWorld()->getFolderName() === "box-" . $faction) {
+            $x = $block->getPosition()->getX();
+            $z = $block->getPosition()->getZ();
+
+            $min = Cache::$factions[$faction]["box"]["zone"]["min"];
+            $max = Cache::$factions[$faction]["box"]["zone"]["max"];
+
+            if ($x >= $min && $x <= $max && $z >= $min && $z <= $max) {
+                return true;
+            } else {
+                $player->sendMessage(Util::PREFIX . "Vous ne pouvez rien faire ici, vous devez augmenter le diametre de votre ile !");
+                return false;
+            }
         } else {
             $claim = Faction::inClaim($block->getPosition()->getX(), $block->getPosition()->getZ());
 
@@ -211,11 +291,6 @@ class Faction
             }
             return null;
         }
-    }
-
-    public static function exists(?string $key): bool
-    {
-        return !is_null($key) && isset(Cache::$factions[strtolower($key)]);
     }
 
     public static function inClaim(int|float $x, int|float $z): array
