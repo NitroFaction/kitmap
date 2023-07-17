@@ -16,6 +16,7 @@ use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\data\BaseNbtWorldData;
+use pocketmine\world\Position;
 use pocketmine\world\World;
 use Symfony\Component\Filesystem\Path;
 
@@ -291,6 +292,14 @@ class Faction
             }
             return null;
         }
+    }
+
+    public static function canClaim(Position $position): bool
+    {
+        $chunkX = $position->getFloorX() >> Chunk::COORD_BIT_SIZE;
+        $chunkZ = $position->getFloorZ() >> Chunk::COORD_BIT_SIZE;
+
+        return in_array($chunkX . ":" . $chunkZ, Cache::$data["claims"]);
     }
 
     public static function inClaim(int|float $x, int|float $z): array

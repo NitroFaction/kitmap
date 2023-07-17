@@ -38,6 +38,9 @@ class Clear extends BaseCommand
 
         $target->getInventory()->clearAll();
         $target->getArmorInventory()->clearAll();
+        $target->getEffects()->clear();
+
+        Util::givePlayerPreferences($target);
 
         if ($target->getName() === $sender->getName()) {
             $sender->sendMessage(Util::PREFIX . "Vous venez de supprimé tous les items de votre inventaire");

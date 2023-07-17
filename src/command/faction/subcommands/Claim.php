@@ -29,6 +29,9 @@ class Claim extends FactionCommand
         if (!is_null(Cache::$factions[$faction]["claim"])) {
             $sender->sendMessage(Util::PREFIX . "Vous avez déjà un claim. Faites §e/f unclaim§f pour le supprimer");
             return;
+        } else if (!Faction::canClaim($sender->getPosition())) {
+            $sender->sendMessage(Util::PREFIX . "Vous ne pouvez pas claim ici");
+            return;
         }
 
         $claim = Faction::inClaim($sender->getPosition()->getX(), $sender->getPosition()->getZ());

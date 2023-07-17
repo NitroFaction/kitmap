@@ -172,6 +172,10 @@ class Pack
         $items[] = ExtraVanillaItems::IRIS_DRILL();
         $items[] = VanillaBlocks::TRAPPED_CHEST()->asItem();
         $items[] = VanillaBlocks::TRAPPED_CHEST()->asItem();
+        $items[] = VanillaBlocks::CHISELED_NETHER_BRICKS()->asItem();
+        $items[] = VanillaBlocks::CHISELED_NETHER_BRICKS()->asItem();
+        $items[] = VanillaBlocks::LAPIS_LAZULI()->asItem();
+        $items[] = VanillaBlocks::LAPIS_LAZULI()->asItem();
 
         foreach ($items as $item) {
             $item->getNamedTag()->setInt("menu_item", 0);

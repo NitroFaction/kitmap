@@ -138,6 +138,12 @@ class Util
         if ($data["staff_mod"][0] && $player->getGamemode() === GameMode::SURVIVAL()) {
             $player->setAllowFlight(true);
         }
+
+        if ($player->getArmorInventory()->getHelmet()->equals(VanillaItems::TURTLE_HELMET())) {
+            $player->getEffects()->add(new EffectInstance(VanillaEffects::FIRE_RESISTANCE(), 20 * 60 * 60 * 24, 0, false));
+            $player->getEffects()->add(new EffectInstance(VanillaEffects::HASTE(), 20 * 60 * 60 * 24, 1, false));
+            $player->getEffects()->add(new EffectInstance(VanillaEffects::JUMP_BOOST(), 20 * 60 * 60 * 24, 2, false));
+        }
     }
 
     public static function getItemByName(string $name): Item

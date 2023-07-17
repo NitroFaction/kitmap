@@ -38,8 +38,11 @@ use pocketmine\event\player\{PlayerBucketEvent,
     PlayerRespawnEvent
 };
 use pocketmine\event\server\CommandEvent;
+use pocketmine\inventory\ArmorInventory;
+use pocketmine\inventory\CallbackInventoryListener;
+use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
-use pocketmine\item\{EnderPearl, PotionType, VanillaItems};
+use pocketmine\item\{EnderPearl, Item, PotionType, VanillaItems};
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\{GameMode, Player};
@@ -193,6 +196,22 @@ class PlayerListener implements Listener
             Bienvenue::$alreadyWished = [];
             Bienvenue::$lastJoin = $player->getName();
         }
+
+        $player->getArmorInventory()->getListeners()->add(new CallbackInventoryListener(function(Inventory $inventory, int $slot, Item $oldItem) : void{
+            if ($inventory instanceof ArmorInventory) {
+                $targetItem = $inventory->getItem($slot);
+
+                if ($targetItem->equals(VanillaItems::TURTLE_HELMET())) {
+                    $inventory->getHolder()->getEffects()->add(new EffectInstance(VanillaEffects::FIRE_RESISTANCE(), 20 * 60 * 60 * 24, 0, false));
+                    $inventory->getHolder()->getEffects()->add(new EffectInstance(VanillaEffects::HASTE(), 20 * 60 * 60 * 24, 1, false));
+                    $inventory->getHolder()->getEffects()->add(new EffectInstance(VanillaEffects::JUMP_BOOST(), 20 * 60 * 60 * 24, 2, false));
+                } else if ($oldItem->equals(VanillaItems::TURTLE_HELMET())) {
+                    $inventory->getHolder()->getEffects()->remove(VanillaEffects::FIRE_RESISTANCE());
+                    $inventory->getHolder()->getEffects()->remove(VanillaEffects::HASTE());
+                    $inventory->getHolder()->getEffects()->remove(VanillaEffects::JUMP_BOOST());
+                }
+            }
+        },  null));
 
         Util::givePlayerPreferences($player);
 
