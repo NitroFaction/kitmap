@@ -59,7 +59,7 @@ class Info extends FactionCommand
     private function sendInfo(string $faction, CommandSender $player): void
     {
         $bar = "§l§8-----------------------";
-        $leader = Cache::$factions[$faction]["members"]["leader"];
+        $leader = Cache::$factions[strtolower($faction)]["members"]["leader"];
 
         $officiers = self::getMembersFormat($faction, "officiers");
         $members = self::getMembersFormat($faction, "members");
@@ -78,7 +78,6 @@ class Info extends FactionCommand
         }
 
         $power = Cache::$factions[$faction]["power"];
-        $money = Cache::$factions[$faction]["money"];
 
         $connected = count(Faction::getFactionMembers($faction, true));
         $everyone = count(Faction::getFactionMembers($faction, false));
@@ -92,7 +91,6 @@ class Info extends FactionCommand
         $player->sendMessage("§eOfficiers§f: " . $officiers);
         $player->sendMessage("§eMembres§f: " . $members);
         $player->sendMessage("§eRecrues§f: " . $recruits);
-        $player->sendMessage("§eMoney§f: " . $money);
         $player->sendMessage("§ePowers§f: " . $power);
         $player->sendMessage($bar);
     }

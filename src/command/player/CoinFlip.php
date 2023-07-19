@@ -74,7 +74,7 @@ class CoinFlip extends BaseCommand
                 $player->sendMessage(Util::PREFIX . "Vous n'avez pas assez d'argent pour créer ce coinflip");
                 return;
             } else if ($session->inCooldown("coinflip")) {
-                $player->sendMessage(Util::PREFIX . "Vous devez eKitmap attendre §e" . ($session->getCooldownData("coinflip")[0] - time()) . " §fsecondes avant de pouvoir re-créer un coinflip");
+                $player->sendMessage(Util::PREFIX . "Vous devez encore attendre §e" . ($session->getCooldownData("coinflip")[0] - time()) . " §fsecondes avant de pouvoir re-créer un coinflip");
                 return;
             }
 

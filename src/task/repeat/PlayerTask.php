@@ -7,15 +7,20 @@ use Kitmap\handler\ScoreFactory;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
+use pocketmine\block\Block;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\scheduler\Task;
+use pocketmine\world\Position;
 use WeakMap;
 
 class PlayerTask extends Task
 {
     /* @var WeakMap<Player, Vector3> */
     private static WeakMap $lastPosition;
+
+
+    public static array $blocks = [];
 
     private int $tick = 0;
 
@@ -32,6 +37,8 @@ class PlayerTask extends Task
         DominationTask::run();
         KothTask::run();
         OutpostTask::run();
+
+        self::updateBlocks();
 
         foreach (Cache::$combatPlayers as $player => $ignore) {
             $session = Session::get($player);
@@ -88,6 +95,20 @@ class PlayerTask extends Task
                 } else if (intval(explode(":", $time)[1]) === 30) {
                     Util::executeCommand("koth start");
                 }
+            }
+        }
+    }
+
+    public static function updateBlocks(bool $force = false): void
+    {
+        foreach (self::$blocks as $index => [$time, $position, $block]) {
+            if (!is_int($time) || !$position instanceof Position || !$position->isValid() || !$block instanceof Block) {
+                unset(self::$blocks[$index]);
+            }
+
+            if ($force || time() >= $time) {
+                $position->getWorld()->setBlock($position, $block, false);
+                unset(self::$blocks[$index]);
             }
         }
     }

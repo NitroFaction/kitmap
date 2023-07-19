@@ -23,6 +23,10 @@ class Entities
             return new NexusEntity(EntityDataHelper::parseLocation($nbt, $world), $nbt);
         }, ["NexusEntity"]);
 
+        EntityFactory::getInstance()->register(ElevatorPhantom::class, function (World $world, CompoundTag $nbt): ElevatorPhantom {
+            return new ElevatorPhantom(EntityDataHelper::parseLocation($nbt, $world), $nbt);
+        }, ["ElevatorPhantom"]);
+
         EntityFactory::getInstance()->register(SwitcherEntity::class, function (World $world, CompoundTag $nbt): SwitcherEntity {
             return new SwitcherEntity(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
         }, ["SwitcherEntity"]);

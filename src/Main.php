@@ -49,6 +49,7 @@ class Main extends PluginBase
 
     protected function onDisable(): void
     {
+        PlayerTask::updateBlocks(true);
         Cache::getInstance()->saveAll();
 
         foreach ($this->getServer()->getOnlinePlayers() as $player) {

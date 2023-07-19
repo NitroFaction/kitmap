@@ -275,6 +275,14 @@
     "antipearl": "ender_pearl:\n§r§7Frappez un joueur et il ne pourra plus\nutiliser de pearl pendant 30 secondes\n\n§r§7Obtenable dans les §epacks:§r§bAntiPearl:2",
     "pumpkinaxe": "golden_axe:\n§r§7Frappez un joueur et son casque sera\nchanger par une citrouille pendant 5 secondes\n\n§r§7Obtenable dans les §epacks:§r§6Pumpkin Axe:2"
   },
+  "elevator": {
+    "cookie": "49.5:12: 78.5",
+    "luckyblock": "49.5:88:78.5",
+    "money": "49.5:73:78.5",
+    "netherite": "49.5:53:78.5",
+    "minerais": "51.5:38:76.5",
+    "emeraude": "51.5:18:76.5"
+  },
   "default-data": {
     "faction": null,
     "money": 10000,
@@ -342,60 +350,50 @@
   "events": {
     "nexus": {
       "description": "§r§fInformations:\n\nTuez lentité qui apparaît dans la place au centre,\nlorsque cette entité naura plus de vie elle donnera\n§e30 §fitems aléatoire provenant des lots de §epack §f!\n\nHoraires:\n\nCet event se lance toutes les 2h à partir de 13h jusquà 23h",
-      "item": 272,
+      "item": "diamond_sword",
       "xyz": [
-        "-19.5:64:142.5",
-        "-55.5:64:159.5",
-        "-73.5:64:147.5",
-        "-54.5:64:138.5",
-        "-35.5:65:157.5"
+        "-112.5:63:-152.5",
+        "-146.5:63:-184.5",
+        "-116.5:66:-201.5",
+        "-83.5:63:-186.5"
       ],
       "slot": 11
     },
     "koth": {
       "description": "§r§fInformations:\n\nRestez le plus longtemps possible sur la platforme de §e5x5 §fau\nbout de 3minutes dessus vous remportez §e25k §fpièces,\nentre §e15 §fet §e25 §fde power pour votre faction et §e2 §fpacks !\n\nHoraires:\n\nCet event se lance toutes les heures à partir de 12h30 jusquà 23h30",
-      "item": 267,
+      "item": "netherite_sword",
       "xyz": [
-        "159.5:64:-38.5",
-        "134.5:69:-64.5",
-        "120.5:64:-45.5",
-        "134.5:69:-58.5"
+        "140.5:63:-97.5",
+        "173.5:67:-61.5",
+        "204.5:63:-62.5"
       ],
       "slot": 12
     },
     "domination": {
       "description": "§r§fInformations:\n\nCet event dure 15 minutes, vous devez capturé les §e3 §fzones\navec votre faction et obtenir le plus de point, les §e3 §ffactions\nobtiendrons du power à la fin de levent.\n\nHoraires:\n\nCet event se lance tous les jours à 18h et à 21h sauf si il ny a pas plus de §e30 §fjoueurs",
-      "item": 276,
+      "item": "iron_sword",
       "xyz": [
-        "-108.5:64:32.5",
-        "-138.5:64:-6.5",
-        "-155.5:86:45.5",
-        "-133.5:102:33.5",
-        "-145.5:109:31.5",
-        "-140.5:85:5.5",
-        "-128.5:64:49.5",
-        "-125.5:65:19.5"
+        "-179.5:63:-47.5",
+        "-199.5:63:-36.5",
+        "-191.5:63:-2.5",
+        "-169.5:75:6.5",
+        "-150.5:63:1.5",
+        "-135.5:63:-43.5"
       ],
       "slot": 14
     },
     "outpost": {
       "description": "§r§fInformations:\n\nCapturez avec laide de votre faction la platforme !\nLorsque loutpost est capturé par une faction, celle-ci\ngagne §e8 §fpowers tous les 5 minutes et les joueurs\nconnectés de la faction gagnent entre §e5k §fet §e7.5k §fpièces !\n\nHoraires:\n\nCet event est 24h sur 24 lancé",
-      "item": 743,
+      "item": "golden_sword",
       "xyz": [
-        "86.5:64:141.5",
-        "90.5:64:170.5",
-        "109.5:64:181.5",
-        "132.5:64:158.5",
-        "112.5:65:152.5"
+        "67.5:64:-199.5",
+        "60.5:63:-211.5",
+        "69.5:63:-171.5",
+        "91.5:63:-187.5",
+        "35.5:63:-181.5"
       ],
       "slot": 22
     }
-  },
-  "top": {
-    "6.5:64:-10.5:map": "played_time",
-    "3.5:64:-10.5:map": "money",
-    "-2.5:64:-10.5:map": "kill",
-    "-5.5:64:-10.5:map": "death"
   },
   "zones": {
     "spawn": "83:-64:-111:-74:355:37:map",
@@ -473,6 +471,15 @@
     "member": "Membre",
     "recruit": "Recrue"
   },
+  "elevators": [
+    "48.5:19.3:71.5:320",
+    "49.5:40.5:69.5:343",
+    "46.5:54:80.5:234",
+    "44.5:74:79.5:259",
+    "45.5:90:79.5:255",
+    "45.5:125:80.5:241",
+    "29.5:121.3:137.5:247"
+  ],
   "sanctions": {
     "ban": {
       "Cheat": [

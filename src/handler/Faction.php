@@ -294,14 +294,6 @@ class Faction
         }
     }
 
-    public static function canClaim(Position $position): bool
-    {
-        $chunkX = $position->getFloorX() >> Chunk::COORD_BIT_SIZE;
-        $chunkZ = $position->getFloorZ() >> Chunk::COORD_BIT_SIZE;
-
-        return in_array($chunkX . ":" . $chunkZ, Cache::$data["claims"]);
-    }
-
     public static function inClaim(int|float $x, int|float $z): array
     {
         $chunkX = intval(floor($x)) >> Chunk::COORD_BIT_SIZE;
@@ -314,6 +306,14 @@ class Faction
         } else {
             return [false, null, $chunk];
         }
+    }
+
+    public static function canClaim(Position $position): bool
+    {
+        $chunkX = $position->getFloorX() >> Chunk::COORD_BIT_SIZE;
+        $chunkZ = $position->getFloorZ() >> Chunk::COORD_BIT_SIZE;
+
+        return in_array($chunkX . ":" . $chunkZ, Cache::$data["claims"]);
     }
 
     public static function hasFaction(Player $player): bool

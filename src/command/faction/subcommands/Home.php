@@ -40,7 +40,7 @@ class Home extends FactionCommand
         $home = Cache::$factions[$faction]["home"];
 
         if (is_null($home)) {
-            $sender->sendMessage(Util::PREFIX . "Votre faction n'a pas eKitmap définit de home");
+            $sender->sendMessage(Util::PREFIX . "Votre faction n'a pas encore définit de home");
             return;
         }
 

@@ -74,7 +74,7 @@ class Vote extends BaseCommand
 
     public static function getVoted(Player $player): void
     {
-        Cache::$data["voteparty"] += 1;
+        Cache::$data["voteparty"] = (Cache::$data["voteparty"] ?? 0) +1;
 
         if (intval(Cache::$data["voteparty"]) >= 100) {
             $packs = mt_rand(2, 4);

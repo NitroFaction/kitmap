@@ -9,10 +9,24 @@ use Kitmap\entity\{AntiBackBallEntity, LogoutEntity, SwitcherEntity};
 use Kitmap\handler\{Cache, Faction, Pack, PartnerItems, Rank, Sanction};
 use Kitmap\Main;
 use Kitmap\Session;
+use Kitmap\task\repeat\PlayerTask;
 use Kitmap\Util;
-use pocketmine\block\{Door, FenceGate, Fire, inventory\EnderChestInventory, Lava, Liquid, Trapdoor, VanillaBlocks};
+use MaXoooZ\Util\item\ExtraVanillaItems;
+use pocketmine\block\{CocoaBlock,
+    Crops,
+    Door,
+    FenceGate,
+    Fire,
+    inventory\EnderChestInventory,
+    Lava,
+    Liquid,
+    Trapdoor,
+    utils\DyeColor,
+    VanillaBlocks,
+    Wheat
+};
 use pocketmine\entity\effect\{EffectInstance, VanillaEffects};
-use pocketmine\event\block\{BlockBreakEvent, BlockPlaceEvent, BlockSpreadEvent};
+use pocketmine\event\block\{BlockBreakEvent, BlockGrowEvent, BlockPlaceEvent, BlockSpreadEvent, BlockUpdateEvent};
 use pocketmine\event\entity\{EntityDamageByEntityEvent,
     EntityDamageEvent,
     EntityItemPickupEvent,
@@ -42,13 +56,16 @@ use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
-use pocketmine\item\{EnderPearl, Item, PotionType, VanillaItems};
+use pocketmine\item\{Durable, EnderPearl, Item, PotionType, VanillaItems};
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\{GameMode, Player};
 use pocketmine\player\chat\LegacyRawChatFormatter;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\particle\BlockBreakParticle;
+use pocketmine\world\sound\AmethystBlockChimeSound;
+use pocketmine\world\sound\BlockBreakSound;
 use pocketmine\world\sound\EndermanTeleportSound;
 use Symfony\Component\Filesystem\Path;
 
@@ -197,7 +214,7 @@ class PlayerListener implements Listener
             Bienvenue::$lastJoin = $player->getName();
         }
 
-        $player->getArmorInventory()->getListeners()->add(new CallbackInventoryListener(function(Inventory $inventory, int $slot, Item $oldItem) : void{
+        $player->getArmorInventory()->getListeners()->add(new CallbackInventoryListener(function (Inventory $inventory, int $slot, Item $oldItem): void {
             if ($inventory instanceof ArmorInventory) {
                 $targetItem = $inventory->getItem($slot);
 
@@ -211,7 +228,7 @@ class PlayerListener implements Listener
                     $inventory->getHolder()->getEffects()->remove(VanillaEffects::JUMP_BOOST());
                 }
             }
-        },  null));
+        }, null));
 
         Util::givePlayerPreferences($player);
 
@@ -543,7 +560,7 @@ class PlayerListener implements Listener
 
             $event->setDrops([$block->asItem()->setCount(1)]);
             $event->setXpDropAmount(0);
-        } else if (!Faction::canBuild($player, $block, "break")) {
+        } else if ($player->getPosition()->getWorld()->getFolderName() !== "mine" && !Faction::canBuild($player, $block, "break")) {
             if ($block->isFullCube()) {
                 Util::antiBlockGlitch($player);
             }
@@ -557,6 +574,94 @@ class PlayerListener implements Listener
             return;
         } else if ($session->data["cobblestone"] === false && ($block->hasSameTypeId(VanillaBlocks::COBBLESTONE()) || $block->hasSameTypeId(VanillaBlocks::STONE()))) {
             $event->setDrops([]);
+        }
+
+        if (!$player->isCreative() && $block->getPosition()->getWorld()->getFolderName() === "mine" && $player->getPosition()->getFloorX() < 10000) {
+            $respawn = 0;
+            $bedrock = false;
+
+            $_block = clone $block;
+
+            if ($block->hasSameTypeId(VanillaBlocks::COCOA_POD())) {
+                $respawn = 15;
+
+                if ($block instanceof CocoaBlock) {
+                    $block = $block->setAge(CocoaBlock::MAX_AGE);
+                }
+
+                $cookies = [
+                    VanillaItems::COOKED_FISH(),
+                    VanillaItems::COOKED_SALMON(),
+                    VanillaItems::RAW_SALMON()
+                ];
+
+                $event->setDrops([$cookies[array_rand($cookies)]]);
+            } else if ($block->hasSameTypeId(VanillaBlocks::DEEPSLATE_EMERALD_ORE()) || $block->hasSameTypeId(VanillaBlocks::ANCIENT_DEBRIS())) {
+                $respawn = 15;
+                $bedrock = true;
+
+                if ($block->hasSameTypeId(VanillaBlocks::ANCIENT_DEBRIS())) {
+                    $event->setDrops([VanillaItems::NETHERITE_INGOT()]);
+                }
+            } else if ($block->hasSameTypeId(VanillaBlocks::NETHER_GOLD_ORE())) {
+                $respawn = 40;
+                $bedrock = true;
+
+                $items = [
+                    ExtraVanillaItems::MINER_HELMET(),
+                    VanillaItems::COOKED_FISH(),
+                    VanillaItems::COOKED_SALMON(),
+                    VanillaItems::RAW_SALMON(),
+                    VanillaBlocks::REDSTONE()->asItem(),
+                    VanillaBlocks::CHISELED_NETHER_BRICKS()->asItem(),
+                    VanillaBlocks::SUNFLOWER()->asItem(),
+                    VanillaBlocks::FLOWERING_AZALEA_LEAVES()->asItem(),
+                    VanillaItems::EXPERIENCE_BOTTLE()->setCount(3),
+                    VanillaBlocks::LAPIS_LAZULI()->asItem(),
+                    ExtraVanillaItems::NETHERITE_DRILL(),
+                    ExtraVanillaItems::POTION_LAUNCHER(),
+                    VanillaItems::NETHERITE_INGOT(),
+                    VanillaBlocks::STAINED_GLASS()->setColor(DyeColor::BROWN())->asItem()
+                ];
+
+                $player->broadcastSound(new AmethystBlockChimeSound());
+                $event->setDrops([$items[array_rand($items)]]);
+            } else if ($block->hasSameTypeId(VanillaBlocks::WHEAT())) {
+                $respawn = 15;
+
+                if ($block instanceof Wheat) {
+                    $block = $block->setAge(Crops::MAX_AGE);
+                }
+
+                $session->addValue("money", ($rand = mt_rand(1, 10)));
+                $player->sendTip("+ §e" . $rand . " §fPièces §e+");
+
+                $event->setDrops([]);
+            } else {
+                $event->setDrops([]);
+                $event->setXpDropAmount(0);
+            }
+
+            if ($respawn > 0) {
+                $item = $event->getItem();
+                $position = $_block->getPosition();
+
+                $replace = $bedrock ? VanillaBlocks::BEDROCK() : VanillaBlocks::AIR();
+
+                if ($item instanceof Durable) {
+                    $item->applyDamage(1);
+                }
+
+                $player->getInventory()->setItemInHand($item);
+                $position->getWorld()->setBlock($position, $replace, false);
+
+                PlayerTask::$blocks[] = [time() + $respawn, $position, $block];
+
+                $position->getWorld()->addSound($position, new BlockBreakSound($_block));
+                $position->getWorld()->addParticle($position->add(0.5, 0.5, 0.5), new BlockBreakParticle($_block));
+            }
+
+            $event->cancel();
         }
 
         foreach ($event->getDrops() as $item) {
@@ -672,6 +777,20 @@ class PlayerListener implements Listener
         }
     }
 
+    public function onGrow(BlockGrowEvent $event): void
+    {
+        if ($event->getBlock()->getPosition()->getWorld()->getFolderName() === "mine") {
+            $event->cancel();
+        }
+    }
+
+    public function onUpdate(BlockUpdateEvent $event): void
+    {
+        if ($event->getBlock()->getPosition()->getWorld()->getFolderName() === "mine") {
+            $event->cancel();
+        }
+    }
+
     public function onDamage(EntityDamageEvent $event): void
     {
         $entity = $event->getEntity();
@@ -688,23 +807,23 @@ class PlayerListener implements Listener
                 $event->getCause() === EntityDamageEvent::CAUSE_FALL ||
                 Util::insideZone($entity->getPosition(), "spawn") ||
                 $entitySession->data["staff_mod"][0] ||
-                str_starts_with($entity->getPosition()->getWorld()->getFolderName(), "box-")
+                str_starts_with($entity->getPosition()->getWorld()->getFolderName(), "box-") ||
+                $entity->getPosition()->getWorld()->getFolderName() === "mine"
             ) {
                 if ($event->getCause() === EntityDamageEvent::CAUSE_VOID) {
                     $entity->teleport($entity->getPosition()->getWorld()->getSpawnLocation());
                 }
 
                 $event->cancel();
-                return;
             }
 
             if ($event instanceof EntityDamageByEntityEvent && ($damager = $event->getDamager()) instanceof Player) {
                 if (Util::insideZone($damager->getPosition(), "spawn")) {
                     $event->cancel();
-                    return;
                 }
 
                 $damagerSession = Session::get($damager);
+
                 if ($damagerSession->data["staff_mod"][0]) {
                     $message = match ($damager->getInventory()->getItemInHand()->getCustomName()) {
                         "§r" . Util::PREFIX . "Sanction §e§l«" => "custom",
@@ -733,7 +852,7 @@ class PlayerListener implements Listener
                     return;
                 }
 
-                if (Faction::hasFaction($damager) && Faction::hasFaction($entity) && $damagerSession->data["faction"] === $entitySession->data["faction"] || $entity->isFlying() || $entity->getAllowFlight()) {
+                if ($event->isCancelled() || Faction::hasFaction($damager) && Faction::hasFaction($entity) && $damagerSession->data["faction"] === $entitySession->data["faction"] || $entity->isFlying() || $entity->getAllowFlight()) {
                     $event->cancel();
                     return;
                 }
@@ -747,7 +866,7 @@ class PlayerListener implements Listener
                 $entitySession->setCooldown("combat", 30, [$damager->getName()]);
 
                 $event->setKnockback(0.38);
-                $event->setAttackCooldown(8.60);
+                $event->setAttackCooldown(8);
 
                 $damagerSession->data["last_hit"] = [$entity->getName(), time()];
 

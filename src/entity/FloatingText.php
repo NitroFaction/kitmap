@@ -86,7 +86,7 @@ class FloatingText extends FloatingTextEntity
                 }
             case "blocks":
                 $this->period = null;
-                return Util::PREFIX."Salle des blocs §e§l«\nBienvenue dans la salle des §eblocs §f!\n§fTous les blocs que vous §ecassez §fsont mis\n§fdans votre inventaire pour §e0 §fpièces en illimité";
+                return Util::PREFIX . "Salle des blocs §e§l«\nBienvenue dans la salle des §eblocs §f!\n§fTous les blocs que vous §ecassez §fsont mis\n§fdans votre inventaire pour §e0 §fpièces en illimité";
         }
 
         $this->period = null;

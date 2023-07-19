@@ -10,7 +10,6 @@ use Kitmap\Util;
 use MaXoooZ\Util\inventory\CustomSizedInvMenu;
 use MaXoooZ\Util\item\ExtraVanillaItems;
 use muqsit\invmenu\InvMenu;
-use muqsit\invmenu\type\InvMenuTypeIds;
 use OutOfBoundsException;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;

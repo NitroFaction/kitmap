@@ -4,6 +4,7 @@ namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
+use Kitmap\entity\ElevatorPhantom;
 use Kitmap\entity\FloatingText;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
@@ -30,11 +31,17 @@ class Floating extends BaseCommand
     {
         switch ($args["opt"]) {
             case "spawn":
-
                 foreach (Cache::$config["floatings"] as $key => $value) {
                     list ($x, $y, $z, $world) = explode(":", $key);
 
                     $entity = new FloatingText(new Location(floatval($x), floatval($y), floatval($z), Main::getInstance()->getServer()->getWorldManager()->getWorldByName($world), 0, 0));
+                    $entity->spawnToAll();
+                }
+
+                foreach (Cache::$config["elevators"] as $elevator) {
+                    list($x, $y, $z, $yaw) = explode(":", $elevator);
+
+                    $entity = new ElevatorPhantom(new Location(floatval($x), floatval($y), floatval($z),Main::getInstance()->getServer()->getWorldManager()->getWorldByName("mine"), intval($yaw), 0));
                     $entity->spawnToAll();
                 }
 
@@ -43,7 +50,7 @@ class Floating extends BaseCommand
             case "despawn":
                 foreach (Main::getInstance()->getServer()->getWorldManager()->getWorlds() as $world) {
                     foreach ($world->getEntities() as $entity) {
-                        if ($entity instanceof FloatingText) {
+                        if ($entity instanceof FloatingText || $entity instanceof ElevatorPhantom) {
                             $entity->flagForDespawn();
                         }
                     }

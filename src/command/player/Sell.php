@@ -86,8 +86,8 @@ class Sell extends BaseCommand
             $items = ($value["type"] === "bourse") ? Cache::$data["bourse"] : $value["items"];
 
             foreach ($items as $_item) {
-                list($name, $itemName, , $sell) = explode(":", $_item);
-                $testItem = StringToItemParser::getInstance()->parse($itemName) ?? VanillaItems::AIR();
+                list($name, $_itemName, , $sell) = explode(":", $_item);
+                $testItem = StringToItemParser::getInstance()->parse($_itemName) ?? VanillaItems::AIR();
 
                 if (intval($sell) !== 0 && $item->equals($testItem)) {
                     $itemName = $name;
