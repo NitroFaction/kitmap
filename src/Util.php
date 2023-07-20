@@ -357,8 +357,8 @@ class Util
             $sellPrice = mt_rand(intval($value[2]), intval($value[3]));
             $buyPrice = $sellPrice * 2;
 
-            $value[2] = $sellPrice;
-            $value[3] = $buyPrice;
+            $value[2] = $buyPrice;
+            $value[3] = $sellPrice;
 
             $bourse[] = implode(":", $value);
         }
@@ -366,8 +366,9 @@ class Util
         Cache::$data["bourse"] = $bourse;
     }
 
-    public static function formatNumberWithSuffix(int $value): string
+    public static function formatNumberWithSuffix(int|float $value): string
     {
+        $value = intval($value);
         $value = (0 + str_replace(",", "", $value));
 
         if ($value > 1000000000000) {

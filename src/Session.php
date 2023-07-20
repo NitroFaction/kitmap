@@ -31,10 +31,10 @@ class Session
 
         if ($data === []) {
             $ownings = Util::getFile("ownings");
-            $ownings = $ownings->get($player->getXuid());
+            $rank = $ownings->get(strtolower($player->getName()), "joueur");
 
             $data = array_merge(Cache::$config["default-data"], [
-                "rank" => $ownings["rank"] ?? "joueur",
+                "rank" => $rank,
             ]);
         }
 
@@ -107,10 +107,10 @@ class Session
         unset($this->data["cooldown"][$key]);
     }
 
-    public function addValue(string $key, int $value, bool $substraction = false): void
+    public function addValue(string $key, int|float $value, bool $substraction = false): void
     {
+        $value = intval($value);
         $this->data[$key] = ($substraction ? $this->data[$key] - $value : $this->data[$key] + $value);
-
 
         if (isset(Cache::$players[$key])) {
             $username = strtolower($this->player->getName());

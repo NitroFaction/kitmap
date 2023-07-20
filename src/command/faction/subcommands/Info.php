@@ -58,8 +58,15 @@ class Info extends FactionCommand
 
     private function sendInfo(string $faction, CommandSender $player): void
     {
+        $faction = strtolower($faction);
+
+        if (!Faction::exists($faction)) {
+            $player->sendMessage(Util::PREFIX . "La faction §e" . $faction . " §fn'existe pas");
+            return;
+        }
+
         $bar = "§l§8-----------------------";
-        $leader = Cache::$factions[strtolower($faction)]["members"]["leader"];
+        $leader = Cache::$factions[$faction]["members"]["leader"];
 
         $officiers = self::getMembersFormat($faction, "officiers");
         $members = self::getMembersFormat($faction, "members");

@@ -16,12 +16,9 @@ use WeakMap;
 
 class PlayerTask extends Task
 {
+    public static array $blocks = [];
     /* @var WeakMap<Player, Vector3> */
     private static WeakMap $lastPosition;
-
-
-    public static array $blocks = [];
-
     private int $tick = 0;
 
     public function __construct()
@@ -38,9 +35,17 @@ class PlayerTask extends Task
         KothTask::run();
         OutpostTask::run();
 
+        if ($this->tick % 3 == 0) {
+            MoneyZoneTask::run();
+        }
+
         self::updateBlocks();
 
         foreach (Cache::$combatPlayers as $player => $ignore) {
+            if (!$player->isConnected()) {
+                continue;
+            }
+
             $session = Session::get($player);
             $position = $player->getPosition();
 

@@ -57,7 +57,7 @@ class Top extends BaseCommand
 
             foreach ($array as $key => $value) {
                 $upper = Cache::$players["upper_name"][$key] ?? $key;
-                $array[$upper] = $value;
+                $leaderboard[$upper] = $value;
             }
         }
 

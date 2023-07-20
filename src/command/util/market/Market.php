@@ -40,7 +40,9 @@ class Market extends BaseCommand
 
     public static function serialize(Item $item, string $seller = null): string
     {
-        $nbt = CompoundTag::create()->setTag("Item", new ListTag([$item->nbtSerialize()], NBT::TAG_Compound));
+        $nbt = CompoundTag::create()->setTag("Item", new ListTag([
+            $item->nbtSerialize()
+        ], NBT::TAG_Compound));
 
         if (!is_null($seller)) {
             $nbt = $nbt->setString("Seller", $seller);
@@ -98,13 +100,11 @@ class Market extends BaseCommand
     {
         $menu->getInventory()->clearAll();
 
-        foreach (Util::arrayToPage(array_reverse(Cache::$market), $page, 45)[1] as $id => $data) {
+        foreach (Util::arrayToPage(array_reverse(Cache::$market), $page, 45)[1] as $data) {
             $nbt = self::deserialize($data);
             $item = self::readItem($nbt);
 
-            $item->getNamedTag()->setString("id", $id);
             $item->getNamedTag()->setInt("menu_item", 0);
-
             $menu->getInventory()->addItem($item);
         }
 
@@ -174,7 +174,7 @@ class Market extends BaseCommand
         $menu->setListener(InvMenu::readonly(function (DeterministicInvMenuTransaction $transaction) use ($item, $type): void {
             $player = $transaction->getPlayer();
 
-            if ($transaction->getItemClicked()->getCustomName() === "§r§eConfirmer") {
+            if ($transaction->getItemClicked()->getCustomName() === "§r§aConfirmer") {
                 $this->checkAuctionHouse($player, $item, $type);
             }
 
@@ -197,13 +197,19 @@ class Market extends BaseCommand
     {
         $session = Session::get($player);
 
-        if (is_null($item->getNamedTag()->getTag("id")) || is_null($item->getNamedTag()->getTag("price"))) {
+        $id = $item->getNamedTag()->getTag("id");
+        $price = $item->getNamedTag()->getTag("price");
+
+        if (is_null($id) || is_null($price)) {
             return;
         }
 
-        $price = $item->getNamedTag()->getInt("price");
-        $id = $item->getNamedTag()->getInt("id");
-        $seller = strtolower($item->getNamedTag()->getString("seller"));
+        $seller = $this->cleanNameTag($item->getNamedTag()->getString("seller"));
+
+        $id = intval($this->cleanNameTag($id->getValue()));
+        $price = intval($this->cleanNameTag($price->getValue()));
+        $seller = strtolower($seller);
+
 
         if ($price > $session->data["money"] && $type === 0) {
             $player->sendMessage(Util::PREFIX . "Vous n'avez pas assez d'argent pour acheter cela");
@@ -265,6 +271,11 @@ class Market extends BaseCommand
         } else if ($type === 1) {
             $player->sendMessage(Util::PREFIX . "Vous venez de supprimer un de vos items dans l'hotel des ventes");
         }
+    }
+
+    private function cleanNameTag(mixed $input): string
+    {
+        return str_replace(["\"", "tag_int", "tag_string"], ["", "", ""], strval($input));
     }
 
     public static function getAuctionHousePlayerItems(Player $player): array

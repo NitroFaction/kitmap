@@ -58,12 +58,12 @@ class Cache
 
             $file = Util::getFile("data/players/" . $username);
 
-            self::$players["money"][$username] = $file->get("money");
-            self::$players["kill"][$username] = $file->get("kill");
-            self::$players["death"][$username] = $file->get("death");
-            self::$players["killstreak"][$username] = $file->get("killstreak");
-            self::$players["played_time"][$username] = $file->get("played_time");
-            self::$players["upper_name"][$username] = $file->get("upper_name");
+            self::$players["money"][$username] = $file->get("money", 0);
+            self::$players["kill"][$username] = $file->get("kill", 0);
+            self::$players["death"][$username] = $file->get("death", 0);
+            self::$players["killstreak"][$username] = $file->get("killstreak", 0);
+            self::$players["played_time"][$username] = $file->get("played_time", 0);
+            self::$players["upper_name"][strtolower($username)] = $file->get("upper_name", $username);
 
             foreach (Cache::$config["saves"] as $column) {
                 self::$players[$column][$username] = $file->get($column, []);
@@ -76,7 +76,7 @@ class Cache
         $this->save(self::$data, "data");
         $this->save(self::$market, "market");
         $this->save(self::$bans, "bans");
-        $this->save(self::$bans, "claims");
+        $this->save(self::$claims, "claims");
         $this->save(self::$factions, "factions");
     }
 

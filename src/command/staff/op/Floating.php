@@ -41,7 +41,7 @@ class Floating extends BaseCommand
                 foreach (Cache::$config["elevators"] as $elevator) {
                     list($x, $y, $z, $yaw) = explode(":", $elevator);
 
-                    $entity = new ElevatorPhantom(new Location(floatval($x), floatval($y), floatval($z),Main::getInstance()->getServer()->getWorldManager()->getWorldByName("mine"), intval($yaw), 0));
+                    $entity = new ElevatorPhantom(new Location(floatval($x), floatval($y), floatval($z), Main::getInstance()->getServer()->getWorldManager()->getWorldByName("mine"), intval($yaw), 0));
                     $entity->spawnToAll();
                 }
 

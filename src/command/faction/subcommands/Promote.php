@@ -48,7 +48,7 @@ class Promote extends FactionCommand
             return;
         }
 
-        $rank_name = Cache::$config["faction_ranks"][$next_rank];
+        $rank_name = Cache::$config["faction-ranks"][$next_rank];
 
         unset(Cache::$factions[$faction]["members"][$target_rank . "s"][array_search($args["membre"], Cache::$factions[$faction]["members"][$target_rank . "s"])]);
         Cache::$factions[$faction]["members"][$next_rank . "s"][] = $args["membre"];

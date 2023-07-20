@@ -87,7 +87,13 @@ class Anvil extends BaseCommand
             }
 
             $item->setDamage(0);
+
+            if (!is_null($item->getNamedTag()->getTag("cdt"))) {
+                $item->getNamedTag()->removeTag("cdt");
+            }
+
             $player->getInventory()->setItemInHand($item);
+
 
             $player->sendMessage(Util::PREFIX . "Vous venez de réparer l'item dans votre main");
         });

@@ -45,7 +45,7 @@ class Demote extends FactionCommand
             return;
         }
 
-        $rank_name = Cache::$config["faction_ranks"][$previous_rank];
+        $rank_name = Cache::$config["faction-ranks"][$previous_rank];
 
         unset(Cache::$factions[$faction]["members"][$target_rank . "s"][array_search($args["membre"], Cache::$factions[$faction]["members"][$target_rank . "s"])]);
         Cache::$factions[$faction]["members"][$previous_rank . "s"][] = $args["membre"];

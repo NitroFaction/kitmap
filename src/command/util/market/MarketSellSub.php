@@ -70,9 +70,11 @@ class MarketSellSub extends BaseSubCommand
                 "§r§eCliquez ici pour acheter",
             ]));
 
+            var_dump($id);
+
             $item->getNamedTag()->setString("seller", $sender->getName());
-            $item->getNamedTag()->setInt("price", $args["prix"]);
-            $item->getNamedTag()->setInt("id", $id);
+            $item->getNamedTag()->setString("price", strval($args["prix"]));
+            $item->getNamedTag()->setString("id", strval($id));
 
             Cache::$market[$id] = Market::serialize($item, $sender->getName());
 

@@ -41,7 +41,7 @@ class Permissions extends FactionCommand
 
             foreach ($data as $key => $value) {
                 if (isset(Cache::$factions[$faction]["permissions"][$key])) {
-                    $rank = array_keys(Cache::$config["faction_ranks"])[$value] ?? "recruit";
+                    $rank = array_keys(Cache::$config["faction-ranks"])[$value] ?? "recruit";
                     Cache::$factions[$faction]["permissions"][$key] = $rank;
                 }
             }
@@ -53,8 +53,8 @@ class Permissions extends FactionCommand
         $form->addLabel(Util::PREFIX . "Choissisez un rôle minimum pour faire des actions:");
 
         foreach ($names as $permission => $description) {
-            $actual = $permissions[$permission];
-            $form->addDropdown($description, array_values(Cache::$config["faction_ranks"]), Faction::getRankPosition($actual), $permission);
+            $actual = $permissions[$permission] ?? "Probleme merci de contacter le staff";
+            $form->addDropdown($description, array_values(Cache::$config["faction-ranks"]), Faction::getRankPosition($actual), $permission);
         }
 
         $sender->sendForm($form);

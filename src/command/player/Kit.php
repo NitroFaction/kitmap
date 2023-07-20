@@ -141,7 +141,7 @@ class Kit extends BaseCommand
                 "items" => [
                     VanillaItems::NETHERITE_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
                     VanillaItems::DIAMOND_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::DIAMOND_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    VanillaItems::NETHERITE_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
                     VanillaItems::NETHERITE_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
                     VanillaItems::NETHERITE_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking)
                 ],
@@ -151,7 +151,7 @@ class Kit extends BaseCommand
             "prince" => [
                 "items" => [
                     VanillaItems::NETHERITE_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::DIAMOND_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    VanillaItems::NETHERITE_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
                     VanillaItems::NETHERITE_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
                     VanillaItems::NETHERITE_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
                     VanillaItems::NETHERITE_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking)

@@ -332,7 +332,7 @@ class Box extends FactionCommand
         $default = Cache::$config["box"]["default-max"];
         $max = Cache::$factions[$faction]["box"]["zone"]["max"] ?? $default;
 
-        return is_null($max) ? $max : ($max - ($default - 1)) * 5000;
+        return is_null($max) ? $max : ($max - ($default - 1)) * 3000;
     }
 
     private function verifForm(Player $player, string $option): void

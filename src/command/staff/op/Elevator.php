@@ -47,7 +47,7 @@ class Elevator extends BaseCommand
                 return;
             }
 
-            $this->teleportTo($player, $data);
+            Elevator::teleportTo($player, $data);
         });
         $form->setTitle("Ascenseur");
         $form->setContent(Util::PREFIX . "Cliquez sur l'étage de votre choix");
@@ -60,7 +60,7 @@ class Elevator extends BaseCommand
         $player->sendForm($form);
     }
 
-    public function teleportTo(Player $player, string $teleport): void
+    private static function teleportTo(Player $player, string $teleport): void
     {
         if (!in_array($teleport, array_keys(Cache::$config["elevator"]))) {
             return;

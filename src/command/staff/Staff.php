@@ -78,6 +78,11 @@ class Staff extends BaseCommand
                 if (in_array($sender->getName(), Vanish::$vanish)) {
                     $sender->sendMessage(Util::PREFIX . "Vous restez cependant toujours en vanish, n'oubliez pas de l'enlever");
                 }
+
+                if (!$sender->isCreative()) {
+                    $sender->setAllowFlight(false);
+                    $sender->setFlying(false);
+                }
             }
         }
     }

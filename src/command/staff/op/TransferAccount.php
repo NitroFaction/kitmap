@@ -64,8 +64,8 @@ class TransferAccount extends BaseCommand
         $this->setData($old, $newData);
         $this->setData($new, $oldData);
 
-        $file->set($oldData["xuid"], $file->get($newData["xuid"]));
-        $file->set($newData["xuid"], $file->get($oldData["xuid"]));
+        /*$file->set($oldData["xuid"], $file->get($newData["xuid"]));
+        $file->set($newData["xuid"], $file->get($oldData["xuid"]));*/
 
         $file->save();
         $sender->sendMessage(Util::PREFIX . "Vous venez de transférer les données de §e" . $old . " §fvers §e" . $new);

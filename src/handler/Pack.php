@@ -139,7 +139,6 @@ class Pack
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§eBillet de 30k", 0, 30000]);
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§e1 Pack", 2, 1]);
         $items[] = VanillaItems::RABBIT_HIDE()->setCount(1);
-        $items[] = VanillaItems::RABBIT_HIDE()->setCount(1);
         $items[] = VanillaItems::RABBIT_FOOT()->setCount(2);
         $items[] = VanillaItems::RABBIT_FOOT()->setCount(2);
         $items[] = VanillaItems::RABBIT_FOOT()->setCount(2);
@@ -171,8 +170,11 @@ class Pack
         $items[] = ExtraVanillaItems::IRIS_DRILL();
         $items[] = VanillaBlocks::TRAPPED_CHEST()->asItem();
         $items[] = VanillaBlocks::TRAPPED_CHEST()->asItem();
+        $items[] = VanillaBlocks::TRAPPED_CHEST()->asItem();
         $items[] = VanillaBlocks::CHISELED_NETHER_BRICKS()->asItem();
         $items[] = VanillaBlocks::CHISELED_NETHER_BRICKS()->asItem();
+        $items[] = VanillaBlocks::CHISELED_NETHER_BRICKS()->asItem();
+        $items[] = VanillaBlocks::LAPIS_LAZULI()->asItem();
         $items[] = VanillaBlocks::LAPIS_LAZULI()->asItem();
         $items[] = VanillaBlocks::LAPIS_LAZULI()->asItem();
 

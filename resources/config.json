@@ -276,7 +276,7 @@
     "pumpkinaxe": "golden_axe:\n§r§7Frappez un joueur et son casque sera\nchanger par une citrouille pendant 5 secondes\n\n§r§7Obtenable dans les §epacks:§r§6Pumpkin Axe:2"
   },
   "elevator": {
-    "cookie": "49.5:12: 78.5",
+    "cookie": "49.5:124:78.5",
     "luckyblock": "49.5:88:78.5",
     "money": "49.5:73:78.5",
     "netherite": "49.5:53:78.5",
@@ -399,8 +399,9 @@
     "spawn": "83:-64:-111:-74:355:37:map",
     "koth": "175:60:-86:169:70:-80:map",
     "outpost": "65:60:-184:59:70:-190:map",
-    "blocks_tp": "-30:63:-38:-30:66:-37:map",
-    "mine_tp": "-31:62:-30:-31:66:-26:map"
+    "blocks-tp": "-30:63:-38:-30:66:-37:map",
+    "mine-tp": "-31:62:-30:-31:66:-26:map",
+    "money-zone": "0:60:-126:-2:65:-128:map"
   },
   "floatings": {
     "62.5:63.5:-186.5:map": "outpost",
@@ -413,7 +414,8 @@
     "-36.5:62.5:-27.5:map": "mine",
     "-34.5:63:-37:map": "blocs",
     "-19.5:73.5:-14.5:map": "teleporteur",
-    "10055.5:7:10058:mine": "blocks"
+    "10055.5:7:10058:mine": "blocks",
+    "-0.5:64.5:-126.5:map": "money-zone"
   },
   "domination": {
     "Alpha": {
@@ -465,7 +467,7 @@
     "lock": "Gérer les visiteurs de la box",
     "time": "Gérer la météo de la box"
   },
-  "faction_ranks": {
+  "faction-ranks": {
     "leader": "Chef",
     "officier": "Officier",
     "member": "Membre",

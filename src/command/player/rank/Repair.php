@@ -76,7 +76,13 @@ class Repair extends BaseCommand
     private function repairItem(Item $item, int $index, $inventory): bool
     {
         if ($item instanceof Durable) {
-            $inventory->setItem($index, $item->setDamage(0));
+            $item->setDamage(0);
+
+            if (!is_null($item->getNamedTag()->getTag("cdt"))) {
+                $item->getNamedTag()->removeTag("cdt");
+            }
+
+            $inventory->setItem($index, $item);
             return true;
         }
         return false;

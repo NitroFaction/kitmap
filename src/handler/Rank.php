@@ -5,6 +5,7 @@ namespace Kitmap\handler;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionManager;
@@ -116,7 +117,7 @@ class Rank
 
     public static function getRankValue(string $rank, string $value): mixed
     {
-        return Cache::$config["ranks"][$rank][$value];
+        return Cache::$config["ranks"][$rank][$value] ?? "joueur";
     }
 
     public static function setReplace(string $replace, Player $player, string $msg = ""): string
@@ -140,10 +141,12 @@ class Rank
 
         if (Rank::isStaff($session->data["rank"]) || $player->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
             $player->addAttachment(Main::getInstance(), self::GROUP_STAFF, true);
-            $player->addAttachment(Main::getInstance(), "pocketmine.command.teleport", true);
+
+            $player->addAttachment(Main::getInstance(), DefaultPermissionNames::COMMAND_TELEPORT_OTHER, true);
+            $player->addAttachment(Main::getInstance(), DefaultPermissionNames::COMMAND_TELEPORT_SELF, true);
 
             if (!in_array($session->data["rank"], ["guide", "moderateur"])) {
-                $player->addAttachment(Main::getInstance(), "pocketmine.command.gamemode", true);
+                $player->addAttachment(Main::getInstance(), DefaultPermissionNames::COMMAND_GAMEMODE_SELF, true);
             }
         }
     }
@@ -151,11 +154,11 @@ class Rank
     public static function saveRank(string $value, string $key): void
     {
         $file = Util::getFile("ownings");
-        $data = $file->get($value, []);
+        /*$data = $file->get($value, []);
 
-        $data["rank"] = $key;
+        $data["rank"] = $key;*/
 
-        $file->set($value, $data);
+        $file->set(strtolower($value), $key);
         $file->save();
     }
 }

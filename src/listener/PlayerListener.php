@@ -12,19 +12,24 @@ use Kitmap\Session;
 use Kitmap\task\repeat\PlayerTask;
 use Kitmap\Util;
 use MaXoooZ\Util\item\ExtraVanillaItems;
-use pocketmine\block\{CocoaBlock,
+use pocketmine\block\{Barrel,
+    Chest,
+    CocoaBlock,
     Crops,
     Door,
     FenceGate,
     Fire,
+    Furnace,
+    GlowLichen,
+    Hopper,
     inventory\EnderChestInventory,
     Lava,
     Liquid,
+    SweetBerryBush,
     Trapdoor,
     utils\DyeColor,
     VanillaBlocks,
-    Wheat
-};
+    Wheat};
 use pocketmine\entity\effect\{EffectInstance, VanillaEffects};
 use pocketmine\event\block\{BlockBreakEvent, BlockGrowEvent, BlockPlaceEvent, BlockSpreadEvent, BlockUpdateEvent};
 use pocketmine\event\entity\{EntityDamageByEntityEvent,
@@ -34,9 +39,9 @@ use pocketmine\event\entity\{EntityDamageByEntityEvent,
     EntityTeleportEvent,
     EntityTrampleFarmlandEvent,
     ItemSpawnEvent,
-    ProjectileHitEntityEvent
-};
+    ProjectileHitEntityEvent};
 use pocketmine\event\inventory\{CraftItemEvent, InventoryOpenEvent, InventoryTransactionEvent};
+use MaXoooZ\Util\item\Tier;
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerBucketEvent,
     PlayerChatEvent,
@@ -49,14 +54,24 @@ use pocketmine\event\player\{PlayerBucketEvent,
     PlayerJoinEvent,
     PlayerPreLoginEvent,
     PlayerQuitEvent,
-    PlayerRespawnEvent
-};
+    PlayerRespawnEvent};
 use pocketmine\event\server\CommandEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
-use pocketmine\item\{Durable, EnderPearl, Item, PotionType, VanillaItems};
+use pocketmine\item\{Axe,
+    Bucket,
+    Durable,
+    EnderPearl,
+    FlintSteel,
+    Hoe,
+    Item,
+    PaintingItem,
+    PotionType,
+    Shovel,
+    Stick,
+    VanillaItems};
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\{GameMode, Player};
@@ -74,20 +89,26 @@ class PlayerListener implements Listener
     public function onInteract(PlayerInteractEvent $event): void
     {
         $player = $event->getPlayer();
-        $block = $event->getBlock();
 
-        if ($event->getAction() === $event::RIGHT_CLICK_BLOCK && !Faction::canBuild($player, $block, "interact")) {
+        $block = $event->getBlock();
+        $item = $event->getItem();
+
+        if (
+            $event->getAction() === $event::RIGHT_CLICK_BLOCK &&
+            (($block instanceof Door || $block instanceof Trapdoor || $block instanceof FenceGate || $block instanceof Furnace || $block instanceof SweetBerryBush || $block instanceof GlowLichen || $block instanceof Chest || $block instanceof Barrel || $block instanceof Hopper) || ($item instanceof Bucket || $item instanceof Hoe  || $item instanceof Axe || $item instanceof Shovel || $item instanceof PaintingItem || $item instanceof FlintSteel || $item instanceof Stick)) &&
+            !Faction::canBuild($player, $block, "interact")
+        ) {
             $event->cancel();
 
             if ($block instanceof Door || $block instanceof Trapdoor || $block instanceof FenceGate) {
                 Util::antiBlockGlitch($player);
             }
-        } else if (!$player->isSneaking() && $event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK && $block->isSameState(VanillaBlocks::ANVIL())) {
+        } else if (!$player->isSneaking() && $event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK && $block->hasSameTypeId(VanillaBlocks::ANVIL())) {
             $event->cancel();
             $player->removeCurrentWindow();
 
             Anvil::openAnvil($player);
-        } else if (!$player->isSneaking() && $event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK && $block->isSameState(VanillaBlocks::ENCHANTING_TABLE())) {
+        } else if (!$player->isSneaking() && $event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK && $block->hasSameTypeId(VanillaBlocks::ENCHANTING_TABLE())) {
             $event->cancel();
             $player->removeCurrentWindow();
 
@@ -277,16 +298,6 @@ class PlayerListener implements Listener
         }
 
         Session::get($player)->saveSessionData();
-    }
-
-    public function onExhaust(PlayerExhaustEvent $event): void
-    {
-        $event->cancel();
-
-        $event->getPlayer()->getHungerManager()->setExhaustion(0);
-        $event->getPlayer()->getHungerManager()->setEnabled(false);
-        $event->getPlayer()->getHungerManager()->setFood(18);
-        $event->getPlayer()->getHungerManager()->setSaturation(18);
     }
 
     public function onDeath(PlayerDeathEvent $event): void
@@ -553,10 +564,14 @@ class PlayerListener implements Listener
         $player = $event->getPlayer();
         $block = $event->getBlock();
 
+        $target = clone $block;
+        $drop = true;
+
         $session = Session::get($player);
 
         if (!$player->isCreative() && $player->getPosition()->getWorld()->getFolderName() === "mine" && $player->getPosition()->getFloorX() > 10000) {
             $event->cancel();
+            $drop = false;
 
             $event->setDrops([$block->asItem()->setCount(1)]);
             $event->setXpDropAmount(0);
@@ -580,8 +595,6 @@ class PlayerListener implements Listener
             $respawn = 0;
             $bedrock = false;
 
-            $_block = clone $block;
-
             if ($block->hasSameTypeId(VanillaBlocks::COCOA_POD())) {
                 $respawn = 15;
 
@@ -602,6 +615,8 @@ class PlayerListener implements Listener
 
                 if ($block->hasSameTypeId(VanillaBlocks::ANCIENT_DEBRIS())) {
                     $event->setDrops([VanillaItems::NETHERITE_INGOT()]);
+                } else if ($block->hasSameTypeId(VanillaBlocks::DEEPSLATE_EMERALD_ORE())) {
+                    $event->setDrops([VanillaItems::GOLD_NUGGET()->setCount(mt_rand(1, 4))]);
                 }
             } else if ($block->hasSameTypeId(VanillaBlocks::NETHER_GOLD_ORE())) {
                 $respawn = 40;
@@ -621,7 +636,19 @@ class PlayerListener implements Listener
                     ExtraVanillaItems::NETHERITE_DRILL(),
                     ExtraVanillaItems::POTION_LAUNCHER(),
                     VanillaItems::NETHERITE_INGOT(),
-                    VanillaBlocks::STAINED_GLASS()->setColor(DyeColor::BROWN())->asItem()
+                    VanillaBlocks::STAINED_GLASS()->setColor(DyeColor::BROWN())->asItem(),
+                    VanillaItems::CARROT(),
+                    VanillaItems::POTATO(),
+                    VanillaItems::BEETROOT(),
+                    VanillaItems::WHEAT_SEEDS(),
+                    VanillaItems::BEETROOT_SEEDS(),
+                    VanillaBlocks::STONE()->asItem(),
+                    VanillaBlocks::COBBLESTONE()->asItem(),
+                    VanillaBlocks::DIRT()->asItem(),
+                    VanillaBlocks::GLASS()->asItem(),
+                    VanillaItems::BAMBOO(),
+                    VanillaItems::MELON(),
+                    VanillaItems::SWEET_BERRIES()
                 ];
 
                 $player->broadcastSound(new AmethystBlockChimeSound());
@@ -644,7 +671,7 @@ class PlayerListener implements Listener
 
             if ($respawn > 0) {
                 $item = $event->getItem();
-                $position = $_block->getPosition();
+                $position = $target->getPosition();
 
                 $replace = $bedrock ? VanillaBlocks::BEDROCK() : VanillaBlocks::AIR();
 
@@ -657,15 +684,21 @@ class PlayerListener implements Listener
 
                 PlayerTask::$blocks[] = [time() + $respawn, $position, $block];
 
-                $position->getWorld()->addSound($position, new BlockBreakSound($_block));
-                $position->getWorld()->addParticle($position->add(0.5, 0.5, 0.5), new BlockBreakParticle($_block));
+                $position->getWorld()->addSound($position, new BlockBreakSound($target));
+                $position->getWorld()->addParticle($position->add(0.5, 0.5, 0.5), new BlockBreakParticle($target));
             }
 
             $event->cancel();
         }
 
+        if (!$player->isCreative() && $target->hasSameTypeId(VanillaBlocks::TRAPPED_CHEST())) {
+            $event->setDrops([
+                VanillaBlocks::EMERALD()->asItem()->setCount(mt_rand(3, 5))
+            ]);
+        }
+
         foreach ($event->getDrops() as $item) {
-            Util::addItem($player, $item);
+            Util::addItem($player, $item, !$drop);
         }
 
         if ($event->getXpDropAmount() > 0) {
@@ -769,6 +802,9 @@ class PlayerListener implements Listener
             if ($entity instanceof LogoutEntity) {
                 $name = $entity->player;
 
+                $username = is_null($username) ? "aa" : $username;
+                $name = is_null($name) ? "aba" : $name;
+
                 if (strtolower($username) === strtolower($name)) {
                     $entity->killed = true;
                     $entity->flagForDespawn();
@@ -860,10 +896,16 @@ class PlayerListener implements Listener
                     return;
                 }
 
+                if ($damager->getInventory()->getItemInHand()->equals(VanillaItems::NETHERITE_SWORD())) {
+                    $event->setBaseDamage(7);
+                } else if ($damager->getInventory()->getItemInHand()->equals(VanillaItems::DIAMOND_SWORD())) {
+                    $event->setBaseDamage(6);
+                }
+
                 PartnerItems::executeHitPartnerItem($damager, $entity);
 
-                $damagerSession->setCooldown("combat", 30, [$entity->getName()]);
-                $entitySession->setCooldown("combat", 30, [$damager->getName()]);
+                $damagerSession->setCooldown("combat", 20, [$entity->getName()]);
+                $entitySession->setCooldown("combat", 20, [$damager->getName()]);
 
                 $event->setKnockback(0.38);
                 $event->setAttackCooldown(8);

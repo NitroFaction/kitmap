@@ -63,7 +63,7 @@ class NexusEntity extends Living
                 $source->cancel();
                 $updatedHp = $this->getHealth() - 1;
 
-                if ($updatedHp % 20 == 0) {
+                if (intval($updatedHp) % 20 == 0) {
                     $this->updateBossBar();
                 }
 

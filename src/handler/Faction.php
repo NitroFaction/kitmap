@@ -24,19 +24,19 @@ class Faction
 {
     public static function getNextRank(string $rank): string
     {
-        $ranks = array_keys(Cache::$config["faction_ranks"]);
+        $ranks = array_keys(Cache::$config["faction-ranks"]);
         return $ranks[self::getRankPosition($rank) - 1] ?? $rank;
     }
 
     public static function getRankPosition(string $rank): int
     {
-        $ranks = array_keys(Cache::$config["faction_ranks"]);
+        $ranks = array_keys(Cache::$config["faction-ranks"]);
         return array_search($rank, $ranks);
     }
 
     public static function getPreviousRank(string $rank): string
     {
-        $ranks = array_keys(Cache::$config["faction_ranks"]);
+        $ranks = array_keys(Cache::$config["faction-ranks"]);
         return $ranks[self::getRankPosition($rank) + 1] ?? $rank;
     }
 
@@ -174,10 +174,12 @@ class Faction
         return Cache::$factions[$faction]["power"];
     }
 
-    public static function canBuild(Player $player, Block $block, string $type): bool
+    public static function canBuild(Player $player, Block|Position $block, string $type): bool
     {
         $session = Session::get($player);
         $faction = $session->data["faction"];
+
+        $position = $block instanceof Position ? $block : $block->getPosition();
 
         if ($type === "break" && $session->inCooldown("_antibuild")) {
             $player->sendTip(Util::PREFIX . "Veuillez attendre §e" . ($session->getCooldownData("_antibuild")[0] - time()) . " §fseconde(s) avant de construire");
@@ -185,8 +187,10 @@ class Faction
         } else if ($player->getGamemode() === GameMode::CREATIVE() && $player->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
             return true;
         } else if ($player->getWorld()->getFolderName() === "box-" . $faction) {
-            $x = $block->getPosition()->getX();
-            $z = $block->getPosition()->getZ();
+            $position = $block instanceof Position ? $block : $block->getPosition();
+
+            $x = $position->getX();
+            $z = $position->getZ();
 
             $min = Cache::$factions[$faction]["box"]["zone"]["min"];
             $max = Cache::$factions[$faction]["box"]["zone"]["max"];
@@ -198,7 +202,7 @@ class Faction
                 return false;
             }
         } else {
-            $claim = Faction::inClaim($block->getPosition()->getX(), $block->getPosition()->getZ());
+            $claim = Faction::inClaim($position->getX(), $position->getZ());
 
             if ($claim[0]) {
                 if ($type === "interact") {
@@ -238,14 +242,19 @@ class Faction
         $data = Cache::$factions[$faction];
 
         if ($rank !== "leader") {
-            $require = $data["permissions"][$permission];
+            $require = $data["permissions"][$permission] ?? null;
+
+            if (is_null($require)) {
+                return true;
+            }
+
             $passed = false;
 
             if ($rank === $require) {
                 return true;
             }
 
-            foreach (array_keys(Cache::$config["faction_ranks"]) as $value) {
+            foreach (array_keys(Cache::$config["faction-ranks"]) as $value) {
                 if (!$passed && $value === $require) {
                     return false;
                 } else if ($rank === $value) {

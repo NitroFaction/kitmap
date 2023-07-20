@@ -16,13 +16,9 @@ class ElevatorPhantom extends Living
     protected bool $gravityEnabled = false;
     protected float $gravity = 0.0;
 
-    protected function initEntity(CompoundTag $nbt): void
+    public static function getNetworkTypeId(): string
     {
-        parent::initEntity($nbt);
-
-        $this->setNameTagAlwaysVisible();
-        $this->setNameTag("Elevateur");
-        $this->setNoClientPredictions();
+        return EntityIds::PHANTOM;
     }
 
     public function attack(EntityDamageEvent $source): void
@@ -38,18 +34,22 @@ class ElevatorPhantom extends Living
         }
     }
 
-    protected function getInitialSizeInfo(): EntitySizeInfo
-    {
-        return new EntitySizeInfo(0.3, 0.9);
-    }
-
-    public static function getNetworkTypeId(): string
-    {
-        return EntityIds::PHANTOM;
-    }
-
     public function getName(): string
     {
         return "Elevateur";
+    }
+
+    protected function initEntity(CompoundTag $nbt): void
+    {
+        parent::initEntity($nbt);
+
+        $this->setNameTagAlwaysVisible();
+        $this->setNameTag("Elevateur");
+        $this->setNoClientPredictions();
+    }
+
+    protected function getInitialSizeInfo(): EntitySizeInfo
+    {
+        return new EntitySizeInfo(0.3, 0.9);
     }
 }

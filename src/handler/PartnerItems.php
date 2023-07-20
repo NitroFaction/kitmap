@@ -92,10 +92,22 @@ class PartnerItems
                 if ($randomItem instanceof Durable) {
                     if (in_array($randomItem, $armorInventory, true)) {
                         $slot = array_search($randomItem, $armorInventory, true);
-                        $player->getArmorInventory()->setItem($slot, $randomItem->setDamage(0));
+                        $randomItem = $randomItem->setDamage(0);
+
+                        if (!is_null($randomItem->getNamedTag()->getTag("cdt"))) {
+                            $randomItem->getNamedTag()->removeTag("cdt");
+                        }
+
+                        $player->getArmorInventory()->setItem($slot, $randomItem);
                     } else {
                         $slot = array_search($randomItem, $baseInventory, true);
-                        $player->getInventory()->setItem($slot, $randomItem->setDamage(0));
+                        $randomItem = $randomItem->setDamage(0);
+
+                        if (!is_null($randomItem->getNamedTag()->getTag("cdt"))) {
+                            $randomItem->getNamedTag()->removeTag("cdt");
+                        }
+
+                        $player->getInventory()->setItem($slot, $randomItem);
                     }
 
                     $player->sendMessage(Util::PREFIX . "L'item §e" . $randomItem->getName() . " §fqui est dans votre inventaire a été réparé");
@@ -259,7 +271,7 @@ class PartnerItems
 
         $name = $item->getNamedTag()->getString("partneritem");
 
-        if (explode(":", Cache::$config["partneritems"][$name])[4] === "1") {
+        if (explode(":", Cache::$config["partneritems"][$name])[3] === "1") {
             return;
         }
 

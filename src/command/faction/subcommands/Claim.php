@@ -34,7 +34,7 @@ class Claim extends FactionCommand
             return;
         }
 
-        $claim = Faction::inClaim($sender->getPosition()->getX(), $sender->getPosition()->getZ());
+        $claim = Faction::inClaim($sender->getPosition()->getFloorX(), $sender->getPosition()->getFloorZ());
 
         if ($claim[0]) {
             $sender->sendMessage(Util::PREFIX . "Ce claim n'est pas libre");
