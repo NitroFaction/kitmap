@@ -222,7 +222,7 @@ class PartnerItems
                     $player->sendMessage(Util::PREFIX . "Veuillez attendre §e" . ($session->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser de nouveau un rocket");
                     return true;
                 } else {
-                    $player->setMotion(new Vector3(0, 3.5, 0));
+                    $player->setMotion(new Vector3(0, 4, 0));
 
                     $session->setCooldown($name, 30);
                     $player->sendMessage(Util::PREFIX . "Vous venez d'être expulsé du sol car vous avez utilisé un rocket");
@@ -289,7 +289,7 @@ class PartnerItems
                 }
                 break;
             case "pumpkinaxe":
-                if ($target->getArmorInventory()->getHelmet()->equals(VanillaBlocks::PUMPKIN()->asItem())) {
+                if ($target->getArmorInventory()->getHelmet()->getTypeId() === VanillaBlocks::PUMPKIN()->asItem()->getTypeId()) {
                     $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser une pumpkin axe sur une personne qui a déjà une citrouille sur la tête");
                     return;
                 } else if ($playerSession->inCooldown($name)) {

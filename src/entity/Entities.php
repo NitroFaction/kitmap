@@ -34,5 +34,9 @@ class Entities
         EntityFactory::getInstance()->register(FloatingText::class, function (World $world, CompoundTag $nbt): FloatingText {
             return new FloatingText(EntityDataHelper::parseLocation($nbt, $world), $nbt);
         }, ["FloatingText"]);
+
+        EntityFactory::getInstance()->register(Forgeron::class, function (World $world, CompoundTag $nbt): Forgeron {
+            return new Forgeron(EntityDataHelper::parseLocation($nbt, $world), $nbt);
+        }, ["Forgeron"]);
     }
 }

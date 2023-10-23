@@ -24,6 +24,8 @@ class Leader extends BaseSubCommand
         $faction = strtolower($args["faction"]);
         $member = $args["membre"];
 
+        return;
+
         if (!Faction::exists($faction)) {
             $sender->sendMessage(Util::PREFIX . "La faction §e" . $faction . " §fn'existe pas");
             return;

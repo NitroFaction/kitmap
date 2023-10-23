@@ -2,23 +2,25 @@
 
 namespace Kitmap\command\staff\op;
 
-
+use CortexPE\Commando\args\IntegerArgument;
 use CortexPE\Commando\BaseCommand;
-use Kitmap\handler\Cache;
-use Kitmap\Util;
+use Kitmap\Main;
+use Kitmap\task\StopTask;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
+use pocketmine\scheduler\Task;
 
-class ListClaims extends BaseCommand
+class Stop extends BaseCommand
 {
+    public static ?Task $task = null;
+
     public function __construct(PluginBase $plugin)
     {
         parent::__construct(
             $plugin,
-            "listclaims",
-            "Permet de donner la liste des claims"
+            "stop",
+            "Arrêter le serveur"
         );
 
         $this->setPermissions([DefaultPermissions::ROOT_OPERATOR]);
@@ -26,12 +28,18 @@ class ListClaims extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
-        if ($sender instanceof Player) {
-            $sender->sendMessage(Util::PREFIX . "Voici la liste des claims: §e" . implode("§f, §e", Cache::$data["claims"]));
+        $seconds = intval($args["secondes"] ?? -1);
+
+        if ($seconds <= 0) {
+            Main::getInstance()->getServer()->shutdown();
+            return;
         }
+
+        Main::getInstance()->getScheduler()->scheduleRepeatingTask(new StopTask($seconds), 20);
     }
 
     protected function prepare(): void
     {
+        $this->registerArgument(0, new IntegerArgument("secondes", true));
     }
 }

@@ -2,23 +2,21 @@
 
 namespace Kitmap\command\staff\op;
 
-
 use CortexPE\Commando\BaseCommand;
-use Kitmap\handler\Cache;
+use Kitmap\Main;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
-class ListClaims extends BaseCommand
+class CancelStop extends BaseCommand
 {
     public function __construct(PluginBase $plugin)
     {
         parent::__construct(
             $plugin,
-            "listclaims",
-            "Permet de donner la liste des claims"
+            "cancelstop",
+            "Arrête l'arrêt du serveur"
         );
 
         $this->setPermissions([DefaultPermissions::ROOT_OPERATOR]);
@@ -26,9 +24,16 @@ class ListClaims extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
-        if ($sender instanceof Player) {
-            $sender->sendMessage(Util::PREFIX . "Voici la liste des claims: §e" . implode("§f, §e", Cache::$data["claims"]));
+        if (is_null(Stop::$task)) {
+            $sender->sendMessage(Util::PREFIX . "Le serveur n'est pas entrain de redémarrer");
+            return;
         }
+
+        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le redémarrage du serveur vient d'être annulé");
+        Main::getInstance()->getServer()->broadcastPopup(Util::PREFIX . "Le redémarrage du serveur vient d'être annulé");
+
+        Stop::$task->getHandler()->cancel();
+        Stop::$task = null;
     }
 
     protected function prepare(): void

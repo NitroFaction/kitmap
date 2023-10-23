@@ -4,9 +4,9 @@ namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\BaseCommand;
 use Kitmap\handler\Cache;
-use MaXoooZ\Util\entity\Player;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
+use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
 class ResetAllClaims extends BaseCommand

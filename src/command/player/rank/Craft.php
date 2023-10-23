@@ -6,7 +6,7 @@ use CortexPE\Commando\BaseCommand;
 use Kitmap\handler\Rank;
 use Kitmap\Session;
 use Kitmap\Util;
-use MaXoooZ\Util\inventory\CraftingTableInvMenu;
+use MaXoooZ\Util\util\inventory\CraftingTableInvMenu;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;

@@ -120,6 +120,7 @@
     "ban-ip",
     "banlist",
     "ban",
+    "stop",
     "clear",
     "checkperm",
     "defaultgamemode",
@@ -406,7 +407,6 @@
   "floatings": {
     "62.5:63.5:-186.5:map": "outpost",
     "172.5:63.5:-82.5:map": "koth",
-    "38.5:64:42.5:map": "mine",
     "-0.5:65:-55.5:map": "pack",
     "-144.5:63.5:-17.5:map": "domination",
     "-170.5:67.5:-12.5:map": "domination",
@@ -481,6 +481,13 @@
     "45.5:90:79.5:255",
     "45.5:125:80.5:241",
     "29.5:121.3:137.5:247"
+  ],
+  "forgeron-positions": [
+    "-13.5:56:-30.5:180",
+    "21.5:70:-106.5:360",
+    "-63.5:65:-66.5:270",
+    "52.5:66:10.5:90",
+    "48.5:62:-51.5:90"
   ],
   "sanctions": {
     "ban": {
@@ -562,10 +569,13 @@
       ]
     },
     "mute": {
-      "Gros-Mots": [
+      "Langage Inapproprié": [
         900,
         1800,
-        3600
+        3600,
+        7200,
+        10800,
+        18000
       ],
       "Provocations": [
         900,
@@ -598,6 +608,7 @@
     },
     "kick": {
       "Nick Inapproprié": [],
+      "Skin Inapproprié": [],
       "Full Back": [],
       "Camping": [],
       "Hosting": []
@@ -665,8 +676,10 @@
   },
   "planning": {
     "11:00": "generatebourse",
+    "12:00": "changeforgeron",
     "18:00": "domination start",
-    "21:00": "domination start"
+    "21:00": "domination start",
+    "07:59": "stop 60"
   },
   "box": {
     "default-max": 267,

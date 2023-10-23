@@ -9,6 +9,8 @@ use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
@@ -97,7 +99,9 @@ class Reclaim extends BaseCommand
                 $nbt = Util::deserializePlayerData($player->getName(), $data["data"] ?? "");
 
                 foreach ($this->getItems($nbt) as $item) {
-                    Util::addItem($player, $item);
+                    if ($item instanceof Item && !$item->equals(VanillaItems::SPLASH_POTION())) {
+                        Util::addItem($player, $item);
+                    }
                 }
 
                 $session = Session::get($player);

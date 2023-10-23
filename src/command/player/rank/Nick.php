@@ -82,12 +82,13 @@ class Nick extends BaseCommand
             }
 
             $name = TextFormat::clean($data[0]);
+            $name = trim($name);
 
             if (
                 2 > strlen($name) ||
                 strlen($name) >= 15 ||
                 isset(Cache::$players["upper_name"][strtolower($name)]) ||
-                preg_match('/[\'^£$%&*()}{@#~?<>,|=_+¬-]/', $name)
+                preg_match('/[^A-Za-z0-9_\s]/', $name)
             ) {
                 $player->sendMessage(Util::PREFIX . "Le pseudo indiqué est invalide");
                 return;

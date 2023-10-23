@@ -13,8 +13,10 @@ use Kitmap\task\repeat\PlayerTask;
 use Kitmap\Util;
 use MaXoooZ\Util\item\ExtraVanillaItems;
 use pocketmine\block\{Barrel,
+    CartographyTable,
     Chest,
     CocoaBlock,
+    CraftingTable,
     Crops,
     Door,
     FenceGate,
@@ -29,7 +31,8 @@ use pocketmine\block\{Barrel,
     Trapdoor,
     utils\DyeColor,
     VanillaBlocks,
-    Wheat};
+    Wheat
+};
 use pocketmine\entity\effect\{EffectInstance, VanillaEffects};
 use pocketmine\event\block\{BlockBreakEvent, BlockGrowEvent, BlockPlaceEvent, BlockSpreadEvent, BlockUpdateEvent};
 use pocketmine\event\entity\{EntityDamageByEntityEvent,
@@ -39,22 +42,22 @@ use pocketmine\event\entity\{EntityDamageByEntityEvent,
     EntityTeleportEvent,
     EntityTrampleFarmlandEvent,
     ItemSpawnEvent,
-    ProjectileHitEntityEvent};
+    ProjectileHitEntityEvent
+};
 use pocketmine\event\inventory\{CraftItemEvent, InventoryOpenEvent, InventoryTransactionEvent};
-use MaXoooZ\Util\item\Tier;
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerBucketEvent,
     PlayerChatEvent,
     PlayerDataSaveEvent,
     PlayerDeathEvent,
-    PlayerExhaustEvent,
     PlayerInteractEvent,
     PlayerItemConsumeEvent,
     PlayerItemUseEvent,
     PlayerJoinEvent,
     PlayerPreLoginEvent,
     PlayerQuitEvent,
-    PlayerRespawnEvent};
+    PlayerRespawnEvent
+};
 use pocketmine\event\server\CommandEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
@@ -64,14 +67,14 @@ use pocketmine\item\{Axe,
     Bucket,
     Durable,
     EnderPearl,
-    FlintSteel,
     Hoe,
     Item,
     PaintingItem,
     PotionType,
     Shovel,
     Stick,
-    VanillaItems};
+    VanillaItems
+};
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\{GameMode, Player};
@@ -93,9 +96,14 @@ class PlayerListener implements Listener
         $block = $event->getBlock();
         $item = $event->getItem();
 
+        if ($item->equals(VanillaItems::FLINT_AND_STEEL())) {
+            $event->cancel();
+            return;
+        }
+
         if (
             $event->getAction() === $event::RIGHT_CLICK_BLOCK &&
-            (($block instanceof Door || $block instanceof Trapdoor || $block instanceof FenceGate || $block instanceof Furnace || $block instanceof SweetBerryBush || $block instanceof GlowLichen || $block instanceof Chest || $block instanceof Barrel || $block instanceof Hopper) || ($item instanceof Bucket || $item instanceof Hoe  || $item instanceof Axe || $item instanceof Shovel || $item instanceof PaintingItem || $item instanceof FlintSteel || $item instanceof Stick)) &&
+            (($block instanceof Door || $block instanceof Trapdoor || $block instanceof FenceGate || $block instanceof Furnace || $block instanceof SweetBerryBush || $block instanceof GlowLichen || $block instanceof CraftingTable || $block instanceof CartographyTable || $block instanceof Chest || $block instanceof Barrel || $block instanceof Hopper) || ($item instanceof Bucket || $item instanceof Hoe || $item instanceof Axe || $item instanceof Shovel || $item instanceof PaintingItem || $item instanceof Stick)) &&
             !Faction::canBuild($player, $block, "interact")
         ) {
             $event->cancel();
@@ -127,6 +135,12 @@ class PlayerListener implements Listener
         $message = TextFormat::clean($event->getMessage());
 
         $session = Session::get($player);
+
+        if (str_contains($message, "@here") && !$player->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
+            $event->cancel();
+            $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser §e@here §fdans votre message");
+            return;
+        }
 
         if (Question::$currentEvent !== 0) {
             $valid = false;
@@ -210,7 +224,7 @@ class PlayerListener implements Listener
         Main::getInstance()->getServer()->broadcastTip("§a+ " . $player->getName() . " +");
 
         if (Faction::hasFaction($player)) {
-            Cache::$factions[$session->data["faction"]]["activity"][date("H:i")] = $player->getName();
+            Cache::$factions[$session->data["faction"]]["activity"][date("m-d")] = $player->getName();
             Faction::broadcastMessage($session->data["faction"], "§e[§fF§e] §fLe joueur de votre faction §e" . $player->getName() . " §fvient de se connecter");
         }
 
@@ -239,11 +253,11 @@ class PlayerListener implements Listener
             if ($inventory instanceof ArmorInventory) {
                 $targetItem = $inventory->getItem($slot);
 
-                if ($targetItem->equals(VanillaItems::TURTLE_HELMET())) {
+                if ($targetItem->getTypeId() === VanillaItems::TURTLE_HELMET()->getTypeId()) {
                     $inventory->getHolder()->getEffects()->add(new EffectInstance(VanillaEffects::FIRE_RESISTANCE(), 20 * 60 * 60 * 24, 0, false));
                     $inventory->getHolder()->getEffects()->add(new EffectInstance(VanillaEffects::HASTE(), 20 * 60 * 60 * 24, 1, false));
                     $inventory->getHolder()->getEffects()->add(new EffectInstance(VanillaEffects::JUMP_BOOST(), 20 * 60 * 60 * 24, 2, false));
-                } else if ($oldItem->equals(VanillaItems::TURTLE_HELMET())) {
+                } else if ($oldItem->getTypeId() === VanillaItems::TURTLE_HELMET()->getTypeId()) {
                     $inventory->getHolder()->getEffects()->remove(VanillaEffects::FIRE_RESISTANCE());
                     $inventory->getHolder()->getEffects()->remove(VanillaEffects::HASTE());
                     $inventory->getHolder()->getEffects()->remove(VanillaEffects::JUMP_BOOST());
@@ -399,6 +413,10 @@ class PlayerListener implements Listener
                     $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser cette perle");
                     $event->cancel();
                     return;
+                } else if (Util::isPlayerAimOnAntiBack($player)) {
+                    $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas perle en visant un bloc antiback");
+                    $event->cancel();
+                    return;
                 }
 
                 $session->setCooldown("enderpearl", 15, [$player->getPosition()]);
@@ -449,7 +467,7 @@ class PlayerListener implements Listener
                 $player->getEffects()->add(new EffectInstance(VanillaEffects::STRENGTH(), (240 * 20), 0, false));
                 $session->setCooldown("cookie_strength", 25);
             }
-        } else if ($item->equals(VanillaItems::GOLDEN_APPLE())) {
+        } else if ($item->equals(VanillaItems::GOLDEN_APPLE()) || $item->equals(VanillaItems::GOLDEN_CARROT())) {
             $event->cancel();
         }
     }
@@ -494,6 +512,7 @@ class PlayerListener implements Listener
             }
         }
     }
+
 
     public function onOpenInventory(InventoryOpenEvent $event): void
     {
@@ -616,7 +635,13 @@ class PlayerListener implements Listener
                 if ($block->hasSameTypeId(VanillaBlocks::ANCIENT_DEBRIS())) {
                     $event->setDrops([VanillaItems::NETHERITE_INGOT()]);
                 } else if ($block->hasSameTypeId(VanillaBlocks::DEEPSLATE_EMERALD_ORE())) {
-                    $event->setDrops([VanillaItems::GOLD_NUGGET()->setCount(mt_rand(1, 4))]);
+                    $emerald = VanillaItems::GOLD_NUGGET()->setCount(mt_rand(1, 4));
+
+                    if (mt_rand(0, 250) === 1) {
+                        $event->setDrops([$emerald, VanillaItems::RABBIT_FOOT()]);
+                    } else {
+                        $event->setDrops([$emerald]);
+                    }
                 }
             } else if ($block->hasSameTypeId(VanillaBlocks::NETHER_GOLD_ORE())) {
                 $respawn = 40;
@@ -801,9 +826,7 @@ class PlayerListener implements Listener
         foreach (Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld()->getEntities() as $entity) {
             if ($entity instanceof LogoutEntity) {
                 $name = $entity->player;
-
-                $username = is_null($username) ? "aa" : $username;
-                $name = is_null($name) ? "aba" : $name;
+                $name = is_null($name) ? "" : $name;
 
                 if (strtolower($username) === strtolower($name)) {
                     $entity->killed = true;
@@ -839,17 +862,18 @@ class PlayerListener implements Listener
         if ($entity instanceof Player) {
             $entitySession = Session::get($entity);
 
-            if (
+            if ($event->getCause() === EntityDamageEvent::CAUSE_VOID) {
+                $entity->teleport($entity->getPosition()->getWorld()->getSpawnLocation());
+                $event->cancel();
+                return;
+            } else if (
                 $event->getCause() === EntityDamageEvent::CAUSE_FALL ||
+                $event->getCause() === EntityDamageEvent::CAUSE_SUFFOCATION ||
                 Util::insideZone($entity->getPosition(), "spawn") ||
                 $entitySession->data["staff_mod"][0] ||
                 str_starts_with($entity->getPosition()->getWorld()->getFolderName(), "box-") ||
                 $entity->getPosition()->getWorld()->getFolderName() === "mine"
             ) {
-                if ($event->getCause() === EntityDamageEvent::CAUSE_VOID) {
-                    $entity->teleport($entity->getPosition()->getWorld()->getSpawnLocation());
-                }
-
                 $event->cancel();
             }
 
@@ -896,9 +920,9 @@ class PlayerListener implements Listener
                     return;
                 }
 
-                if ($damager->getInventory()->getItemInHand()->equals(VanillaItems::NETHERITE_SWORD())) {
+                if ($damager->getInventory()->getItemInHand()->getTypeId() === VanillaItems::NETHERITE_SWORD()->getTypeId()) {
                     $event->setBaseDamage(7);
-                } else if ($damager->getInventory()->getItemInHand()->equals(VanillaItems::DIAMOND_SWORD())) {
+                } else if ($damager->getInventory()->getItemInHand()->getTypeId() === VanillaItems::DIAMOND_SWORD()->getTypeId()) {
                     $event->setBaseDamage(6);
                 }
 

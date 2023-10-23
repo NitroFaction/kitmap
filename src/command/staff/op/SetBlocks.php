@@ -5,10 +5,10 @@ namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\BaseCommand;
 use Kitmap\handler\Rank;
-use MaXoooZ\Util\entity\Player;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
 use pocketmine\inventory\CreativeInventory;
+use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
 class SetBlocks extends BaseCommand

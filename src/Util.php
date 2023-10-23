@@ -4,6 +4,11 @@ namespace Kitmap;
 
 use Kitmap\handler\Cache;
 use Kitmap\handler\ScoreFactory;
+use pocketmine\block\Block;
+use pocketmine\block\Fence;
+use pocketmine\block\FenceGate;
+use pocketmine\block\utils\DyeColor;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\color\Color;
 use pocketmine\command\CommandSender;
 use pocketmine\console\ConsoleCommandSender;
@@ -139,7 +144,7 @@ class Util
             $player->setAllowFlight(true);
         }
 
-        if ($player->getArmorInventory()->getHelmet()->equals(VanillaItems::TURTLE_HELMET())) {
+        if ($player->getArmorInventory()->getHelmet()->getTypeId() === VanillaItems::TURTLE_HELMET()->getTypeId()) {
             $player->getEffects()->add(new EffectInstance(VanillaEffects::FIRE_RESISTANCE(), 20 * 60 * 60 * 24, 0, false));
             $player->getEffects()->add(new EffectInstance(VanillaEffects::HASTE(), 20 * 60 * 60 * 24, 1, false));
             $player->getEffects()->add(new EffectInstance(VanillaEffects::JUMP_BOOST(), 20 * 60 * 60 * 24, 2, false));
@@ -364,6 +369,18 @@ class Util
         }
 
         Cache::$data["bourse"] = $bourse;
+    }
+
+    public static function isPlayerAimOnAntiBack(Player $player): bool
+    {
+        $blocks = $player->getLineOfSight(10, 2);
+
+        foreach ($blocks as $block) {
+            if ($block instanceof Block && !$block instanceof FenceGate) {
+                return $block->isSameState(VanillaBlocks::STAINED_GLASS()->setColor(DyeColor::BROWN())) || $block->hasSameTypeId(VanillaBlocks::REDSTONE());
+            }
+        }
+        return false;
     }
 
     public static function formatNumberWithSuffix(int|float $value): string

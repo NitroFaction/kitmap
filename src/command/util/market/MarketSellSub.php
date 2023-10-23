@@ -70,8 +70,6 @@ class MarketSellSub extends BaseSubCommand
                 "§r§eCliquez ici pour acheter",
             ]));
 
-            var_dump($id);
-
             $item->getNamedTag()->setString("seller", $sender->getName());
             $item->getNamedTag()->setString("price", strval($args["prix"]));
             $item->getNamedTag()->setString("id", strval($id));

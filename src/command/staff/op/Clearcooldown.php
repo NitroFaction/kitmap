@@ -43,6 +43,7 @@ class Clearcooldown extends BaseCommand
             $sender->sendMessage(Util::PREFIX . "Le joueur indiqué n'est pas connecté sur le serveur");
             return;
         }
+
         $targetSession = Session::get($target);
 
         if ($target->getName() === $sender->getName()) {

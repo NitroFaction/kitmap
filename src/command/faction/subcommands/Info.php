@@ -79,7 +79,7 @@ class Info extends FactionCommand
         $_leader = Main::getInstance()->getServer()->getPlayerExact($leader);
 
         if ($_leader instanceof Player) {
-            $leader = "§e" . $_leader->getName() . "§7[§e" . Session::get($_leader)->data["kill"] . "§7]";
+            $leader = "§e" . $_leader->getName();
         } else {
             $leader = "§7" . $leader;
         }

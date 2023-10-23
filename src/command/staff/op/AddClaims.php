@@ -2,14 +2,13 @@
 
 namespace Kitmap\command\staff\op;
 
-
 use CortexPE\Commando\args\IntegerArgument;
 use CortexPE\Commando\BaseCommand;
 use Kitmap\handler\Cache;
 use Kitmap\Util;
-use MaXoooZ\Util\entity\Player;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
+use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\world\format\Chunk;
 

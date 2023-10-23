@@ -6,6 +6,7 @@ use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
 use Kitmap\entity\ElevatorPhantom;
 use Kitmap\entity\FloatingText;
+use Kitmap\entity\Forgeron;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Util;
@@ -45,12 +46,17 @@ class Floating extends BaseCommand
                     $entity->spawnToAll();
                 }
 
+                list($x, $y, $z, $yaw) = explode(":", Cache::$data["forgeron-position"] ?? Cache::$config["forgeron-positions"][0]);
+
+                $entity = new Forgeron(new Location(floatval($x), floatval($y), floatval($z), Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld(), intval($yaw), 0));
+                $entity->spawnToAll();
+
                 $sender->sendMessage(Util::PREFIX . "Vous venez de faire apparaitre les floatings texts");
                 break;
             case "despawn":
                 foreach (Main::getInstance()->getServer()->getWorldManager()->getWorlds() as $world) {
                     foreach ($world->getEntities() as $entity) {
-                        if ($entity instanceof FloatingText || $entity instanceof ElevatorPhantom) {
+                        if ($entity instanceof FloatingText || $entity instanceof ElevatorPhantom || $entity instanceof Forgeron) {
                             $entity->flagForDespawn();
                         }
                     }

@@ -7,8 +7,8 @@ use jojoe77777\FormAPI\SimpleForm;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
-use MaXoooZ\Util\inventory\CustomSizedInvMenu;
 use MaXoooZ\Util\item\ExtraVanillaItems;
+use MaXoooZ\Util\util\inventory\CustomSizedInvMenu;
 use muqsit\invmenu\InvMenu;
 use OutOfBoundsException;
 use pocketmine\block\utils\DyeColor;
@@ -135,11 +135,13 @@ class Pack
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§bKit Roi", 1, 4]);
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§bKit Roi", 1, 4]);
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§eBillet de 1k", 0, 1000]);
+        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§eBillet de 5k", 0, 1000]);
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§eBillet de 10k", 0, 10000]);
+        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§eBillet de 25k", 0, 10000]);
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§eBillet de 30k", 0, 30000]);
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§e1 Pack", 2, 1]);
         $items[] = VanillaItems::RABBIT_HIDE()->setCount(1);
-        $items[] = VanillaItems::RABBIT_FOOT()->setCount(2);
+        $items[] = VanillaItems::RABBIT_FOOT()->setCount(1);
         $items[] = VanillaItems::RABBIT_FOOT()->setCount(2);
         $items[] = VanillaItems::RABBIT_FOOT()->setCount(2);
         $items[] = ExtraVanillaItems::MINER_HELMET();
@@ -259,7 +261,7 @@ class Pack
 
     private static function previsualizePack(Player $player): void
     {
-        $menu = CustomSizedInvMenu::create(63);
+        $menu = CustomSizedInvMenu::create(72);
         $menu->setName("Prévisualisation des packs");
         $menu->setListener(InvMenu::readonly());
 

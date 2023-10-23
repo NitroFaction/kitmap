@@ -58,7 +58,7 @@ class Vote extends BaseCommand
 
     public static function sendPlayer(Player $player, string $type = "object"): void
     {
-        $user = str_replace(" ", "", $player->getName());
+        $user = str_replace(" ", "_", $player->getName());
         $api = "https://minecraftpocket-servers.com/api/?";
 
         $query = match ($type) {
@@ -68,7 +68,7 @@ class Vote extends BaseCommand
         };
 
         if (!is_null($query)) {
-            Main::getInstance()->getServer()->getAsyncPool()->submitTask(new VoteRequestTask($user, $type, $api . $query));
+            Main::getInstance()->getServer()->getAsyncPool()->submitTask(new VoteRequestTask($player->getName(), $type, $api . $query));
         }
     }
 

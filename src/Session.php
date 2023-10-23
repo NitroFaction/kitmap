@@ -74,12 +74,12 @@ class Session
         return new Session($player, $data);
     }
 
-    public function saveSessionData(bool $quit = true): void
+    public function saveSessionData(bool $destroy = true): void
     {
         $player = $this->player;
         $username = strtolower($player->getName());
 
-        if ($quit) {
+        if ($destroy) {
             $this->removeCooldown("enderpearl");
 
             foreach (CoinFlip::$coinflip as $id => $value) {
@@ -88,6 +88,8 @@ class Session
                     unset(CoinFlip::$coinflip[$id]);
                 }
             }
+
+            unset(self::$sessions[$player]);
         }
 
         $this->data["played_time"] += time() - $this->data["play_time"];

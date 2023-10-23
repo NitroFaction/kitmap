@@ -38,6 +38,10 @@ class Top extends BaseCommand
         $sender->sendMessage(Util::PREFIX . self::getTopName($args["categorie"]) . " §f(Page §e#" . $page . "§f/§e" . $response[0] . "§f)");
 
         foreach ($response[1] as $key => $value) {
+            if ($args["categorie"] === "nerd") {
+                $value = Util::formatDurationFromSeconds(intval($value));
+            }
+
             $sender->sendMessage(str_replace(["{KEY}", "{VALUE}", "{COUNT}"], [$key, $value, (($page - 1) * 10) + $i], $format));
             $i++;
         }
