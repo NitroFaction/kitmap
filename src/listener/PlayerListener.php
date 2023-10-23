@@ -45,6 +45,7 @@ use pocketmine\event\entity\{EntityDamageByEntityEvent,
     ProjectileHitEntityEvent
 };
 use pocketmine\event\inventory\{CraftItemEvent, InventoryOpenEvent, InventoryTransactionEvent};
+use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerBucketEvent,
     PlayerChatEvent,
@@ -54,11 +55,13 @@ use pocketmine\event\player\{PlayerBucketEvent,
     PlayerItemConsumeEvent,
     PlayerItemUseEvent,
     PlayerJoinEvent,
+    PlayerMissSwingEvent,
     PlayerPreLoginEvent,
     PlayerQuitEvent,
-    PlayerRespawnEvent
-};
+    PlayerRespawnEvent};
 use pocketmine\event\server\CommandEvent;
+use pocketmine\event\server\DataPacketDecodeEvent;
+use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
@@ -76,6 +79,9 @@ use pocketmine\item\{Axe,
     VanillaItems
 };
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\SetTimePacket;
+use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\{GameMode, Player};
 use pocketmine\player\chat\LegacyRawChatFormatter;
@@ -573,6 +579,13 @@ class PlayerListener implements Listener
         }
     }
 
+    public function onMissSwing(PlayerMissSwingEvent $event): void
+    {
+        $player = $event->getPlayer();
+        $player->broadcastAnimation(new ArmSwingAnimation($player), $player->getViewers());
+        $event->cancel();
+    }
+
     public function onTrampleFarmland(EntityTrampleFarmlandEvent $event): void
     {
         $event->cancel();
@@ -965,5 +978,32 @@ class PlayerListener implements Listener
     {
         $entity = $event->getEntity();
         $entity->setDespawnDelay(intval(15 * Main::getInstance()->getServer()->getTicksPerSecondAverage()));
+    }
+
+    public function onDataPacketSend(DataPacketSendEvent $event): void
+    {
+        $packets = $event->getPackets();
+        foreach ($packets as $packet) {
+            switch ($packet) {
+                case $packet instanceof SetTimePacket:
+                    $packet->time = 12500; // on sait jamais parfois le stoptime il a la flemme
+                    break;
+                case $packet instanceof StartGamePacket:
+                    $packet->levelSettings->muteEmoteAnnouncements = true;
+                    break;
+            }
+        }
+    }
+
+    public function onDataPacketDecode(DataPacketDecodeEvent $event): void
+    {
+        $origin = $event->getOrigin();
+        $packetId = $event->getPacketId();
+        $packetBuffer = $event->getPacketBuffer();
+        if (strlen($packetBuffer) > 8096 and $packetId !== ProtocolInfo::LOGIN_PACKET) {
+            Main::getInstance()->getLogger()->warning("ID de paquet non décodé: $packetId (" . strlen($packetBuffer) . ") venant de : " . (($player = $origin->getPlayer()) instanceof Player ? $player->getName() : $origin->getIp()));
+            $origin->disconnect("§cUne erreur est survenue lors de l'encodage d'un paquet.");
+            $event->cancel();
+        }
     }
 }

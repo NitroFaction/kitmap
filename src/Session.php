@@ -4,6 +4,7 @@ namespace Kitmap;
 
 use Kitmap\command\player\CoinFlip;
 use Kitmap\handler\Cache;
+use Kitmap\handler\Casino;
 use pocketmine\player\Player;
 use WeakMap;
 
@@ -86,6 +87,13 @@ class Session
                 if ($value["username"] === $username) {
                     $this->addValue("money", $value["price"]);
                     unset(CoinFlip::$coinflip[$id]);
+                }
+            }
+
+            foreach (Casino::$games as $key => $value) {
+                if ($key === $username) {
+                    $this->addValue("money", $value["bet"]);
+                    unset(Casino::$games[$username]);
                 }
             }
 
