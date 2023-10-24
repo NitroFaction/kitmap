@@ -1,4 +1,4 @@
-<?php
+<?php /* @noinspection PhpDeprecationInspection */
 
 namespace Kitmap;
 
@@ -10,6 +10,9 @@ use Kitmap\handler\Rank;
 use Kitmap\listener\PlayerListener;
 use Kitmap\task\repeat\PlayerTask;
 use muqsit\invmenu\InvMenuHandler;
+use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\ItemFlags;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\SingletonTrait;
 
@@ -33,6 +36,8 @@ class Main extends PluginBase
         if (!PacketHooker::isRegistered()) {
             PacketHooker::register($this);
         }
+
+        EnchantmentIdMap::getInstance()->register(-1, new Enchantment('glow', -1, ItemFlags::ALL, ItemFlags::NONE, 1));
 
         new Rank();
         new Commands();

@@ -5,7 +5,7 @@ namespace Kitmap\task\repeat;
 use Kitmap\handler\Casino;
 use Kitmap\Session;
 use Kitmap\Util;
-use pocketmine\block\StainedHardenedClay;
+use pocketmine\block\Concrete;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\inventory\Inventory;
@@ -38,8 +38,7 @@ class RouletteTask extends Task
         $this->bet = $bet;
         $this->roulette = $roulette;
 
-        $times = [60, 70, 80];
-        $this->time = $times[array_rand($times)];
+        $this->time = mt_rand(60, 80);
 
         $this->update(true);
     }
@@ -67,6 +66,7 @@ class RouletteTask extends Task
                     $this->doEndAnimation();
                     if ($this->close === 40) {
                         $this->player->broadcastSound(new BellRingSound(), [$this->player]);
+                        $this->update();
                     }
                     if ($this->close <= 0) {
                         $resultColor = $this->getResultColor();
@@ -77,7 +77,8 @@ class RouletteTask extends Task
                         ];
                         $resultColorId = $resultColorIds[$resultColor->name()];
                         if (intval(Casino::$games[$this->name]["color"]) === $resultColorId) {
-                            Casino::winGame($this->player, "roulette", $this->bet * 2);
+                            $gain = $resultColorId === 2 ? $this->bet * 14 : $this->bet * 2;
+                            Casino::winGame($this->player, "roulette", $gain);
                         } else {
                             Casino::loseGame($this->player, "roulette");
                         }
@@ -101,6 +102,9 @@ class RouletteTask extends Task
             if ($this->force) {
                 Session::get($this->player)->addValue("money", $this->bet);
                 $this->player->sendMessage(Util::PREFIX . "Votre mise à la roulette a été annulée, vous venez de récupérer votre mise initiale");
+            }
+            if (array_key_exists($this->name, Casino::$games)) {
+                unset(Casino::$games[$this->name]);
             }
             $this->player->removeCurrentWindow();
         }
@@ -174,7 +178,7 @@ class RouletteTask extends Task
     private function getResultColor(): DyeColor
     {
         $block = $this->inventory->getItem(13)->getBlock();
-        /* @var StainedHardenedClay $block */
+        /* @var Concrete $block */
         return $block->getColor();
     }
 
