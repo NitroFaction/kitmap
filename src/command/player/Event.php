@@ -13,10 +13,10 @@ use muqsit\invmenu\InvMenu;
 use muqsit\invmenu\transaction\DeterministicInvMenuTransaction;
 use muqsit\invmenu\type\InvMenuTypeIds;
 use pocketmine\command\CommandSender;
+use pocketmine\entity\Location;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
-use pocketmine\world\Position;
 
 class Event extends BaseCommand
 {
@@ -47,24 +47,27 @@ class Event extends BaseCommand
                 return;
             }
 
-            $menu = InvMenu::create(InvMenuTypeIds::TYPE_CHEST);
+            $menu = InvMenu::create(InvMenuTypeIds::TYPE_HOPPER);
             $inventory = $menu->getInventory();
+
+            $eventsData = Cache::$config["events"];
 
             $menu->setName("Events");
 
-            $menu->setListener(InvMenu::readonly(function (DeterministicInvMenuTransaction $transaction): void {
+            $menu->setListener(InvMenu::readonly(function (DeterministicInvMenuTransaction $transaction) use ($eventsData): void {
                 $player = $transaction->getPlayer();
                 $slot = $transaction->getAction()->getSlot();
 
-                $slots = array_column(Cache::$config["events"], "slot");
+                $slots = array_column($eventsData, "slot");
 
                 $event = array_search($slot, $slots);
-                $event = array_keys(Cache::$config["events"])[$event];
+                $event = array_keys($eventsData)[$event];
 
                 $this->tpToEvent($player, $event);
+                $player->removeCurrentWindow();
             }));
 
-            foreach (Cache::$config["events"] as $name => $data) {
+            foreach ($eventsData as $name => $data) {
                 $item = Util::getItemByName($data["item"]);
                 $item->setCustomName("§r§e§l" . strtoupper($name) . "\n\n" . $data["description"] . "\n\n§o§eCliquez sur l'item pour y être téléporté");
 
@@ -78,9 +81,9 @@ class Event extends BaseCommand
     private function tpToEvent(Player $player, string $event): void
     {
         $data = Cache::$config["events"][strtolower($event)];
-        [$x, $y, $z] = explode(":", $data["xyz"][array_rand($data["xyz"])]);
+        [$x, $y, $z, $yaw, $pitch] = explode(":", $data["positions"][array_rand($data["positions"])]);
 
-        $position = new Position(intval($x), intval($y), intval($z), Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld());
+        $position = new Location(floatval($x), intval($y), floatval($z), Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld(), intval($yaw), intval($pitch));
         Main::getInstance()->getScheduler()->scheduleRepeatingTask(new TeleportationTask($player, $position), 20);
     }
 
