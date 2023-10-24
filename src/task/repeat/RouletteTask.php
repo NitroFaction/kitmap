@@ -101,7 +101,7 @@ class RouletteTask extends Task
         if ($this->player->isConnected()) {
             if ($this->force) {
                 Session::get($this->player)->addValue("money", $this->bet);
-                $this->player->sendMessage(Util::PREFIX . "Votre mise à la roulette a été annulée, vous venez de récupérer votre mise initiale");
+                $this->player->sendMessage(Util::PREFIX . "Votre mise à la Roulette a été annulée, vous venez de récupérer votre mise initiale");
             }
             if (array_key_exists($this->name, Casino::$games)) {
                 unset(Casino::$games[$this->name]);

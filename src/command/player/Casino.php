@@ -39,6 +39,7 @@ class Casino extends BaseCommand {
 
             if ($money < 10000) {
                 $sender->sendMessage(Util::PREFIX . "Vous devez possédez au moins 10k pièces pour miser au casino.");
+                return;
             }
 
             $game = $args["jeu"] ?? null;
