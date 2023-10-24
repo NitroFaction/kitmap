@@ -17,7 +17,10 @@ class StopTask extends Task
     {
         Stop::$task = $this;
 
-        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Redémarrage du serveur dans §e" . max(0, $this->time) . " §fsecondes");
+        if (in_array($this->time, [60, 45, 30, 15, 10, 5, 4, 3, 2, 1])) {
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Redémarrage du serveur dans §e" . max(0, $this->time) . " §fsecondes");
+        }
+
         Main::getInstance()->getServer()->broadcastPopup(Util::PREFIX . "Redémarrage du serveur dans §e" . max(0, $this->time) . " §fsecondes");
 
         $this->time--;
