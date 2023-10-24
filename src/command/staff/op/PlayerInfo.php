@@ -28,15 +28,11 @@ class PlayerInfo extends BaseCommand
             $sender->sendMessage(Util::PREFIX . intval($sender->getLocation()->getYaw()));
             $sender->sendMessage(Util::PREFIX . intval($sender->getLocation()->getPitch()));
 
-            var_dump(intval($sender->getLocation()->getYaw()));
-            var_dump(intval($sender->getLocation()->getPitch()));
-
             $x = $sender->getLocation()->getFloorX() + 0.5;
             $y = $sender->getLocation()->getFloorY() + 1;
             $z = $sender->getLocation()->getFloorZ() + 0.5;
 
             $format = $x . ":" . $y . ":" . $z;
-            var_dump($format);
 
             $sender->sendMessage(Util::PREFIX . $format);
         }

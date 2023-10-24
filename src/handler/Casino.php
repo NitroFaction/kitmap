@@ -308,7 +308,6 @@ class Casino
                 foreach ($randomSlots as $randomSlot) {
                     $mines[$randomSlot] = 1;
                 }
-                var_dump(implode(", ", $mines));
                 $scoreToComplete = 25 - $mineAmount;
                 $invMenu = InvMenu::create(InvMenuTypeIds::TYPE_DOUBLE_CHEST);
                 $invMenu->setName(ucfirst($game));
