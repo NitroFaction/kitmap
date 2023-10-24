@@ -352,48 +352,47 @@
     "nexus": {
       "description": "§r§fInformations:\n\nTuez lentité qui apparaît dans la place au centre,\nlorsque cette entité naura plus de vie elle donnera\n§e30 §fitems aléatoire provenant des lots de §epack §f!\n\nHoraires:\n\nCet event se lance toutes les 2h à partir de 13h jusquà 23h",
       "item": "diamond_sword",
-      "xyz": [
-        "-112.5:63:-152.5",
-        "-146.5:63:-184.5",
-        "-116.5:66:-201.5",
-        "-83.5:63:-186.5"
+      "positions": [
+        "76.5:65:82.5:360:0",
+        "41.5:65:117:270:0",
+        "76.5:65:152.5:180:0",
+        "111.5:65:117.5:90:0"
       ],
-      "slot": 11
+      "slot": 0
     },
     "koth": {
       "description": "§r§fInformations:\n\nRestez le plus longtemps possible sur la platforme de §e5x5 §fau\nbout de 3minutes dessus vous remportez §e25k §fpièces,\nentre §e15 §fet §e25 §fde power pour votre faction et §e2 §fpacks !\n\nHoraires:\n\nCet event se lance toutes les heures à partir de 12h30 jusquà 23h30",
       "item": "netherite_sword",
-      "xyz": [
-        "140.5:63:-97.5",
-        "173.5:67:-61.5",
-        "204.5:63:-62.5"
+      "positions": [
+        "-114.5:65:102.5:135:0",
+        "-132.5:65:27.5:360:0",
+        "-87.5:65:44.5:45:0"
       ],
-      "slot": 12
+      "slot": 1
     },
     "domination": {
       "description": "§r§fInformations:\n\nCet event dure 15 minutes, vous devez capturé les §e3 §fzones\navec votre faction et obtenir le plus de point, les §e3 §ffactions\nobtiendrons du power à la fin de levent.\n\nHoraires:\n\nCet event se lance tous les jours à 18h et à 21h sauf si il ny a pas plus de §e30 §fjoueurs",
       "item": "iron_sword",
-      "xyz": [
-        "-179.5:63:-47.5",
-        "-199.5:63:-36.5",
-        "-191.5:63:-2.5",
-        "-169.5:75:6.5",
-        "-150.5:63:1.5",
-        "-135.5:63:-43.5"
+      "positions": [
+        "110.5:65:47.5:180:0",
+        "142.5:65:18.5:120:0",
+        "153.5:65:-19.5:75:0",
+        "130.5:65:-64.5:30:0",
+        "89.5:65:-63.5:335:0",
+        "80.5:65:2.5:270:0"
       ],
-      "slot": 14
+      "slot": 3
     },
     "outpost": {
       "description": "§r§fInformations:\n\nCapturez avec laide de votre faction la platforme !\nLorsque loutpost est capturé par une faction, celle-ci\ngagne §e8 §fpowers tous les 5 minutes et les joueurs\nconnectés de la faction gagnent entre §e5k §fet §e7.5k §fpièces !\n\nHoraires:\n\nCet event est 24h sur 24 lancé",
       "item": "golden_sword",
-      "xyz": [
-        "67.5:64:-199.5",
-        "60.5:63:-211.5",
-        "69.5:63:-171.5",
-        "91.5:63:-187.5",
-        "35.5:63:-181.5"
+      "positions": [
+        "-60.5:65:150.5:180:0",
+        "-35.5:65:125.5:90:0",
+        "-60.5:65:100.5:360:0",
+        "-85.5:65:125.5:270:0"
       ],
-      "slot": 22
+      "slot": 4
     }
   },
   "zones": {
