@@ -1,7 +1,4 @@
-<?php
-
-/**
- */
+<?php /** @noinspection PhpMultipleClassDeclarationsInspection */
 
 namespace Kitmap\handler;
 

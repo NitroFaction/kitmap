@@ -172,6 +172,13 @@ class Enchant extends BaseCommand
         $enchant = new EnchantmentInstance(EnchantmentIdMap::getInstance()->fromId($enchantId), $enchantLevel);
         $item->addEnchantment($enchant);
 
+        $enchantName = $enchant->getType()->getName();
+        if (is_string($enchantName)) {
+            $lore = $item->getLore();
+            $lore[] = "§r§7" . $enchantName . " " . Util::formatToRomanNumber($enchant->getLevel());
+            $item->setLore($lore);
+        }
+
         $player->getInventory()->setItemInHand($item);
         $player->sendMessage(Util::PREFIX . "L'item dans votre main a été enchanté");
     }

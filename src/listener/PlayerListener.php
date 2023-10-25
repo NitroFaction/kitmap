@@ -564,6 +564,7 @@ class PlayerListener implements Listener
 
             if ($action instanceof SlotChangeAction && ($staff || $player->hasNoClientPredictions())) {
                 $event->cancel();
+                var_dump(1);
                 return;
             }
 
@@ -574,6 +575,7 @@ class PlayerListener implements Listener
                 if ($inventory instanceof EnderChestInventory) {
                     if (($nbt->getTag("enderchest_slots") && $nbt->getString("enderchest_slots") === "restricted") || ($_nbt->getTag("enderchest_slots") && $_nbt->getString("enderchest_slots") === "restricted")) {
                         $event->cancel();
+                        var_dump(2);
                         return;
                     }
                 }
@@ -1077,14 +1079,14 @@ class PlayerListener implements Listener
         $packets = $event->getPackets();
         foreach ($packets as $packet) {
             switch ($packet) {
-                case $packet instanceof InventorySlotPacket:
+                /*case $packet instanceof InventorySlotPacket:
                     $packet->item = new ItemStackWrapper($packet->item->getStackId(), Util::displayEnchants($packet->item->getItemStack()));
                     break;
                 case $packet instanceof InventoryContentPacket:
                     foreach ($packet->items as $i => $item) {
                         $packet->items[$i] = new ItemStackWrapper($item->getStackId(), Util::displayEnchants($item->getItemStack()));
                     }
-                    break;
+                    break;*/
                 case $packet instanceof SetTimePacket:
                     $packet->time = 12500; // on sait jamais parfois le stoptime il a la flemme
                     break;
