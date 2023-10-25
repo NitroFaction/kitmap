@@ -67,7 +67,7 @@ class Enchant extends BaseCommand
         if ($item instanceof Sword) {
             $form->addButton("Tranchant", label: EnchantmentIds::SHARPNESS . ";Tranchant;2");
             $form->addButton("Pilleur", label: CustomEnchantmentIds::LOOTER . ";Pilleur;3");
-            $form->addButton("Coup de foudre", label: CustomEnchantmentIds::LIGHTNING_STRIKE . ";Coup de foutre;3");
+            $form->addButton("Foudroiement", label: CustomEnchantmentIds::LIGHTNING_STRIKE . ";Foudroiement;3");
             $form->addButton("Arès", label: CustomEnchantmentIds::ARES . ";Arès;1");
         } else if ($item instanceof Armor) {
             $form->addButton("Protection", label: EnchantmentIds::PROTECTION . ";Protection;2");
@@ -107,8 +107,8 @@ class Enchant extends BaseCommand
         while ($x <= $maxLevel) {
             $price = (($x * 10) * $multiplier);
             $content = $onlyLevels
-                ? $enchantName . " " . $x . "\n§e" . $price . " levels"
-                : $enchantName . " " . $x . "\n§e" . $price . " levels §8ou §e" . $price . " émeraudes";
+                ? $enchantName . " " . $x . "\n§6" . $price . " levels"
+                : $enchantName . " " . $x . "\n§6" . $price . " levels §8ou §6" . $price . " émeraudes";
             $form->addButton($content);
             $x++;
         }
@@ -119,7 +119,7 @@ class Enchant extends BaseCommand
     private static function confirmationForm(Player $player, int $enchantId, int $enchantLevel, int $multiplier, bool $onlyLevels, bool $force): void
     {
         if ($force) {
-            self::enchantItem($player, $enchantId, $enchantLevel);
+            self::enchantItem($player, $enchantId, $enchantLevel, 0, "levels");
             return;
         }
 
@@ -135,8 +135,6 @@ class Enchant extends BaseCommand
                         $player->sendMessage(Util::PREFIX . "Vous n'avez pas assez de niveaux pour enchanter votre item");
                         return;
                     }
-
-                    $player->getXpManager()->setXpLevel($player->getXpManager()->getXpLevel() - $finalPrice);
                     break;
                 case 1:
                     $finalPrice = ($enchantLevel * 10) * $multiplier;
@@ -144,14 +142,13 @@ class Enchant extends BaseCommand
                         $player->sendMessage(Util::PREFIX . "Vous n'avez pas assez d'émeraudes pour enchanter votre item");
                         return;
                     }
-
-                    $player->getInventory()->removeItem(VanillaItems::EMERALD()->setCount($finalPrice));
                     break;
                 default:
                     return;
             }
 
-            self::enchantItem($player, $enchantId, $enchantLevel);
+            $type = $data[1] === 0 ? "levels" : "émeraudes";
+            self::enchantItem($player, $enchantId, $enchantLevel, $finalPrice, $type);
         });
         $form->setTitle("Enchantement");
         $form->addLabel(Util::PREFIX . "Êtes-vous sur d'enchanter l'item dans votre main ?");
@@ -160,7 +157,7 @@ class Enchant extends BaseCommand
         $player->sendForm($form);
     }
 
-    private static function enchantItem(Player $player, int $enchantId, int $enchantLevel): void
+    private static function enchantItem(Player $player, int $enchantId, int $enchantLevel, int $price, string $type): void
     {
         $item = $player->getInventory()->getItemInHand();
 
@@ -169,14 +166,29 @@ class Enchant extends BaseCommand
             return;
         }
 
-        $enchant = new EnchantmentInstance(EnchantmentIdMap::getInstance()->fromId($enchantId), $enchantLevel);
-        $item->addEnchantment($enchant);
+        $enchant = EnchantmentIdMap::getInstance()->fromId($enchantId);
+        $enchantInstance = new EnchantmentInstance($enchant, $enchantLevel);
 
-        $enchantName = $enchant->getType()->getName();
+        $enchantName = $enchantInstance->getType()->getName();
+        $formattedEnchant = "§r§7" . $enchantName . " " . Util::formatToRomanNumber($enchantInstance->getLevel());
+
+        if ($item->hasEnchantment($enchant)) {
+            $player->sendMessage(Util::PREFIX . "Votre item possède déjà cet enchantement.");
+            return;
+        }
+
+        $item->addEnchantment($enchantInstance);
+
         if (is_string($enchantName)) {
             $lore = $item->getLore();
-            $lore[] = "§r§7" . $enchantName . " " . Util::formatToRomanNumber($enchant->getLevel());
+            $lore[] = $formattedEnchant;
             $item->setLore($lore);
+        }
+
+        if ($type == "levels") {
+            $player->getXpManager()->setXpLevel($player->getXpManager()->getXpLevel() - $price);
+        } else if ($type == "émeraudes") {
+            $player->getInventory()->removeItem(VanillaItems::EMERALD()->setCount($price));
         }
 
         $player->getInventory()->setItemInHand($item);

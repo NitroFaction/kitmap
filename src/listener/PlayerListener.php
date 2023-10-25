@@ -7,10 +7,7 @@ use Kitmap\command\staff\{Ban, LastInventory, Question, Vanish};
 use Kitmap\command\util\Bienvenue;
 use Kitmap\entity\{AntiBackBallEntity, LogoutEntity, SwitcherEntity};
 use Kitmap\handler\{Cache, Faction, Pack, PartnerItems, Rank, Sanction};
-use Kitmap\enchantment\childs\sword\Ares;
-use Kitmap\enchantment\childs\sword\Looter;
 use Kitmap\enchantment\EnchantmentIds;
-use Kitmap\enchantment\Enchantments;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\task\repeat\PlayerTask;
@@ -63,7 +60,6 @@ use pocketmine\event\player\{PlayerBucketEvent,
     PlayerDeathEvent,
     PlayerInteractEvent,
     PlayerItemConsumeEvent,
-    PlayerItemHeldEvent,
     PlayerItemUseEvent,
     PlayerJoinEvent,
     PlayerMissSwingEvent,
@@ -387,9 +383,10 @@ class PlayerListener implements Listener
                 }
 
                 $item = $damager->getInventory()->getItemInHand();
-                $enchantmentIdMap = EnchantmentIdMap::getInstance();
 
+                $enchantmentIdMap = EnchantmentIdMap::getInstance();
                 $looter = $enchantmentIdMap->fromId(EnchantmentIds::LOOTER);
+                $ares = $enchantmentIdMap->fromId(EnchantmentIds::ARES);
 
                 if ($item->hasEnchantment($looter)) {
                     $enchantLevel = $item->getEnchantment($looter)?->getLevel();
@@ -397,27 +394,27 @@ class PlayerListener implements Listener
                     $playerMoney = $session->data["money"];
                     $moneyToLoot = round($playerMoney * $multiplier);
 
-                    $formattedEnchant = "Pilleur " . str_repeat("I", $enchantLevel);
+                    $formattedEnchant = "Pilleur " . Util::formatToRomanNumber($enchantLevel);
 
                     $session->addValue("money", $moneyToLoot, true);
-                    $player->sendMessage(Util::PREFIX . "§e" . $damager->getName() . " §fvous a volé §e" . $moneyToLoot . " pièce(s) §fà cause de l'enchantement §e" .$formattedEnchant . " §fsur son épée !");
+                    $player->sendMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvous a volé §6" . $moneyToLoot . " pièce(s) §fà cause de l'enchantement §6" .$formattedEnchant . " §fsur son épée !");
 
                     $damagerSession->addValue("money", $moneyToLoot);
-                    $damager->sendMessage(Util::PREFIX . "§fVous avez volé §e" . $moneyToLoot . " pièce(s) §fà §e" . $player->getName() . " §fgrâce à votre enchantement §e" . $formattedEnchant . " §f!");
+                    $damager->sendMessage(Util::PREFIX . "§fVous avez volé §6" . $moneyToLoot . " pièce(s) §fà §6" . $player->getName() . " §fgrâce à votre enchantement §6" . $formattedEnchant . " §f!");
                 }
-
-                $ares = $enchantmentIdMap->fromId(EnchantmentIds::ARES);
 
                 if ($item->hasEnchantment($ares)) {
                     $updatedItem = clone $item;
+
                     if (!is_null($updatedItem->getNamedTag()->getTag("kills"))) {
                         $kills = $updatedItem->getNamedTag()->getInt("kills");
                         $updatedItem->getNamedTag()->setInt("kills", ($updatedKills = $kills + 1));
-                        $updatedItem->setCustomName($updatedItem->getCustomName() . " §8(§7" . $updatedKills . " kill(s)§8)");
+                        $updatedItem->setCustomName($updatedItem->getName() . " §8(§7" . $updatedKills . " kill(s)§8)");
                     } else {
                         $updatedItem->getNamedTag()->setInt("kills", 1);
-                        $updatedItem->setCustomName($updatedItem->getCustomName() . " §8(§71 kill§8)");
+                        $updatedItem->setCustomName($updatedItem->getName() . " §8(§71 kill§8)");
                     }
+
                     $damager->getInventory()->setItemInHand($updatedItem);
                 }
 
@@ -564,7 +561,6 @@ class PlayerListener implements Listener
 
             if ($action instanceof SlotChangeAction && ($staff || $player->hasNoClientPredictions())) {
                 $event->cancel();
-                var_dump(1);
                 return;
             }
 
@@ -575,7 +571,6 @@ class PlayerListener implements Listener
                 if ($inventory instanceof EnderChestInventory) {
                     if (($nbt->getTag("enderchest_slots") && $nbt->getString("enderchest_slots") === "restricted") || ($_nbt->getTag("enderchest_slots") && $_nbt->getString("enderchest_slots") === "restricted")) {
                         $event->cancel();
-                        var_dump(2);
                         return;
                     }
                 }
@@ -965,11 +960,11 @@ class PlayerListener implements Listener
 
                     if ($damagerSession->data["staff_mod"][0]) {
                         $message = match ($damager->getInventory()->getItemInHand()->getCustomName()) {
-                            "§r" . Util::PREFIX . "Sanction §e§l«" => "custom",
-                            "§r" . Util::PREFIX . "Alias §e§l«" => "/alias \"" . $entity->getName() . "\"",
-                            "§r" . Util::PREFIX . "Freeze §e§l«" => "/freeze \"" . $entity->getName() . "\"",
-                            "§r" . Util::PREFIX . "Invsee §e§l«" => "/invsee \"" . $entity->getName() . "\"",
-                            "§r" . Util::PREFIX . "Ecsee §e§l«" => "/ecsee \"" . $entity->getName() . "\"",
+                            "§r" . Util::PREFIX . "Sanction §6§l«" => "custom",
+                            "§r" . Util::PREFIX . "Alias §6§l«" => "/alias \"" . $entity->getName() . "\"",
+                            "§r" . Util::PREFIX . "Freeze §6§l«" => "/freeze \"" . $entity->getName() . "\"",
+                            "§r" . Util::PREFIX . "Invsee §6§l«" => "/invsee \"" . $entity->getName() . "\"",
+                            "§r" . Util::PREFIX . "Ecsee §6§l«" => "/ecsee \"" . $entity->getName() . "\"",
                             default => null
                         };
 
@@ -983,7 +978,7 @@ class PlayerListener implements Listener
                             if (!is_null($message)) {
                                 $damager->chat($message);
                             } else {
-                                $damager->sendMessage("Vous venez de taper le joueur §e" . $entity->getName());
+                                $damager->sendMessage("Vous venez de taper le joueur §6" . $entity->getName());
                             }
                         }
 
@@ -1037,14 +1032,18 @@ class PlayerListener implements Listener
                             $packets[] = AddActorPacket::create(($id = Entity::nextRuntimeId()), $id, "minecraft:lightning_bolt", $entity->getLocation(), new Vector3(0, 0, 0), 0, 0, 0, 0, array_map(function (Attribute $attribute): NetworkAttribute {
                                 return new NetworkAttribute($attribute->getId(), $attribute->getMinValue(), $attribute->getMaxValue(), $attribute->getValue(), $attribute->getDefaultValue(), []);
                             }, $entity->getAttributeMap()->getAll()), [], new PropertySyncData([], []), []);
+
                             $hurtAnimation = new HurtAnimation($entity);
+
                             $healthToRemove = mt_rand(1.5, 2);
                             $entity->setLastDamageCause(new EntityDamageByEntityEvent($damager, $entity, $event::CAUSE_CUSTOM, $healthToRemove));
-                            $entity->setHealth(max($entity->getHealth() - mt_rand(2, 3), 0));
+                            $entity->setHealth(max($entity->getHealth() - $healthToRemove, 0));
+
                             $viewers = array_merge($entity->getViewers(), $damager->getViewers());
                             NetworkBroadcastUtils::broadcastPackets([array_unique($viewers)], [$packets, $hurtAnimation->encode()]);
-                            $entity->sendMessage(Util::PREFIX . "§e" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §eCoup de foudre §f!");
-                            $damager->sendMessage(Util::PREFIX . "§fVous venez d'envoyer un éclair sur §e" . $entity->getName() . " §fgrâce à votre enchantement §eCoup de foudre §f!");
+
+                            $entity->sendMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §6Foudroiement §f!");
+                            $damager->sendMessage(Util::PREFIX . "§fVous venez d'envoyer un éclair sur §6" . $entity->getName() . " §fgrâce à votre enchantement §6Foudroiement §f!");
                         }
                     }
                 }

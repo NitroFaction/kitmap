@@ -2,11 +2,9 @@
 
 namespace Kitmap;
 
-use Kitmap\command\player\Enchant;
 use Kitmap\handler\Cache;
 use Kitmap\handler\ScoreFactory;
 use pocketmine\block\Block;
-use pocketmine\block\Fence;
 use pocketmine\block\FenceGate;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
@@ -20,8 +18,6 @@ use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
 use pocketmine\item\VanillaItems;
-use pocketmine\lang\Language;
-use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
@@ -42,8 +38,6 @@ use pocketmine\utils\TextFormat;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\particle\DustParticle;
 use pocketmine\world\Position;
-use ReflectionClass;
-use ReflectionProperty;
 use Symfony\Component\Filesystem\Path;
 
 class Util

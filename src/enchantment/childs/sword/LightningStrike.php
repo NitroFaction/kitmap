@@ -23,7 +23,7 @@ class LightningStrike extends Enchantment
 
     public function getName(): Translatable|string
     {
-        return "Coup de foudre";
+        return "Foudroiement";
     }
 
     public function getMaxLevel(): int
