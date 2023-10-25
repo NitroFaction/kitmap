@@ -1031,12 +1031,12 @@ class PlayerListener implements Listener
 
                         if ($item->hasEnchantment($lightningStrike)) {
                             $level = $item->getEnchantment($lightningStrike)?->getLevel();
-                            /*$chance = match ($level) {
+                            $chance = match ($level) {
                                 1 => 300,
                                 2 => 225,
                                 3 => 150
-                            };*/
-                            if (mt_rand(0, 5) < 1) {
+                            };
+                            if (mt_rand(0, $chance) < 1) {
                                 $lightning = new LightningBolt($entity->getLocation());
                                 $lightning->spawnToAll();
 
