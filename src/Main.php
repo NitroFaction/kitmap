@@ -4,6 +4,7 @@ namespace Kitmap;
 
 use CortexPE\Commando\PacketHooker;
 use Kitmap\command\Commands;
+use Kitmap\enchantment\Enchantments;
 use Kitmap\entity\Entities;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Rank;
@@ -37,11 +38,10 @@ class Main extends PluginBase
             PacketHooker::register($this);
         }
 
-        EnchantmentIdMap::getInstance()->register(-1, new Enchantment('glow', -1, ItemFlags::ALL, ItemFlags::NONE, 1));
-
         new Rank();
         new Commands();
         new Entities();
+        new Enchantments();
 
         $this->getScheduler()->scheduleRepeatingTask(new PlayerTask(), 20);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerListener(), $this);

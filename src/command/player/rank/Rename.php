@@ -4,11 +4,15 @@ namespace Kitmap\command\player\rank;
 
 use CortexPE\Commando\BaseCommand;
 use jojoe77777\FormAPI\CustomForm;
+use Kitmap\enchantment\childs\sword\Ares;
+use Kitmap\enchantment\EnchantmentIds;
+use Kitmap\enchantment\Enchantments;
 use Kitmap\handler\Rank;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
+use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\item\VanillaItems;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
@@ -53,7 +57,17 @@ class Rename extends BaseCommand
                     return;
                 }
 
-                $item = $player->getInventory()->getItemInHand()->setCustomName("§r§f" . $data[0]);
+                $customName = "§r§f" . $data[0];
+                $item = $player->getInventory()->getItemInHand();
+
+                if (
+                    $item->hasEnchantment(EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::ARES)) &&
+                    !is_null($kills = $item->getNamedTag()->getInt("kills"))
+                ) {
+                    $customName .= " §8(§7" . $kills . " kill(s)§8)";
+                }
+
+                $item->setCustomName($customName);
 
                 if ($item->equals(VanillaItems::PAPER()) || !is_null($item->getNamedTag()->getTag("partneritem")) || !is_null($item->getNamedTag()->getTag("type")) || !is_null($item->getNamedTag()->getTag("data"))) {
                     $player->sendMessage(Util::PREFIX . "L'item dans votre main ne peut pas être renommé !");

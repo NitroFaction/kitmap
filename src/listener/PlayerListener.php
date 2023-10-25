@@ -7,6 +7,10 @@ use Kitmap\command\staff\{Ban, LastInventory, Question, Vanish};
 use Kitmap\command\util\Bienvenue;
 use Kitmap\entity\{AntiBackBallEntity, LogoutEntity, SwitcherEntity};
 use Kitmap\handler\{Cache, Faction, Pack, PartnerItems, Rank, Sanction};
+use Kitmap\enchantment\childs\sword\Ares;
+use Kitmap\enchantment\childs\sword\Looter;
+use Kitmap\enchantment\EnchantmentIds;
+use Kitmap\enchantment\Enchantments;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\task\repeat\PlayerTask;
@@ -33,6 +37,10 @@ use pocketmine\block\{Barrel,
     VanillaBlocks,
     Wheat
 };
+use pocketmine\entity\animation\HurtAnimation;
+use pocketmine\entity\Attribute;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
+use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\entity\effect\{EffectInstance, VanillaEffects};
 use pocketmine\event\block\{BlockBreakEvent, BlockGrowEvent, BlockPlaceEvent, BlockSpreadEvent, BlockUpdateEvent};
 use pocketmine\event\entity\{EntityDamageByEntityEvent,
@@ -45,7 +53,9 @@ use pocketmine\event\entity\{EntityDamageByEntityEvent,
     ProjectileHitEntityEvent
 };
 use pocketmine\event\inventory\{CraftItemEvent, InventoryOpenEvent, InventoryTransactionEvent};
+use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\entity\animation\ArmSwingAnimation;
+use pocketmine\entity\Entity;
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerBucketEvent,
     PlayerChatEvent,
@@ -53,6 +63,7 @@ use pocketmine\event\player\{PlayerBucketEvent,
     PlayerDeathEvent,
     PlayerInteractEvent,
     PlayerItemConsumeEvent,
+    PlayerItemHeldEvent,
     PlayerItemUseEvent,
     PlayerJoinEvent,
     PlayerMissSwingEvent,
@@ -61,6 +72,7 @@ use pocketmine\event\player\{PlayerBucketEvent,
     PlayerRespawnEvent};
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketDecodeEvent;
+use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
@@ -78,10 +90,21 @@ use pocketmine\item\{Axe,
     Stick,
     VanillaItems
 };
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\AddActorPacket;
+use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\InventoryContentPacket;
+use pocketmine\network\mcpe\protocol\InventorySlotPacket;
+use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
+use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\{GameMode, Player};
 use pocketmine\player\chat\LegacyRawChatFormatter;
@@ -357,6 +380,41 @@ class PlayerListener implements Listener
 
                 if ($damagerSession->data["killstreak"] % 5 == 0) {
                     Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §e" . $damager->getName() . " §fa fait §e" . $damagerSession->data["killstreak"] . " §fkill sans mourrir !");
+                }
+
+                $item = $damager->getInventory()->getItemInHand();
+                $enchantmentIdMap = EnchantmentIdMap::getInstance();
+
+                $looter = $enchantmentIdMap->fromId(EnchantmentIds::LOOTER);
+
+                if ($item->hasEnchantment($looter)) {
+                    $enchantLevel = $item->getEnchantment($looter)?->getLevel();
+                    $multiplier = 0.03 * $enchantLevel;
+                    $playerMoney = $session->data["money"];
+                    $moneyToLoot = round($playerMoney * $multiplier);
+
+                    $formattedEnchant = "Pilleur " . str_repeat("I", $enchantLevel);
+
+                    $session->addValue("money", $moneyToLoot, true);
+                    $player->sendMessage(Util::PREFIX . "§e" . $damager->getName() . " §fvous a volé §e" . $moneyToLoot . " pièce(s) §fà cause de l'enchantement §e" .$formattedEnchant . " §fsur son épée !");
+
+                    $damagerSession->addValue("money", $moneyToLoot);
+                    $damager->sendMessage(Util::PREFIX . "§fVous avez volé §e" . $moneyToLoot . " pièce(s) §fà §e" . $player->getName() . " §fgrâce à votre enchantement §e" . $formattedEnchant . " §f!");
+                }
+
+                $ares = $enchantmentIdMap->fromId(EnchantmentIds::ARES);
+
+                if ($item->hasEnchantment($ares)) {
+                    $updatedItem = clone $item;
+                    if (!is_null($updatedItem->getNamedTag()->getTag("kills"))) {
+                        $kills = $updatedItem->getNamedTag()->getInt("kills");
+                        $updatedItem->getNamedTag()->setInt("kills", ($updatedKills = $kills + 1));
+                        $updatedItem->setCustomName($updatedItem->getCustomName() . " §8(§7" . $updatedKills . " kill(s)§8)");
+                    } else {
+                        $updatedItem->getNamedTag()->setInt("kills", 1);
+                        $updatedItem->setCustomName($updatedItem->getCustomName() . " §8(§71 kill§8)");
+                    }
+                    $damager->getInventory()->setItemInHand($updatedItem);
                 }
 
                 return;
@@ -890,70 +948,100 @@ class PlayerListener implements Listener
                 $event->cancel();
             }
 
-            if ($event instanceof EntityDamageByEntityEvent && ($damager = $event->getDamager()) instanceof Player) {
-                if (Util::insideZone($damager->getPosition(), "spawn")) {
-                    $event->cancel();
-                }
-
-                $damagerSession = Session::get($damager);
-
-                if ($damagerSession->data["staff_mod"][0]) {
-                    $message = match ($damager->getInventory()->getItemInHand()->getCustomName()) {
-                        "§r" . Util::PREFIX . "Sanction §e§l«" => "custom",
-                        "§r" . Util::PREFIX . "Alias §e§l«" => "/alias \"" . $entity->getName() . "\"",
-                        "§r" . Util::PREFIX . "Freeze §e§l«" => "/freeze \"" . $entity->getName() . "\"",
-                        "§r" . Util::PREFIX . "Invsee §e§l«" => "/invsee \"" . $entity->getName() . "\"",
-                        "§r" . Util::PREFIX . "Ecsee §e§l«" => "/ecsee \"" . $entity->getName() . "\"",
-                        default => null
-                    };
-
-                    if ($message === "custom") {
-                        if ($damager->getInventory()->getItemInHand()->getCustomName() === "§r" . Util::PREFIX . "Knockback 2 §e§l«") {
-                            return;
-                        }
-
-                        Sanction::chooseSanction($damager, $entity->getName());
-                    } else {
-                        if (!is_null($message)) {
-                            $damager->chat($message);
-                        } else {
-                            $damager->sendMessage("Vous venez de taper le joueur §e" . $entity->getName());
-                        }
+            if ($event instanceof EntityDamageByEntityEvent) {
+                $damager = $event->getDamager();
+                if ($damager instanceof Player) {
+                    if (Util::insideZone($damager->getPosition(), "spawn")) {
+                        $event->cancel();
                     }
 
-                    $event->cancel();
-                    return;
+                    $damagerSession = Session::get($damager);
+
+                    if ($damagerSession->data["staff_mod"][0]) {
+                        $message = match ($damager->getInventory()->getItemInHand()->getCustomName()) {
+                            "§r" . Util::PREFIX . "Sanction §e§l«" => "custom",
+                            "§r" . Util::PREFIX . "Alias §e§l«" => "/alias \"" . $entity->getName() . "\"",
+                            "§r" . Util::PREFIX . "Freeze §e§l«" => "/freeze \"" . $entity->getName() . "\"",
+                            "§r" . Util::PREFIX . "Invsee §e§l«" => "/invsee \"" . $entity->getName() . "\"",
+                            "§r" . Util::PREFIX . "Ecsee §e§l«" => "/ecsee \"" . $entity->getName() . "\"",
+                            default => null
+                        };
+
+                        if ($message === "custom") {
+                            if ($damager->getInventory()->getItemInHand()->getCustomName() === "§r" . Util::PREFIX . "Knockback 2 §e§l«") {
+                                return;
+                            }
+
+                            Sanction::chooseSanction($damager, $entity->getName());
+                        } else {
+                            if (!is_null($message)) {
+                                $damager->chat($message);
+                            } else {
+                                $damager->sendMessage("Vous venez de taper le joueur §e" . $entity->getName());
+                            }
+                        }
+
+                        $event->cancel();
+                        return;
+                    }
+
+                    if ($event->isCancelled() || Faction::hasFaction($damager) && Faction::hasFaction($entity) && $damagerSession->data["faction"] === $entitySession->data["faction"] || $entity->isFlying() || $entity->getAllowFlight()) {
+                        $event->cancel();
+                        return;
+                    }
+                    if ($entity->getGamemode() === GameMode::CREATIVE() || $damager->getGamemode() === GameMode::CREATIVE() || $entity->hasNoClientPredictions()) {
+                        return;
+                    }
+
+                    if ($damager->getInventory()->getItemInHand()->getTypeId() === VanillaItems::NETHERITE_SWORD()->getTypeId()) {
+                        $event->setBaseDamage(7);
+                    } else if ($damager->getInventory()->getItemInHand()->getTypeId() === VanillaItems::DIAMOND_SWORD()->getTypeId()) {
+                        $event->setBaseDamage(6);
+                    }
+
+                    PartnerItems::executeHitPartnerItem($damager, $entity);
+
+                    $damagerSession->setCooldown("combat", 20, [$entity->getName()]);
+                    $entitySession->setCooldown("combat", 20, [$damager->getName()]);
+
+                    $event->setKnockback(0.38);
+                    $event->setAttackCooldown(8);
+
+                    $damagerSession->data["last_hit"] = [$entity->getName(), time()];
+
+                    if ($entitySession->inCooldown("_focusmode") && $damager->getName() === $entitySession->getCooldownData("_focusmode")[1]) {
+                        $event->setBaseDamage($event->getBaseDamage() + (($event->getBaseDamage() / 100) * 15));
+                    }
+
+                    $entity->setScoreTag("§7" . round($entity->getHealth(), 2) . " §c❤");
+
+                    $item = $damager->getInventory()->getItemInHand();
+                    $lightningStrike = EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::LIGHTNING_STRIKE);
+
+                    if ($item->hasEnchantment($lightningStrike)) {
+                        $level = $item->getEnchantment($lightningStrike)?->getLevel();
+                        $chance = match ($level) {
+                            1 => 300,
+                            2 => 225,
+                            3 => 150
+                        };
+                        if (mt_rand(0, $chance) < 1) {
+                            $packets = [];
+                            $packets[] = LevelSoundEventPacket::create(LevelSoundEvent::THUNDER, $entity->getLocation(), -1, "minecraft:lightning_bolt", false, false);
+                            $packets[] = AddActorPacket::create(($id = Entity::nextRuntimeId()), $id, "minecraft:lightning_bolt", $entity->getLocation(), new Vector3(0, 0, 0), 0, 0, 0, 0, array_map(function (Attribute $attribute): NetworkAttribute {
+                                return new NetworkAttribute($attribute->getId(), $attribute->getMinValue(), $attribute->getMaxValue(), $attribute->getValue(), $attribute->getDefaultValue(), []);
+                            }, $entity->getAttributeMap()->getAll()), [], new PropertySyncData([], []), []);
+                            $hurtAnimation = new HurtAnimation($entity);
+                            $healthToRemove = mt_rand(1.5, 2);
+                            $entity->setLastDamageCause(new EntityDamageByEntityEvent($damager, $entity, $event::CAUSE_CUSTOM, $healthToRemove));
+                            $entity->setHealth(max($entity->getHealth() - mt_rand(2, 3), 0));
+                            $viewers = array_merge($entity->getViewers(), $damager->getViewers());
+                            NetworkBroadcastUtils::broadcastPackets([array_unique($viewers)], [$packets, $hurtAnimation->encode()]);
+                            $entity->sendMessage(Util::PREFIX . "§e" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §eCoup de foudre §f!");
+                            $damager->sendMessage(Util::PREFIX . "§fVous venez d'envoyer un éclair sur §e" . $entity->getName() . " §fgrâce à votre enchantement §eCoup de foudre §f!");
+                        }
+                    }
                 }
-
-                if ($event->isCancelled() || Faction::hasFaction($damager) && Faction::hasFaction($entity) && $damagerSession->data["faction"] === $entitySession->data["faction"] || $entity->isFlying() || $entity->getAllowFlight()) {
-                    $event->cancel();
-                    return;
-                }
-                if ($entity->getGamemode() === GameMode::CREATIVE() || $damager->getGamemode() === GameMode::CREATIVE() || $entity->hasNoClientPredictions()) {
-                    return;
-                }
-
-                if ($damager->getInventory()->getItemInHand()->getTypeId() === VanillaItems::NETHERITE_SWORD()->getTypeId()) {
-                    $event->setBaseDamage(7);
-                } else if ($damager->getInventory()->getItemInHand()->getTypeId() === VanillaItems::DIAMOND_SWORD()->getTypeId()) {
-                    $event->setBaseDamage(6);
-                }
-
-                PartnerItems::executeHitPartnerItem($damager, $entity);
-
-                $damagerSession->setCooldown("combat", 20, [$entity->getName()]);
-                $entitySession->setCooldown("combat", 20, [$damager->getName()]);
-
-                $event->setKnockback(0.38);
-                $event->setAttackCooldown(8);
-
-                $damagerSession->data["last_hit"] = [$entity->getName(), time()];
-
-                if ($entitySession->inCooldown("_focusmode") && $damager->getName() === $entitySession->getCooldownData("_focusmode")[1]) {
-                    $event->setBaseDamage($event->getBaseDamage() + (($event->getBaseDamage() / 100) * 15));
-                }
-
-                $entity->setScoreTag("§7" . round($entity->getHealth(), 2) . " §c❤");
             }
         }
     }
@@ -985,6 +1073,14 @@ class PlayerListener implements Listener
         $packets = $event->getPackets();
         foreach ($packets as $packet) {
             switch ($packet) {
+                case $packet instanceof InventorySlotPacket:
+                    $packet->item = new ItemStackWrapper($packet->item->getStackId(), Util::displayEnchants($packet->item->getItemStack()));
+                    break;
+                case $packet instanceof InventoryContentPacket:
+                    foreach ($packet->items as $i => $item) {
+                        $packet->items[$i] = new ItemStackWrapper($item->getStackId(), Util::displayEnchants($item->getItemStack()));
+                    }
+                    break;
                 case $packet instanceof SetTimePacket:
                     $packet->time = 12500; // on sait jamais parfois le stoptime il a la flemme
                     break;
@@ -994,6 +1090,18 @@ class PlayerListener implements Listener
             }
         }
     }
+
+    /*public function onDataPacketReceive(DataPacketReceiveEvent $event): void
+    {
+        $packet = $event->getPacket();
+        if ($packet instanceof InventoryTransactionPacket) {
+            $transactionData = $packet->trData;
+            foreach ($transactionData->getActions() as $action) {
+                $action->oldItem = new ItemStackWrapper($action->oldItem->getStackId(), Util::filterDisplayedEnchants($action->oldItem->getItemStack()));
+                $action->newItem = new ItemStackWrapper($action->newItem->getStackId(), Util::filterDisplayedEnchants($action->newItem->getItemStack()));
+            }
+        }
+    }*/
 
     public function onDataPacketDecode(DataPacketDecodeEvent $event): void
     {
