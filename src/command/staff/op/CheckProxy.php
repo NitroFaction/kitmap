@@ -61,7 +61,6 @@ class CheckProxy extends BaseCommand
 
         foreach (["did", "cid"] as $column) {
             $values = $file->get($column, []);
-            var_dump($values);
             $result[$column] = count($values);
         }
 

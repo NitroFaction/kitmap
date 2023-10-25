@@ -60,11 +60,9 @@ class Rename extends BaseCommand
                 $customName = "§r§f" . $data[0];
                 $item = $player->getInventory()->getItemInHand();
 
-                if (
-                    $item->hasEnchantment(EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::ARES)) &&
-                    !is_null($kills = $item->getNamedTag()->getInt("kills"))
-                ) {
-                    $customName .= " §8(§7" . $kills . " kill(s)§8)";
+                if ($item->hasEnchantment(EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::ARES))) {
+                    $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas renommer un item possédant l'enchantement Arès");
+                    return;
                 }
 
                 $item->setCustomName($customName);

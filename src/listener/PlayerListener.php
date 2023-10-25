@@ -5,7 +5,7 @@ namespace Kitmap\listener;
 use Kitmap\command\player\{Anvil, Enchant, rank\Enderchest};
 use Kitmap\command\staff\{Ban, LastInventory, Question, Vanish};
 use Kitmap\command\util\Bienvenue;
-use Kitmap\entity\{AntiBackBallEntity, LogoutEntity, SwitcherEntity};
+use Kitmap\entity\{AntiBackBallEntity, LightningBolt, LogoutEntity, SwitcherEntity};
 use Kitmap\handler\{Cache, Faction, Pack, PartnerItems, Rank, Sanction};
 use Kitmap\enchantment\EnchantmentIds;
 use Kitmap\Main;
@@ -409,10 +409,10 @@ class PlayerListener implements Listener
                     if (!is_null($updatedItem->getNamedTag()->getTag("kills"))) {
                         $kills = $updatedItem->getNamedTag()->getInt("kills");
                         $updatedItem->getNamedTag()->setInt("kills", ($updatedKills = $kills + 1));
-                        $updatedItem->setCustomName($updatedItem->getName() . " §8(§7" . $updatedKills . " kill(s)§8)");
+                        $updatedItem->setCustomName("§r§bÉpée de " . $damager->getName() . " §8(§7" . $updatedKills . " kill(s)§8)");
                     } else {
                         $updatedItem->getNamedTag()->setInt("kills", 1);
-                        $updatedItem->setCustomName($updatedItem->getName() . " §8(§71 kill§8)");
+                        $updatedItem->setCustomName("§r§bÉpée de " . $damager->getName() . " §8(§71 kill§8)");
                     }
 
                     $damager->getInventory()->setItemInHand($updatedItem);
@@ -470,6 +470,14 @@ class PlayerListener implements Listener
                 $player->sendMessage(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("enderpearl")[0] - time()) . " §fsecondes avant de relancer une nouvelle perle");
                 $event->cancel();
             } else {
+                $position = $player->getPosition();
+
+                if (Util::insideZone($player->getPosition(), "warzone") && $position->getY() <= 62) {
+                    $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas lancer de perle dans les backrooms");
+                    $event->cancel();
+                    return;
+                }
+
                 if ($session->inCooldown("_antipearl")) {
                     $player->sendTip(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("_antipearl")[0] - time()) . " §fsecondes avant de relancer une nouvelle perle");
                     $event->cancel();
@@ -1016,35 +1024,35 @@ class PlayerListener implements Listener
 
                     $entity->setScoreTag("§7" . round($entity->getHealth(), 2) . " §c❤");
 
-                    $item = $damager->getInventory()->getItemInHand();
-                    $lightningStrike = EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::LIGHTNING_STRIKE);
+                    if (!$event->isCancelled()) {
 
-                    if ($item->hasEnchantment($lightningStrike)) {
-                        $level = $item->getEnchantment($lightningStrike)?->getLevel();
-                        $chance = match ($level) {
-                            1 => 300,
-                            2 => 225,
-                            3 => 150
-                        };
-                        if (mt_rand(0, $chance) < 1) {
-                            $packets = [];
-                            $packets[] = LevelSoundEventPacket::create(LevelSoundEvent::THUNDER, $entity->getLocation(), -1, "minecraft:lightning_bolt", false, false);
-                            $packets[] = AddActorPacket::create(($id = Entity::nextRuntimeId()), $id, "minecraft:lightning_bolt", $entity->getLocation(), new Vector3(0, 0, 0), 0, 0, 0, 0, array_map(function (Attribute $attribute): NetworkAttribute {
-                                return new NetworkAttribute($attribute->getId(), $attribute->getMinValue(), $attribute->getMaxValue(), $attribute->getValue(), $attribute->getDefaultValue(), []);
-                            }, $entity->getAttributeMap()->getAll()), [], new PropertySyncData([], []), []);
+                        $item = $damager->getInventory()->getItemInHand();
+                        $lightningStrike = EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::LIGHTNING_STRIKE);
 
-                            $hurtAnimation = new HurtAnimation($entity);
+                        if ($item->hasEnchantment($lightningStrike)) {
+                            $level = $item->getEnchantment($lightningStrike)?->getLevel();
+                            /*$chance = match ($level) {
+                                1 => 300,
+                                2 => 225,
+                                3 => 150
+                            };*/
+                            if (mt_rand(0, 5) < 1) {
+                                $lightning = new LightningBolt($entity->getLocation());
+                                $lightning->spawnToAll();
 
-                            $healthToRemove = mt_rand(1.5, 2);
-                            $entity->setLastDamageCause(new EntityDamageByEntityEvent($damager, $entity, $event::CAUSE_CUSTOM, $healthToRemove));
-                            $entity->setHealth(max($entity->getHealth() - $healthToRemove, 0));
+                                $entity->setLastDamageCause(new EntityDamageByEntityEvent($damager, $entity, $event::CAUSE_CUSTOM, 2));
+                                $entity->setHealth(max($entity->getHealth() - 2, 0));
 
-                            $viewers = array_merge($entity->getViewers(), $damager->getViewers());
-                            NetworkBroadcastUtils::broadcastPackets([array_unique($viewers)], [$packets, $hurtAnimation->encode()]);
+                                $hurtAnimation = new HurtAnimation($entity);
+                                $viewers = array_merge($entity->getViewers(), $damager->getViewers());
+                                NetworkBroadcastUtils::broadcastPackets(array_unique($viewers), $hurtAnimation->encode());
+                                $entity->getWorld()->broadcastPacketToViewers($entity->getPosition()->asVector3(), LevelSoundEventPacket::create(LevelSoundEvent::THUNDER, $entity->getLocation(), -1, "minecraft:lightning_bolt", false, false));
 
-                            $entity->sendMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §6Foudroiement §f!");
-                            $damager->sendMessage(Util::PREFIX . "§fVous venez d'envoyer un éclair sur §6" . $entity->getName() . " §fgrâce à votre enchantement §6Foudroiement §f!");
+                                $entity->sendMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §6Foudroiement §f!");
+                                $damager->sendMessage(Util::PREFIX . "§fVous venez d'envoyer un éclair sur §6" . $entity->getName() . " §fgrâce à votre enchantement §6Foudroiement §f!");
+                            }
                         }
+
                     }
                 }
             }
