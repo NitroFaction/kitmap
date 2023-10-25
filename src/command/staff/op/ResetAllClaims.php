@@ -4,6 +4,7 @@ namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\BaseCommand;
 use Kitmap\handler\Cache;
+use Kitmap\Util;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
@@ -30,6 +31,8 @@ class ResetAllClaims extends BaseCommand
             foreach (Cache::$factions as $name => $ignore) {
                 Cache::$factions[$name]["claim"] = null;
             }
+
+            $sender->sendMessage(Util::PREFIX . "Vous venez de supprimer tout les claims aux factions");
         }
     }
 

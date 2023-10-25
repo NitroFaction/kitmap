@@ -50,12 +50,12 @@ class Atout extends BaseCommand
                             $session->data["atouts"][$name][0] = false;
                             $player->getEffects()->remove(EffectIdMap::getInstance()->fromId($atout["id"]));
 
-                            $player->sendMessage(Util::PREFIX . "Vous venez de désactiver l'atout §e" . $name);
+                            $player->sendMessage(Util::PREFIX . "Vous venez de désactiver l'atout §6" . $name);
                         } else {
                             $session->data["atouts"][$name][0] = true;
                             Util::givePlayerPreferences($player);
 
-                            $player->sendMessage(Util::PREFIX . "Vous venez d'activer l'atout §e" . $name);
+                            $player->sendMessage(Util::PREFIX . "Vous venez d'activer l'atout §6" . $name);
                         }
                         return;
                 }
@@ -93,32 +93,32 @@ class Atout extends BaseCommand
             switch ($data[1]) {
                 case 0:
                     if ($atout["price"] > $session->data["money"]) {
-                        $player->sendMessage(Util::PREFIX . "Vous ne possedez pas assez de pièces pour acheter l'atout §e" . $name);
+                        $player->sendMessage(Util::PREFIX . "Vous ne possedez pas assez de pièces pour acheter l'atout §6" . $name);
                         return;
                     }
 
                     $session->addValue("money", $atout["price"], true);
                     $session->data["atouts"][$name] = [true, true];
 
-                    $player->sendMessage(Util::PREFIX . "Vous venez d'acheter l'atout §e" . $name . " §favec §e" . $atout["price"] . " §fpièces");
+                    $player->sendMessage(Util::PREFIX . "Vous venez d'acheter l'atout §6" . $name . " §favec §6" . $atout["price"] . " §fpièces");
                     return;
                 case 1:
                     if ($atout["gem"] > $session->data["gem"]) {
-                        $player->sendMessage(Util::PREFIX . "Vous ne possedez pas assez de gemmes pour acheter l'atout §e" . $name);
+                        $player->sendMessage(Util::PREFIX . "Vous ne possedez pas assez de gemmes pour acheter l'atout §6" . $name);
                         return;
                     }
 
                     $session->addValue("gem", $atout["gem"], true);
                     $session->data["atouts"][$name] = [true, true];
 
-                    $player->sendMessage(Util::PREFIX . "Vous venez d'acheter l'atout §e" . $name . " §favec §e" . $atout["gem"] . " §fgemmes");
+                    $player->sendMessage(Util::PREFIX . "Vous venez d'acheter l'atout §6" . $name . " §favec §6" . $atout["gem"] . " §fgemmes");
                     return;
             }
 
             Util::givePlayerPreferences($player);
         });
         $form->setTitle("Atouts");
-        $form->addLabel(Util::PREFIX . "L'atout vous donnera l'effet de " . $name . " constament lorsque l'atout sera activé\n\nPrix: §e" . $atout["price"] . " §fpièces ou §a" . $atout["gem"] . " §fgemmes\n\nVous possedez §e" . $session->data["gem"] . " §fgemme(s)\nVous possedez §e" . $session->data["money"] . " §fpièces(s)\n");
+        $form->addLabel(Util::PREFIX . "L'atout vous donnera l'effet de " . $name . " constament lorsque l'atout sera activé\n\nPrix: §6" . $atout["price"] . " §fpièces ou §a" . $atout["gem"] . " §fgemmes\n\nVous possedez §6" . $session->data["gem"] . " §fgemme(s)\nVous possedez §6" . $session->data["money"] . " §fpièces(s)\n");
         $form->addDropdown("Méthode de payement", ["pièces", "gemmes"]);
         $form->addToggle("Acheter l'atout de " . $name . "?", true);
         $player->sendForm($form);

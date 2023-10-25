@@ -127,7 +127,11 @@ class PlayerListener implements Listener
             $player->removeCurrentWindow();
 
             Enchant::openEnchantTable($player, false);
-        } else if ($block->getPosition()->getX() === -1 && $block->getPosition()->getY() === 64 && $block->getPosition()->getZ() === -56) {
+        }
+
+        [$x,$y,$z] = explode(":", Cache::$config["pack"]);
+
+        if ($block->getPosition()->getX() === intval($x) && $block->getPosition()->getY() === intval($y) && $block->getPosition()->getZ() === intval($z)) {
             $event->cancel();
             $player->removeCurrentWindow();
 
@@ -144,7 +148,7 @@ class PlayerListener implements Listener
 
         if (str_contains($message, "@here") && !$player->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
             $event->cancel();
-            $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser §e@here §fdans votre message");
+            $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser §6@here §fdans votre message");
             return;
         }
 
@@ -154,19 +158,19 @@ class PlayerListener implements Listener
             switch (Question::$currentEvent) {
                 case 1:
                     if ($event->getMessage() === Question::$currentReply) {
-                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§e" . $player->getDisplayName() . " §fa gagné §e5k$ §fen ayant réécrit le code §e" . Question::$currentReply . " §fen premier !");
+                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6" . $player->getDisplayName() . " §fa gagné §65k$ §fen ayant réécrit le code §6" . Question::$currentReply . " §fen premier !");
                         $valid = true;
                     }
                     break;
                 case 2:
                     if (strtolower($event->getMessage()) === Question::$currentReply) {
-                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§e" . $player->getDisplayName() . " §fa gagné §e5k$ §fen ayant trouver le mot §e" . Question::$currentReply . " §fen premier !");
+                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6" . $player->getDisplayName() . " §fa gagné §65k$ §fen ayant trouver le mot §6" . Question::$currentReply . " §fen premier !");
                         $valid = true;
                     }
                     break;
                 case 3:
                     if ($event->getMessage() === strval(Question::$currentReply)) {
-                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§e" . $player->getDisplayName() . " §fa gagné §e5k$ §fen ayant répondu au calcul §e" . Question::$currentReply . " §fen premier !");
+                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6" . $player->getDisplayName() . " §fa gagné §65k$ §fen ayant répondu au calcul §6" . Question::$currentReply . " §fen premier !");
                         $valid = true;
                     }
                     break;
@@ -198,12 +202,12 @@ class PlayerListener implements Listener
             $event->cancel();
 
             Main::getInstance()->getLogger()->info("[F] [" . $faction . "] " . $player->getName() . " » " . $message);
-            Faction::broadcastMessage($faction, "§e[§fF§e] §f" . $player->getName() . " " . Util::PREFIX . $message);
+            Faction::broadcastMessage($faction, "§6[§fF§6] §f" . $player->getName() . " " . Util::PREFIX . $message);
 
             return;
         } else if ($session->inCooldown("mute")) {
             $format = Util::formatDurationFromSeconds($session->getCooldownData("mute")[0] - time());
-            $player->sendMessage(Util::PREFIX . "Vous êtes mute, temps restant: §e" . $format);
+            $player->sendMessage(Util::PREFIX . "Vous êtes mute, temps restant: §6" . $format);
 
             $event->cancel();
             return;
@@ -231,7 +235,7 @@ class PlayerListener implements Listener
 
         if (Faction::hasFaction($player)) {
             Cache::$factions[$session->data["faction"]]["activity"][date("m-d")] = $player->getName();
-            Faction::broadcastMessage($session->data["faction"], "§e[§fF§e] §fLe joueur de votre faction §e" . $player->getName() . " §fvient de se connecter");
+            Faction::broadcastMessage($session->data["faction"], "§6[§fF§6] §fLe joueur de votre faction §6" . $player->getName() . " §fvient de se connecter");
         }
 
         foreach (Vanish::$vanish as $target) {
@@ -249,7 +253,7 @@ class PlayerListener implements Listener
             $path = Path::join(Main::getInstance()->getServer()->getDataPath(), "players");
             $count = count(glob($path . "/*")) + 1;
 
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§e" . $player->getName() . " §fa rejoint le serveur pour la §epremière §ffois ! Souhaitez lui la §ebienvenue §favec la commande §e/bvn §f(#§e" . $count . "§f)!");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6" . $player->getName() . " §fa rejoint le serveur pour la §6première §ffois ! Souhaitez lui la §6bienvenue §favec la commande §6/bvn §f(#§6" . $count . "§f)!");
 
             Bienvenue::$alreadyWished = [];
             Bienvenue::$lastJoin = $player->getName();
@@ -345,7 +349,7 @@ class PlayerListener implements Listener
                 $pot2 = Util::getItemCount($damager, VanillaItems::SPLASH_POTION()->setType(PotionType::STRONG_HEALING()));
 
                 Main::getInstance()->getLogger()->info($player->getDisplayName() . " (" . $player->getName() . ") a été tué par " . $damager->getDisplayName() . " (" . $damager->getName() . ")");
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§e" . $player->getDisplayName() . "[§7" . $pot1 . "§e] §fa été tué par le joueur §e" . $damager->getDisplayName() . "[§7" . $pot2 . "§e]");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6" . $player->getDisplayName() . "[§7" . $pot1 . "§6] §fa été tué par le joueur §6" . $damager->getDisplayName() . "[§7" . $pot2 . "§6]");
 
                 $damagerSession = Session::get($damager);
 
@@ -356,7 +360,7 @@ class PlayerListener implements Listener
                 if (Faction::hasFaction($player)) Faction::addPower($session->data["faction"], -4);
 
                 if ($damagerSession->data["killstreak"] % 5 == 0) {
-                    Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §e" . $damager->getName() . " §fa fait §e" . $damagerSession->data["killstreak"] . " §fkill sans mourrir !");
+                    Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §6" . $damager->getName() . " §fa fait §6" . $damagerSession->data["killstreak"] . " §fkill sans mourrir !");
                 }
 
                 return;
@@ -385,9 +389,9 @@ class PlayerListener implements Listener
 
         if ($session->data["staff_mod"][0]) {
             $command = match ($item->getCustomName()) {
-                "§r" . Util::PREFIX . "Vanish §e§l«" => "/vanish",
-                "§r" . Util::PREFIX . "Random Tp §e§l«" => "/randomtp",
-                "§r" . Util::PREFIX . "Spectateur §e§l«" => "/spec",
+                "§r" . Util::PREFIX . "Vanish §6§l«" => "/vanish",
+                "§r" . Util::PREFIX . "Random Tp §6§l«" => "/randomtp",
+                "§r" . Util::PREFIX . "Spectateur §6§l«" => "/spec",
                 default => null
             };
 
@@ -408,11 +412,11 @@ class PlayerListener implements Listener
 
         if ($item instanceof EnderPearl) {
             if ($session->inCooldown("enderpearl")) {
-                $player->sendMessage(Util::PREFIX . "Veuillez attendre §e" . ($session->getCooldownData("enderpearl")[0] - time()) . " §fsecondes avant de relancer une nouvelle perle");
+                $player->sendMessage(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("enderpearl")[0] - time()) . " §fsecondes avant de relancer une nouvelle perle");
                 $event->cancel();
             } else {
                 if ($session->inCooldown("_antipearl")) {
-                    $player->sendTip(Util::PREFIX . "Veuillez attendre §e" . ($session->getCooldownData("_antipearl")[0] - time()) . " §fsecondes avant de relancer une nouvelle perle");
+                    $player->sendTip(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("_antipearl")[0] - time()) . " §fsecondes avant de relancer une nouvelle perle");
                     $event->cancel();
                     return;
                 } else if (!is_null($item->getNamedTag()->getTag("partneritem"))) {
@@ -439,7 +443,7 @@ class PlayerListener implements Listener
 
         if ($item->equals(VanillaItems::RAW_FISH())) {
             if ($session->inCooldown("cookie_combined")) {
-                $player->sendMessage(Util::PREFIX . "Veuillez attendre §e" . ($session->getCooldownData("cookie_combined")[0] - time()) . " §fsecondes avant de remanger un cookie combiné");
+                $player->sendMessage(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("cookie_combined")[0] - time()) . " §fsecondes avant de remanger un cookie combiné");
                 $event->cancel();
             } else {
                 $player->getEffects()->add(new EffectInstance(VanillaEffects::ABSORPTION(), (10 * 20), 0, false));
@@ -451,7 +455,7 @@ class PlayerListener implements Listener
             }
         } else if ($item->equals(VanillaItems::COOKED_FISH())) {
             if ($session->inCooldown("cookie_regeneration")) {
-                $player->sendMessage(Util::PREFIX . "Veuillez attendre §e" . ($session->getCooldownData("cookie_regeneration")[0] - time()) . " §fsecondes avant de remanger un cookie de regeneration");
+                $player->sendMessage(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("cookie_regeneration")[0] - time()) . " §fsecondes avant de remanger un cookie de regeneration");
                 $event->cancel();
             } else {
                 $player->getEffects()->add(new EffectInstance(VanillaEffects::REGENERATION(), (10 * 20), 0, false));
@@ -459,7 +463,7 @@ class PlayerListener implements Listener
             }
         } else if ($item->equals(VanillaItems::RAW_SALMON())) {
             if ($session->inCooldown("cookie_speed")) {
-                $player->sendMessage(Util::PREFIX . "Veuillez attendre §e" . ($session->getCooldownData("cookie_speed")[0] - time()) . " §fsecondes avant de remanger un cookie de vitesse");
+                $player->sendMessage(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("cookie_speed")[0] - time()) . " §fsecondes avant de remanger un cookie de vitesse");
                 $event->cancel();
             } else {
                 $player->getEffects()->add(new EffectInstance(VanillaEffects::SPEED(), (240 * 20), 0, false));
@@ -467,7 +471,7 @@ class PlayerListener implements Listener
             }
         } else if ($item->equals(VanillaItems::COOKED_SALMON())) {
             if ($session->inCooldown("cookie_strength")) {
-                $player->sendMessage(Util::PREFIX . "Veuillez attendre §e" . ($session->getCooldownData("cookie_strength")[0] - time()) . " §fsecondes avant de remanger un cookie de force");
+                $player->sendMessage(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("cookie_strength")[0] - time()) . " §fsecondes avant de remanger un cookie de force");
                 $event->cancel();
             } else {
                 $player->getEffects()->add(new EffectInstance(VanillaEffects::STRENGTH(), (240 * 20), 0, false));
@@ -699,7 +703,7 @@ class PlayerListener implements Listener
                 }
 
                 $session->addValue("money", ($rand = mt_rand(1, 10)));
-                $player->sendTip("+ §e" . $rand . " §fPièces §e+");
+                $player->sendTip("+ §6" . $rand . " §fPièces §6+");
 
                 $event->setDrops([]);
             } else {
@@ -774,13 +778,13 @@ class PlayerListener implements Listener
                 $player->broadcastSound(new EndermanTeleportSound());
                 $player->broadcastSound(new EndermanTeleportSound());
 
-                $damager->sendMessage(Util::PREFIX . "Vous avez été switch avec le joueur §e" . $player->getDisplayName());
-                $player->sendMessage(Util::PREFIX . "Vous avez été switch avec le joueur §e" . $damager->getDisplayName());
+                $damager->sendMessage(Util::PREFIX . "Vous avez été switch avec le joueur §6" . $player->getDisplayName());
+                $player->sendMessage(Util::PREFIX . "Vous avez été switch avec le joueur §6" . $damager->getDisplayName());
             } else if ($entity instanceof AntiBackBallEntity) {
                 $player->setNoClientPredictions();
 
-                $damager->sendMessage(Util::PREFIX . "Vous avez touché §e" . $player->getDisplayName() . " §favec votre antiback ball, il est donc freeze pendant §e2 §fsecondes");
-                $player->sendMessage(Util::PREFIX . "Vous avez été touché par une antiback ball par §e" . $damager->getDisplayName() . " §fvous êtes donc freeze pendant §e2 §fsecondes");
+                $damager->sendMessage(Util::PREFIX . "Vous avez touché §6" . $player->getDisplayName() . " §favec votre antiback ball, il est donc freeze pendant §62 §fsecondes");
+                $player->sendMessage(Util::PREFIX . "Vous avez été touché par une antiback ball par §6" . $damager->getDisplayName() . " §fvous êtes donc freeze pendant §62 §fsecondes");
 
                 Session::get($damager)->setCooldown("combat", 30, [$player->getName()]);
                 Session::get($player)->setCooldown("combat", 30, [$damager->getName()]);
@@ -899,16 +903,16 @@ class PlayerListener implements Listener
 
                 if ($damagerSession->data["staff_mod"][0]) {
                     $message = match ($damager->getInventory()->getItemInHand()->getCustomName()) {
-                        "§r" . Util::PREFIX . "Sanction §e§l«" => "custom",
-                        "§r" . Util::PREFIX . "Alias §e§l«" => "/alias \"" . $entity->getName() . "\"",
-                        "§r" . Util::PREFIX . "Freeze §e§l«" => "/freeze \"" . $entity->getName() . "\"",
-                        "§r" . Util::PREFIX . "Invsee §e§l«" => "/invsee \"" . $entity->getName() . "\"",
-                        "§r" . Util::PREFIX . "Ecsee §e§l«" => "/ecsee \"" . $entity->getName() . "\"",
+                        "§r" . Util::PREFIX . "Sanction §6§l«" => "custom",
+                        "§r" . Util::PREFIX . "Alias §6§l«" => "/alias \"" . $entity->getName() . "\"",
+                        "§r" . Util::PREFIX . "Freeze §6§l«" => "/freeze \"" . $entity->getName() . "\"",
+                        "§r" . Util::PREFIX . "Invsee §6§l«" => "/invsee \"" . $entity->getName() . "\"",
+                        "§r" . Util::PREFIX . "Ecsee §6§l«" => "/ecsee \"" . $entity->getName() . "\"",
                         default => null
                     };
 
                     if ($message === "custom") {
-                        if ($damager->getInventory()->getItemInHand()->getCustomName() === "§r" . Util::PREFIX . "Knockback 2 §e§l«") {
+                        if ($damager->getInventory()->getItemInHand()->getCustomName() === "§r" . Util::PREFIX . "Knockback 2 §6§l«") {
                             return;
                         }
 
@@ -917,7 +921,7 @@ class PlayerListener implements Listener
                         if (!is_null($message)) {
                             $damager->chat($message);
                         } else {
-                            $damager->sendMessage("Vous venez de taper le joueur §e" . $entity->getName());
+                            $damager->sendMessage("Vous venez de taper le joueur §6" . $entity->getName());
                         }
                     }
 

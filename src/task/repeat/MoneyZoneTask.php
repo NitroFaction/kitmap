@@ -2,11 +2,14 @@
 
 namespace Kitmap\task\repeat;
 
+use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
 use MaXoooZ\Util\entity\MessageEntity;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\color\Color;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
@@ -38,7 +41,7 @@ class MoneyZoneTask
             $session = Session::get($player);
 
             $entity = new MessageEntity($player->getLocation());
-            $entity->initEntityB("§e+ 50$");
+            $entity->initEntityB("§6+ 50$");
             $entity->spawnToAll();
             $entity->setMotion(new Vector3(0, 0.15, 0));
 
@@ -49,13 +52,19 @@ class MoneyZoneTask
     private static function setBlock(bool $claimed): void
     {
         $world = Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld();
-        $block = $claimed ? VanillaBlocks::GOLD() : VanillaBlocks::IRON();
+        $block = $claimed ? VanillaBlocks::CONCRETE_POWDER()->setColor(DyeColor::GREEN()) : VanillaBlocks::CONCRETE_POWDER()->setColor(DyeColor::GRAY());
 
-        $y = 62;
+        [$x1, $y, $z1, $x2, , $z2,] = explode(":", Cache::$config["zones"]["money-zone"]);
 
-        for ($x = -2; $x <= 0; $x++) {
-            for ($z = -128; $z <= -126; $z++) {
-                $world->setBlockAt($x, $y, $z, $block);
+        $minX = min($x1, $x2);
+        $minZ = min($z1, $z2);
+
+        $maxX = max($x1, $x2);
+        $maxZ = max($z1, $z2);
+
+        for ($x = $minX; $x <= $maxX; $x++) {
+            for ($z = $minZ; $z <= $maxZ; $z++) {
+                $world->setBlockAt($x, intval($y), $z, $block);
             }
         }
     }

@@ -63,13 +63,13 @@ class Stats extends BaseCommand
             $faction = (is_null($faction)) ? "Aucune Faction" : Faction::getFactionUpperName($faction);
 
             $sender->sendMessage($bar);
-            $sender->sendMessage("§e[§f" . $faction . "§e] [§f" . ucfirst(strtolower($data["rank"])) . "§e] §f- §e" . $data["upper_name"]);
-            $sender->sendMessage("§ePièces: §f" . $data["money"]);
-            $sender->sendMessage("§eGemmes: §f" . $data["gem"]);
-            $sender->sendMessage("§eKills: §f" . $data["kill"]);
-            $sender->sendMessage("§eMorts: §f" . $data["death"]);
-            $sender->sendMessage("§eKillstreak: §f" . $data["killstreak"]);
-            $sender->sendMessage("§eTemps de jeu: §f" . $playtime);
+            $sender->sendMessage("§6[§f" . $faction . "§6] [§f" . ucfirst(strtolower($data["rank"])) . "§6] §f- §6" . $data["upper_name"]);
+            $sender->sendMessage("§6Pièces: §f" . $data["money"]);
+            $sender->sendMessage("§6Gemmes: §f" . $data["gem"]);
+            $sender->sendMessage("§6Kills: §f" . $data["kill"]);
+            $sender->sendMessage("§6Morts: §f" . $data["death"]);
+            $sender->sendMessage("§6Killstreak: §f" . $data["killstreak"]);
+            $sender->sendMessage("§6Temps de jeu: §f" . $playtime);
             $sender->sendMessage($bar);
         }
     }

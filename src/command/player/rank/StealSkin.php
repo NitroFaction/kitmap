@@ -42,7 +42,7 @@ class StealSkin extends BaseCommand
             $sender->setSkin($player->getSkin());
             $sender->sendSkin();
 
-            $sender->sendMessage(Util::PREFIX . "Vous venez de voler le skin de §e" . $player->getName());
+            $sender->sendMessage(Util::PREFIX . "Vous venez de voler le skin de §6" . $player->getName());
         }
     }
 

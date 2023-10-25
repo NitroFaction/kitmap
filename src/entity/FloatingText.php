@@ -36,7 +36,7 @@ class FloatingText extends FloatingTextEntity
                     if (DominationTask::insideZone($zone, $this->getPosition())) {
                         if (!DominationTask::$currentDomination) {
                             DominationTask::updateZoneBlocks($zone);
-                            return Util::PREFIX . "Domination §e§l«\n§fAucun event §edomination §fn'est en cours";
+                            return Util::PREFIX . "Domination §6§l«\n§fAucun event §6domination §fn'est en cours";
                         }
 
                         $status = DominationTask::$zones[$zone][1][0] ?? "uncaptured";
@@ -57,10 +57,10 @@ class FloatingText extends FloatingTextEntity
 
                         $actual = match (true) {
                             is_bool($actual) => "§fAucune faction contrôle le point",
-                            default => "§fLa faction §e" . $actual . " §fcontrôle le point"
+                            default => "§fLa faction §6" . $actual . " §fcontrôle le point"
                         };
 
-                        return Util::PREFIX . "Point " . $zone . " §e§l«\n" . $actual . "\n§fStatus du point: " . $status;
+                        return Util::PREFIX . "Point " . $zone . " §6§l«\n" . $actual . "\n§fStatus du point: " . $status;
                     }
                 }
                 break;
@@ -70,26 +70,26 @@ class FloatingText extends FloatingTextEntity
                     $player = is_null($player) ? "Aucun joueur" : $player;
 
                     $remaining = Util::formatDurationFromSeconds(KothTask::$currentKoth);
-                    return Util::PREFIX . "Koth §e§l«\n§e" . $player . " §fcontrôle le koth actuellement\n§fTemps restant : §e" . $remaining;
+                    return Util::PREFIX . "Koth §6§l«\n§6" . $player . " §fcontrôle le koth actuellement\n§fTemps restant : §6" . $remaining;
                 } else {
-                    return Util::PREFIX . "Koth §e§l«\n§fAucun event §ekoth §fn'est en cours";
+                    return Util::PREFIX . "Koth §6§l«\n§fAucun event §6koth §fn'est en cours";
                 }
             case "outpost":
                 if (!is_null(Cache::$data["outpost"])) {
                     $remaining = Util::formatDurationFromSeconds(OutpostTask::$nextReward);
                     $faction = Faction::getFactionUpperName(Cache::$data["outpost"]);
 
-                    return Util::PREFIX . "Outpost §e§l«\n§fLa faction §e" . $faction . " §fcontrôle l'outpost\n§fRécompense dans §e" . $remaining . "\n§fPlus controlé dans §e" . OutpostTask::$currentOutpost . " §fsecondes";
+                    return Util::PREFIX . "Outpost §6§l«\n§fLa faction §6" . $faction . " §fcontrôle l'outpost\n§fRécompense dans §6" . $remaining . "\n§fPlus controlé dans §6" . OutpostTask::$currentOutpost . " §fsecondes";
                 } else {
                     $remaining = Util::formatDurationFromSeconds(OutpostTask::$currentOutpost);
-                    return Util::PREFIX . "Outpost §e§l«\n§eAucune §ffaction ne contrôle l'outpost\n§fOutpost contrôlé dans §e" . $remaining;
+                    return Util::PREFIX . "Outpost §6§l«\n§6Aucune §ffaction ne contrôle l'outpost\n§fOutpost contrôlé dans §6" . $remaining;
                 }
             case "money-zone":
                 $this->period = null;
-                return Util::PREFIX . "Zone Money §e§l«\nReste ici et gagne §e50 §fpièces toutes les §e3 §fsecondes\n§fATTENTION ! Tu dois être §eseul §fsur la platforme";
+                return Util::PREFIX . "Zone Money §6§l«\nReste ici et gagne §650 §fpièces toutes les §63 §fsecondes\n§fATTENTION ! Tu dois être §6seul §fsur la platforme";
             case "blocks":
                 $this->period = null;
-                return Util::PREFIX . "Salle des blocs §e§l«\nBienvenue dans la salle des §eblocs §f!\n§fTous les blocs que vous §ecassez §fsont mis\n§fdans votre inventaire pour §e0 §fpièces en illimité";
+                return Util::PREFIX . "Salle des blocs §6§l«\nBienvenue dans la salle des §6blocs §f!\n§fTous les blocs que vous §6cassez §fsont mis\n§fdans votre inventaire pour §60 §fpièces en illimité";
         }
 
         $this->period = null;

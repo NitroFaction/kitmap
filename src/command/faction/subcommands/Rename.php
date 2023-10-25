@@ -79,9 +79,9 @@ class Rename extends FactionCommand
         Faction::renameWorld("box-" . $faction, "box-" . $name);
 
         unset(Cache::$factions[$faction]);
-        Cache::$factions[$name]["logs"][time()] = "§e" . $sender->getName() . " §frenome la faction §e" . $name;
+        Cache::$factions[$name]["logs"][time()] = "§6" . $sender->getName() . " §frenome la faction §6" . $name;
 
-        $sender->sendMessage(Util::PREFIX . "Vous venez de renommer votre faction §e" . $faction . " §fen §e" . $name);
+        $sender->sendMessage(Util::PREFIX . "Vous venez de renommer votre faction §6" . $faction . " §fen §6" . $name);
     }
 
     protected function prepare(): void

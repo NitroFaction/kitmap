@@ -31,10 +31,10 @@ class Buy extends BaseCommand
     {
         if (isset($args["gemme"])) {
             Util::executeCommand("addvalue \"" . $args["joueur"] . "\" " . $args["gemme"] . " gem");
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§eLe joueur §f" . $args["joueur"] . " §evient d'acheter §f" . $args["gemme"] . " §egemmes sur la boutique !! §fhttps://shop.nitrofaction.fr");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6Le joueur §f" . $args["joueur"] . " §6vient d'acheter §f" . $args["gemme"] . " §6gemmes sur la boutique !! §fhttps://shop.nitrofaction.fr");
         } else if (isset($args["grade"])) {
             Util::executeCommand("setrank \"" . $args["joueur"] . "\" " . $args["grade"]);
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§eLe joueur §f" . $args["joueur"] . " §evient d'acheter le grade §f" . $args["grade"] . " §esur la boutique !! §fhttps://shop.nitrofaction.fr");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6Le joueur §f" . $args["joueur"] . " §6vient d'acheter le grade §f" . $args["grade"] . " §6sur la boutique !! §fhttps://shop.nitrofaction.fr");
         }
     }
 

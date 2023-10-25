@@ -29,15 +29,15 @@ class Domination extends BaseCommand
         switch ($args["opt"]) {
             case "start":
                 if (30 > count(Main::getInstance()->getServer()->getOnlinePlayers())) {
-                    $sender->sendMessage(Util::PREFIX . "L'event domination demande au minimum §e30 §fjoueurs avant d'être lancé");
+                    $sender->sendMessage(Util::PREFIX . "L'event domination demande au minimum §630 §fjoueurs avant d'être lancé");
                     return;
                 } else if (DominationTask::$currentDomination) {
-                    $sender->sendMessage(Util::PREFIX . "Un event §edomination §fest déjà en cours... Vous pouvez l'arrêter avec la commande §e/domination end");
+                    $sender->sendMessage(Util::PREFIX . "Un event §6domination §fest déjà en cours... Vous pouvez l'arrêter avec la commande §6/domination end");
                     return;
                 }
 
                 DominationTask::$currentDomination = true;
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Un event §edomination §fvient de commencer ! Vous pouvez vous y téléporter grace à la commande §e/event domination");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Un event §6domination §fvient de commencer ! Vous pouvez vous y téléporter grace à la commande §6/event domination");
                 break;
             case "end":
                 DominationTask::$currentDomination = false;
@@ -45,7 +45,7 @@ class Domination extends BaseCommand
                 DominationTask::$zones = [];
                 DominationTask::$time = 900;
 
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "L'event §edomination §fa été arrêté");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "L'event §6domination §fa été arrêté");
                 break;
         }
     }

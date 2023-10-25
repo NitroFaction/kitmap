@@ -120,8 +120,10 @@ class RouletteTask extends Task
     private function buildLines(): void
     {
         $i = 0;
+
         $lines = range(9, 17);
         $itemIndex = $this->nextItemIndex();
+
         foreach ($lines as $line) {
             $regulatedIndex = ($itemIndex + $i) % 37;
             $item = $this->roulette[$regulatedIndex];
@@ -143,14 +145,18 @@ class RouletteTask extends Task
     private function generateBorderLines(): void
     {
         $i = 0;
+
         if (!$this->started) {
             $this->colors = [DyeColor::RED(), DyeColor::ORANGE(), DyeColor::YELLOW(), DyeColor::LIME(), DyeColor::LIGHT_BLUE(), DyeColor::BLUE(), DyeColor::PURPLE(), DyeColor::PINK(), DyeColor::WHITE()];
             $randomColorIndex = mt_rand(0, 8);
+
             for ($j = 0; $j <= $randomColorIndex; $j++) {
                 next($this->colors);
             }
         }
+
         $colorIndex = $this->nextColorIndex();
+
         foreach (range(0, 8) as $slot) {
             $regulatedIndex = ($colorIndex + $i) % 9;
             $color = $this->colors[$regulatedIndex];
@@ -163,10 +169,12 @@ class RouletteTask extends Task
     private function doEndAnimation(): void
     {
         $colors = [DyeColor::BLACK(), DyeColor::GRAY()];
+
         $order = match (true) {
             $this->close % 2 === 0 => [0, 1],
             default => [1, 0]
         };
+
         foreach ($this->inventory->getContents(true) as $slot => $item) {
             if ($slot !== 13) {
                 $color = $slot % 2 === 0 ? 0 : 1;
@@ -193,11 +201,9 @@ class RouletteTask extends Task
 
     private function nextColorIndex(): int
     {
-        $nextColor = next($this->colors);
-        if ($nextColor === false) {
+        if (next($this->colors) === false) {
             reset($this->colors);
         }
         return key($this->colors);
     }
-
 }

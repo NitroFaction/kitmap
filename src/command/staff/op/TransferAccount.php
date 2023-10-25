@@ -68,7 +68,7 @@ class TransferAccount extends BaseCommand
         $file->set($newData["xuid"], $file->get($oldData["xuid"]));*/
 
         $file->save();
-        $sender->sendMessage(Util::PREFIX . "Vous venez de transférer les données de §e" . $old . " §fvers §e" . $new);
+        $sender->sendMessage(Util::PREFIX . "Vous venez de transférer les données de §6" . $old . " §fvers §6" . $new);
     }
 
     public function getData(string $username): array|bool

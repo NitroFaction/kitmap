@@ -50,7 +50,7 @@ class Removevalue extends BaseCommand
             return;
         }
 
-        $sender->sendMessage(Util::PREFIX . "Vous venez de retirer §e" . $amount . " §f" . $data . " au joueur §e" . $target);
+        $sender->sendMessage(Util::PREFIX . "Vous venez de retirer §6" . $amount . " §f" . $data . " au joueur §6" . $target);
         Addvalue::addValue($sender->getName(), $target, $data, -$amount);
     }
 

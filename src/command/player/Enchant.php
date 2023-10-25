@@ -94,7 +94,7 @@ class Enchant extends BaseCommand
         $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
 
         while ($x <= $maxLevel) {
-            $form->addButton($enchantName . " " . $x . "\n§e" . ($x * 10) . " levels §8ou §e" . ($x * 10) . " émeraudes");
+            $form->addButton($enchantName . " " . $x . "\n§6" . ($x * 10) . " levels §8ou §6" . ($x * 10) . " émeraudes");
             $x++;
         }
 

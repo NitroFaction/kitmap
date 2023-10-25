@@ -37,7 +37,7 @@ class Repair extends BaseCommand
                 return;
             } else if ($session->inCooldown("repair")) {
                 $format = Util::formatDurationFromSeconds($session->getCooldownData("repair")[0] - time());
-                $sender->sendMessage(Util::PREFIX . "Vous ne pourrez ré-utiliser la commande §e/repair §fque dans: §e" . $format);
+                $sender->sendMessage(Util::PREFIX . "Vous ne pourrez ré-utiliser la commande §6/repair §fque dans: §6" . $format);
                 return;
             } else if ($session->inCooldown("combat")) {
                 $sender->sendMessage(Util::PREFIX . "Cette commande est interdite en combat");

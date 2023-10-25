@@ -8,7 +8,6 @@ use Kitmap\handler\Cache;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\world\format\Chunk;
 
@@ -27,40 +26,38 @@ class AddClaims extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
-        if ($sender instanceof Player) {
-            $x1 = intval($args["x1"]);
-            $z1 = intval($args["z1"]);
-            $x2 = intval($args["x2"]);
-            $z2 = intval($args["z2"]);
+        $x1 = intval($args["x1"]);
+        $z1 = intval($args["z1"]);
+        $x2 = intval($args["x2"]);
+        $z2 = intval($args["z2"]);
 
-            $minX = min($x1, $x2);
-            $minZ = min($z1, $z2);
+        $minX = min($x1, $x2);
+        $minZ = min($z1, $z2);
 
-            $maxX = max($x1, $x2);
-            $maxZ = max($z1, $z2);
+        $maxX = max($x1, $x2);
+        $maxZ = max($z1, $z2);
 
-            $claims = 0;
+        $claims = 0;
 
-            if (!isset(Cache::$data["claims"])) {
-                Cache::$data["claims"] = [];
-            }
+        if (!isset(Cache::$data["claims"])) {
+            Cache::$data["claims"] = [];
+        }
 
-            for ($x = $minX; $x <= $maxX; $x++) {
-                for ($z = $minZ; $z <= $maxZ; $z++) {
-                    $chunkX = $x >> Chunk::COORD_BIT_SIZE;
-                    $chunkZ = $z >> Chunk::COORD_BIT_SIZE;
+        for ($x = $minX; $x <= $maxX; $x++) {
+            for ($z = $minZ; $z <= $maxZ; $z++) {
+                $chunkX = $x >> Chunk::COORD_BIT_SIZE;
+                $chunkZ = $z >> Chunk::COORD_BIT_SIZE;
 
-                    $chunk = $chunkX . ":" . $chunkZ;
+                $chunk = $chunkX . ":" . $chunkZ;
 
-                    if (!in_array($chunk, Cache::$data["claims"])) {
-                        $claims++;
-                        Cache::$data["claims"][] = $chunk;
-                    }
+                if (!in_array($chunk, Cache::$data["claims"])) {
+                    $claims++;
+                    Cache::$data["claims"][] = $chunk;
                 }
             }
-
-            $sender->sendMessage(Util::PREFIX . "§e" . $claims . " §fclaims ajoutés");
         }
+
+        $sender->sendMessage(Util::PREFIX . "§6" . $claims . " §fclaims ajoutés");
     }
 
     protected function prepare(): void

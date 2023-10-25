@@ -69,7 +69,7 @@ class Event extends BaseCommand
 
             foreach ($eventsData as $name => $data) {
                 $item = Util::getItemByName($data["item"]);
-                $item->setCustomName("§r§e§l" . strtoupper($name) . "\n\n" . $data["description"] . "\n\n§o§eCliquez sur l'item pour y être téléporté");
+                $item->setCustomName("§r§6§l" . strtoupper($name) . "\n\n" . $data["description"] . "\n\n§o§6Cliquez sur l'item pour y être téléporté");
 
                 $inventory->setItem($data["slot"], $item);
             }

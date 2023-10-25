@@ -50,8 +50,8 @@ class Anvil extends BaseCommand
         });
         $form->setTitle("Enclume");
         $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
-        $form->addButton("Réparer avec\n§e15 levels");
-        $form->addButton("Réparer avec\n§e10 émeraudes");
+        $form->addButton("Réparer avec\n§615 levels");
+        $form->addButton("Réparer avec\n§610 émeraudes");
         $player->sendForm($form);
     }
 

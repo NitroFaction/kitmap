@@ -43,7 +43,7 @@ class UnloadBoxs extends BaseCommand
             }
         }
 
-        $sender->sendMessage(Util::PREFIX . "Vous venez de décharger §e" . $count . " §fbox(s) vide(s)");
+        $sender->sendMessage(Util::PREFIX . "Vous venez de décharger §6" . $count . " §fbox(s) vide(s)");
     }
 
     protected function prepare(): void

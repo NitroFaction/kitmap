@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @noinspection PhpMultipleClassDeclarationsInspection
- * @noinspection PhpUnusedLocalVariableInspection
- * @noinspection PhpUnusedParameterInspection
  */
 
 namespace Kitmap\handler;
@@ -21,7 +18,6 @@ use pocketmine\block\Concrete;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
-use pocketmine\inventory\Inventory;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\ItemBlock;
 use pocketmine\player\Player;
@@ -35,24 +31,25 @@ use pocketmine\world\sound\XpLevelUpSound;
 
 class Casino
 {
-
     public static array $games = [];
 
     public static function openCasinoForm(): SimpleForm
     {
         $form = new SimpleForm(function (Player $player, ?string $data = null) {
             if (is_string($data)) {
-                $formToSend = in_array($data, ["roulette", "escalier", "mines"]) ? self::openCasinoGameForm($data) : null;
+                $formToSend = in_array($data, ["roulette", "dragon-tower", "mines"]) ? self::openCasinoGameForm($data) : null;
                 if (!is_null($formToSend)) {
                     $player->sendForm($formToSend);
                 }
             }
         });
+
         $form->setTitle("Casino");
-        $form->setContent(Util::PREFIX . "Bienvenue dans le menu du §ecasino §f! Veuillez choisir le jeu auquel vous voulez jouer !");
+        $form->setContent(Util::PREFIX . "Bienvenue dans le menu du §6casino §f! Veuillez choisir le jeu auquel vous voulez jouer !");
         $form->addButton("§8Roulette", label: "roulette");
-        $form->addButton("§8Escalier", label: "escalier");
+        $form->addButton("§8Dragon Tower", label: "dragon-tower");
         $form->addButton("§8Mines", label: "mines");
+
         return $form;
     }
 
@@ -62,26 +59,30 @@ class Casino
             if (is_int($data)) {
                 $formToSend = match ($data) {
                     0 => self::openBetForm($player, $game),
-                    1 => self::openGameRulesForm($player, $game),
+                    1 => self::openGameRulesForm($game),
                     default => self::openCasinoForm()
                 };
                 $player->sendForm($formToSend);
             }
         });
+
         $form->setTitle(self::getGameName($game));
-        $form->setContent(Util::PREFIX . "Bienvenue dans le menu du jeu §e" . self::getGameName($game) . " §f! Que voulez-vous faire ?");
+        $form->setContent(Util::PREFIX . "Bienvenue dans le menu du jeu §6" . self::getGameName($game) . " §f! Que voulez-vous faire ?");
         $form->addButton("§8Jouer");
         $form->addButton("§8Règles");
+
         return $form;
     }
 
-    public static function openGameRulesForm(Player $player, string $game): SimpleForm
+    public static function openGameRulesForm(string $game): SimpleForm
     {
-        $form = new SimpleForm(function (Player $player, ?int $data = null) use ($game) {
+        $form = new SimpleForm(function (Player $player) use ($game) {
             $player->sendForm(self::openCasinoGameForm($game));
         });
+
         $form->setTitle("Règles " . self::getGameName($game));
         $form->setContent(self::getRulesByGame($game));
+
         return $form;
     }
 
@@ -119,7 +120,7 @@ class Casino
                                 case "roulette":
                                     self::$games[$playerName]["color"] = $data["color"];
                                     break;
-                                case "escalier":
+                                case "dragon-tower":
                                 case "mines":
                                     self::$games[$playerName]["score"] = 0;
                                     self::$games[$playerName]["end-status"] = 0; // 0 = sort de l'inv, 1 = perdu la partie, 2 = collecte les gains, 3 = complété
@@ -130,7 +131,7 @@ class Casino
                             }
                             self::startGame($player, $game, $data["bet"]);
                         } else {
-                            $player->sendMessage(Util::PREFIX . "Votre monnaie est infèrieur à §e" . $data["bet"]);
+                            $player->sendMessage(Util::PREFIX . "Votre monnaie est infèrieur à §6" . $data["bet"]);
                         }
                     } else {
                         $player->sendMessage(Util::PREFIX . "La mise minimale de ce jeu est 10k de pièces.");
@@ -176,15 +177,15 @@ class Casino
                 $invMenuInventory = $invMenu->getInventory();
                 Main::getInstance()->getScheduler()->scheduleRepeatingTask(new RouletteTask($player, $invMenuInventory, $bet, $roulette), 2);
                 break;
-            case "escalier":
+            case "dragon-tower":
                 $lines = [];
-                $escalier = [];
+                $dt = [];
                 $indice = 9;
                 for ($i = 0; $i <= 3; $i++) {
                     $patern = [0, 0, 0, 0];
                     $randomIndex = mt_rand(0, 3);
                     $patern[$randomIndex] = 1;
-                    $escalier[$i] = $patern;
+                    $dt[$i] = $patern;
                     foreach (range(37, 40) as $slot) {
                         $lines[$i][] = ($slot - ($i * $indice));
                     }
@@ -209,27 +210,27 @@ class Casino
                         $possibleGain = (($bet * 1.5) * $multiplier) * 0.90;
                         $possibleMultiplier = round(($possibleGain * 0.90) / $bet, 2);
                         $gainColor = $possibleGain >= $bet ? TextFormat::GREEN : TextFormat::RED;
-                        $collectGainBlock = VanillaBlocks::CONCRETE()->setColor(DyeColor::YELLOW())->asItem()->setCustomName("§r§l§e» §r§eRécupérer ses gains §l§e«§r\n§l§e| §r§fMise initial§8: §b" . $formattedBet . "\n§l§e| §r§fRécompense§8: " . $gainColor . Util::formatNumberWithSuffix(round($possibleGain)) . " §8(§7x" . $possibleMultiplier . "§8)");
+                        $collectGainBlock = VanillaBlocks::CONCRETE()->setColor(DyeColor::YELLOW())->asItem()->setCustomName("§r§l§6» §r§6Récupérer ses gains §l§6«§r\n§l§6| §r§fMise initial§8: §b" . $formattedBet . "\n§l§6| §r§fRécompense§8: " . $gainColor . Util::formatNumberWithSuffix(round($possibleGain)) . " §8(§7x" . $possibleMultiplier . "§8)");
                         $invMenuInventory->setItem($collectGainSlot, $collectGainBlock);
                     }
                 };
                 $setCollectGainBlocks(0);
-                $invMenu->setListener(InvMenu::readonly(function (DeterministicInvMenuTransaction $invMenuTransaction) use ($invMenuInventory, $playerName, $bet, $escalier, $lines, $game, $setCollectGainBlocks): void {
+                $invMenu->setListener(InvMenu::readonly(function (DeterministicInvMenuTransaction $invMenuTransaction) use ($invMenuInventory, $playerName, $bet, $dt, $lines, $game, $setCollectGainBlocks): void {
                     $player = $invMenuTransaction->getPlayer();
                     $itemClicked = $invMenuTransaction->getItemClicked();
                     $itemSlot = $invMenuTransaction->getAction()->getSlot();
 
                     $multiplier = self::$games[$playerName]["score"];
-                    $interactibleSlots = array_merge($lines[$multiplier], [24, 25, 33, 34]);
 
                     if (in_array($itemSlot, array_merge($lines[$multiplier], [24, 25, 33, 34]))) {
                         if ($itemClicked->getBlock()->hasSameTypeId(VanillaBlocks::CONCRETE())) {
                             /* @var Concrete $blockClicked */
                             $blockClicked = clone $itemClicked->getBlock();
                             $blockClickedColor = $blockClicked->getColor();
+
                             if ($blockClickedColor->equals(DyeColor::BLACK())) {
                                 $indiceIndex = ($itemSlot % 9) - 1;
-                                $selectedSlot = $escalier[$multiplier][$indiceIndex];
+                                $selectedSlot = $dt[$multiplier][$indiceIndex];
                                 if ($selectedSlot > 0) {
                                     $player->broadcastSound(new XpCollectSound());
                                     foreach ($lines[$multiplier] as $index => $slot) {
@@ -246,7 +247,7 @@ class Casino
                                         self::closeInventory($player, 3);
                                         return;
                                     }
-                                    foreach ($lines[$updatedMultiplier] as $_ => $slot) {
+                                    foreach ($lines[$updatedMultiplier] as $slot) {
                                         $newLineEnchanttedBlock = clone $invMenuInventory->getItem($slot);
                                         $newLineEnchanttedBlock->addEnchantment(new EnchantmentInstance(EnchantmentIdMap::getInstance()->fromId(-1)));
                                         $invMenuInventory->setItem($slot, $newLineEnchanttedBlock);
@@ -268,15 +269,18 @@ class Casino
                         $player->broadcastSound(new DoorCrashSound(), [$player]);
                     }
                 }));
-                $invMenu->setInventoryCloseListener(function (Player $player, Inventory $inventory) use ($game, $playerName, $bet): void {
+
+                $invMenu->setInventoryCloseListener(function (Player $player) use ($game, $playerName, $bet): void {
                     $data = self::$games[$playerName];
                     $multiplier = $data["score"];
+
                     $gain = (($bet * 1.5) * $multiplier);
                     $endStatus = $data["end-status"];
+
                     switch ($endStatus) {
                         case 0:
                             Session::get($player)->addValue("money", $bet);
-                            $player->sendMessage(Util::PREFIX . "Votre mise dans l'Escalier a été annulée, vous venez de récupérer votre mise initiale");
+                            $player->sendMessage(Util::PREFIX . "Votre mise au dragon tower a été annulée, vous venez de récupérer votre mise initiale");
                             break;
                         case 1:
                             self::loseGame($player, $game);
@@ -288,8 +292,10 @@ class Casino
                             self::winGame($player, $game, $gain, $multiplier);
                             break;
                     }
+
                     unset(self::$games[$playerName]);
                 });
+
                 $invMenu->send($player);
                 break;
             case "mines":
@@ -329,7 +335,7 @@ class Casino
                         $possibleMultiplier = 0;
                     }
                     $gainColor = $possibleGain >= $bet ? TextFormat::GREEN : TextFormat::RED;
-                    $collectGainBlock = VanillaBlocks::CONCRETE()->setColor(DyeColor::YELLOW())->asItem()->setCustomName("§r§l§e» §r§eRécupérer ses gains §l§e«§r\n§l§e| §r§fMise initial§8: §b" . $formattedBet . "\n§l§e| §r§fRécompense§8: " . $gainColor . Util::formatNumberWithSuffix($possibleGain) . " §8(§7x" . $possibleMultiplier . "§8)");
+                    $collectGainBlock = VanillaBlocks::CONCRETE()->setColor(DyeColor::YELLOW())->asItem()->setCustomName("§r§l§6» §r§6Récupérer ses gains §l§6«§r\n§l§6| §r§fMise initial§8: §b" . $formattedBet . "\n§l§6| §r§fRécompense§8: " . $gainColor . Util::formatNumberWithSuffix($possibleGain) . " §8(§7x" . $possibleMultiplier . "§8)");
                     $invMenuInventory->setItem(49, $collectGainBlock);
                 };
                 $updateCollectBlock(0);
@@ -390,7 +396,7 @@ class Casino
                                         if (!is_null($player->getCurrentWindow()) && array_key_exists($playerName, self::$games)) {
                                             self::closeInventory($player, 1);
                                         }
-                                    }), 20*5);
+                                    }), 20 * 5);
                                 }
                             } else if ($blockClickedColor->equals(DyeColor::YELLOW())) {
                                 if (self::$games[$playerName]["end-status"] === 0) {
@@ -408,7 +414,8 @@ class Casino
                         $player->broadcastSound(new DoorCrashSound(), [$player]);
                     }
                 }));
-                $invMenu->setInventoryCloseListener(function (Player $player, Inventory $inventory) use ($game, $playerName, $bet): void {
+
+                $invMenu->setInventoryCloseListener(function (Player $player) use ($game, $playerName, $bet): void {
                     $data = self::$games[$playerName];
                     $mineAmount = $data["mine"];
                     $scoreToComplete = 25 - $mineAmount;
@@ -443,31 +450,36 @@ class Casino
     {
         $session = Session::get($player);
         $finalGain = round($gain * 0.90);
+
         $formattedFinalGain = Util::formatNumberWithSuffix($finalGain);
         $session->addValue("money", $finalGain);
+
         $playerName = strtolower($player->getName());
-        $player->sendTitle("§e+ " . $finalGain . " +", "§7Vous avez gagné " . $formattedFinalGain . " pièce(s) en jouant à " . self::getGameName($game) . " !");
+        $player->sendTitle("§6+ " . $finalGain . " +", "§7Vous avez gagné " . $formattedFinalGain . " pièce(s) en jouant à " . self::getGameName($game) . " !");
+
         switch ($game) {
             case "roulette":
-                Server::getInstance()->broadcastMessage(Util::PREFIX . "§e" . $player->getName() . " §fa remporté §e" . $formattedFinalGain . " pièces §fen pariant sur la couleur " . self::getColorNameById(self::$games[$playerName]["color"]) . " §fà la §eRoulette §f! §8(§e/casino§8)");
+                Server::getInstance()->broadcastMessage(Util::PREFIX . "§6" . $player->getName() . " §fa remporté §6" . $formattedFinalGain . " pièces §fen pariant sur la couleur " . self::getColorNameById(self::$games[$playerName]["color"]) . " §fà la §6Roulette §f! §8(§6/casino§8)");
                 break;
-            case "escalier":
-                Server::getInstance()->broadcastMessage(Util::PREFIX . "§e" . $player->getName() . " §fa remporté §e" . $formattedFinalGain . " pièces §fen réussissant §e" . $score . " palier(s) §fdans l'§eEscalier §f! §8(§e/casino§8)");
+            case "dragon-tower":
+                Server::getInstance()->broadcastMessage(Util::PREFIX . "§6" . $player->getName() . " §fa remporté §6" . $formattedFinalGain . " pièces §fen réussissant §6" . $score . " palier(s) §fau §6Dragon Tower §f! §8(§6/casino§8)");
                 break;
             case "mines":
                 if ($multiplier >= 1.0) {
-                    Server::getInstance()->broadcastMessage(Util::PREFIX . "§e" . $player->getName() . " §fa remporté §e" . $formattedFinalGain . " pièces §8[§7x" . $multiplier . "§8] §fen esquivant §e" .  $score . "/" . $scoreToComplete . " mine(s) §fdans les §eMines §f! §8(§e/casino§8)");
+                    Server::getInstance()->broadcastMessage(Util::PREFIX . "§6" . $player->getName() . " §fa remporté §6" . $formattedFinalGain . " pièces §8[§7x" . $multiplier . "§8] §fen esquivant §6" . $score . "/" . $scoreToComplete . " mine(s) §fdans les §6Mines §f! §8(§6/casino§8)");
                 }
                 break;
         }
+
         $player->broadcastSound(new XpLevelUpSound(5));
         unset(self::$games[$playerName]);
     }
 
     public static function loseGame(Player $player, string $game): void
     {
-        $player->sendMessage(Util::PREFIX . "Vous n'avez rien gagner en jouant à " . ucfirst($game));
+        $player->sendMessage(Util::PREFIX . "Vous n'avez rien gagné en jouant à " . ucfirst($game));
         unset(self::$games[strtolower($player->getName())]);
+
         // TODO: Trouver un son pour bien foutre le seum au joueur qui a perdu
     }
 
@@ -482,7 +494,7 @@ class Casino
     {
         return match ($game) {
             "roulette" => "Au début de la partie, vous serez amené à choisir une option parmi 3 couleurs (§cRouge§f, §8Noir§f et §aVert§f) ! Dès lors que votre choix sera fait, une roulette tournera et une couleur sera aléatoirement choisie ! Si la couleur choisie est celle sur laquelle vous avez pariée au début, vous doublez votre mise, sinon, vous perdez tout !\n\nNOTE : La couleur verte n'apparait qu'une fois dans les 37 numéros de la roulette, il est donc très rare de tomber sur cette couleur. Si la roulette sélectionne la couleur verte et que vous avez parié dessus, votre mise initiale sera multipliée par 14 !",
-            "escalier" => "Dans ce jeu, vous commencez au palier 0 ! Le but est de faire le bon choix parmi 4 blocks noirs ! Ils sont tous identiques, mais derrière l'un d'eux se cache un block vert. Les autres cachent tous des blocks rouges. Le but du jeu est de gravir les différents palliers et de trouver tous les blocks verts de chaque étage !",
+            "dragon-tower" => "Dans ce jeu, vous commencez au palier 0 ! Le but est de faire le bon choix parmi 4 blocks noirs ! Ils sont tous identiques, mais derrière l'un d'eux se cache un block vert. Les autres cachent tous des blocks rouges. Le but du jeu est de gravir les différents palliers et de trouver tous les blocks verts de chaque étage !",
             "mines" => "Votre mission est de révéler autant de blocks verts que possible, de manière séquentielle, sans trouver d'explosif (block TNT) par inadvertance. C'est le cœur du jeu, avec la possibilité d'encaisser vos gains à tout moment, surtout si vous sentez un risque imminent. Chaque supposition réussie, signifiée par le dévoilement d'un block vert, augmente votre multiplicateur, ce qui a pour effet d'amplifier vos gains !"
         };
     }
@@ -509,5 +521,4 @@ class Casino
     {
         return ucfirst($name);
     }
-
 }

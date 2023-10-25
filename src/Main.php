@@ -37,7 +37,7 @@ class Main extends PluginBase
             PacketHooker::register($this);
         }
 
-        EnchantmentIdMap::getInstance()->register(-1, new Enchantment('glow', -1, ItemFlags::ALL, ItemFlags::NONE, 1));
+        EnchantmentIdMap::getInstance()->register(-1, new Enchantment("glow", -1, ItemFlags::ALL, ItemFlags::NONE, 1));
 
         new Rank();
         new Commands();

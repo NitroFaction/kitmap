@@ -2,7 +2,6 @@
 
 namespace Kitmap\command\staff\op;
 
-
 use CortexPE\Commando\BaseCommand;
 use Kitmap\handler\Cache;
 use Kitmap\Util;
@@ -11,14 +10,14 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
-class ListClaims extends BaseCommand
+class DeleteAllClaims extends BaseCommand
 {
     public function __construct(PluginBase $plugin)
     {
         parent::__construct(
             $plugin,
-            "listclaims",
-            "Permet de donner la liste des claims"
+            "deleteallclaims",
+            "Supprime les emplacement des claims"
         );
 
         $this->setPermissions([DefaultPermissions::ROOT_OPERATOR]);
@@ -26,7 +25,10 @@ class ListClaims extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
-            $sender->sendMessage(Util::PREFIX . "Voici la liste des claims: §6" . implode("§f, §6", Cache::$data["claims"]));
+        if (!$sender instanceof Player) {
+            Cache::$data["claims"] = [];
+            $sender->sendMessage(Util::PREFIX . "Vous venez de supprimer tout les emplacements des claims");
+        }
     }
 
     protected function prepare(): void

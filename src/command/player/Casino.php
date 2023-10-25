@@ -50,7 +50,7 @@ class Casino extends BaseCommand {
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new OptionArgument("jeu", ["escalier", "mines", "roulette"], true));
+        $this->registerArgument(0, new OptionArgument("jeu", ["dragon-tower", "mines", "roulette"], true));
     }
 
 }

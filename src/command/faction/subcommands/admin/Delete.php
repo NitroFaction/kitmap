@@ -26,12 +26,12 @@ class Delete extends BaseSubCommand
         $faction = strtolower($args["faction"]);
 
         if (!Faction::exists($faction)) {
-            $sender->sendMessage(Util::PREFIX . "La faction §e" . $faction . " §fn'existe pas");
+            $sender->sendMessage(Util::PREFIX . "La faction §6" . $faction . " §fn'existe pas");
             return;
         }
 
-        $sender->sendMessage(Util::PREFIX . "Vous venez de supprimer la faction §e" . $faction);
-        Faction::broadcastMessage($faction, "§e[§fF§r§e] §fLa faction dont vous êtiez n'existe désormais plus");
+        $sender->sendMessage(Util::PREFIX . "Vous venez de supprimer la faction §6" . $faction);
+        Faction::broadcastMessage($faction, "§6[§fF§r§6] §fLa faction dont vous êtiez n'existe désormais plus");
 
         foreach (Faction::getFactionMembers($faction, true) as $player) {
             $session = Session::get($player);

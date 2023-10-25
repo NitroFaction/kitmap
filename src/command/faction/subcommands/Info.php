@@ -39,7 +39,7 @@ class Info extends FactionCommand
             $faction = Session::get($player)->data["faction"];
 
             if ($faction === null) {
-                $sender->sendMessage(Util::PREFIX . "Le joueur §e" . $player->getName() . " §fn'est dans aucune faction");
+                $sender->sendMessage(Util::PREFIX . "Le joueur §6" . $player->getName() . " §fn'est dans aucune faction");
                 return;
             }
 
@@ -49,7 +49,7 @@ class Info extends FactionCommand
             $sender->sendMessage(Util::PREFIX . "Vous n'êtes dans aucune faction");
             return;
         } else if (!Faction::exists($search)) {
-            $sender->sendMessage(Util::PREFIX . "La faction §e" . $search . " §fn'existe pas");
+            $sender->sendMessage(Util::PREFIX . "La faction §6" . $search . " §fn'existe pas");
             return;
         }
 
@@ -61,7 +61,7 @@ class Info extends FactionCommand
         $faction = strtolower($faction);
 
         if (!Faction::exists($faction)) {
-            $player->sendMessage(Util::PREFIX . "La faction §e" . $faction . " §fn'existe pas");
+            $player->sendMessage(Util::PREFIX . "La faction §6" . $faction . " §fn'existe pas");
             return;
         }
 
@@ -79,7 +79,7 @@ class Info extends FactionCommand
         $_leader = Main::getInstance()->getServer()->getPlayerExact($leader);
 
         if ($_leader instanceof Player) {
-            $leader = "§e" . $_leader->getName();
+            $leader = "§6" . $_leader->getName();
         } else {
             $leader = "§7" . $leader;
         }
@@ -90,15 +90,15 @@ class Info extends FactionCommand
         $everyone = count(Faction::getFactionMembers($faction, false));
 
         $home = explode(":", Cache::$factions[$faction]["home"]);
-        $home = (($home[0] ?? 0) == 0 && ($home[1] ?? 0) == 0 && ($home[2] ?? 0) == 0) ? "Aucun Home" : "X: §e" . $home[0] . "§f, Z: §e" . $home[2];
+        $home = (($home[0] ?? 0) == 0 && ($home[1] ?? 0) == 0 && ($home[2] ?? 0) == 0) ? "Aucun Home" : "X: §6" . $home[0] . "§f, Z: §6" . $home[2];
 
         $player->sendMessage($bar);
-        $player->sendMessage("§e" . Faction::getFactionUpperName($faction) . " §f[§e" . $connected . "§f/§e" . $everyone . "§f] - " . $home);
-        $player->sendMessage("§eChef§f: " . $leader);
-        $player->sendMessage("§eOfficiers§f: " . $officiers);
-        $player->sendMessage("§eMembres§f: " . $members);
-        $player->sendMessage("§eRecrues§f: " . $recruits);
-        $player->sendMessage("§ePowers§f: " . $power);
+        $player->sendMessage("§6" . Faction::getFactionUpperName($faction) . " §f[§6" . $connected . "§f/§6" . $everyone . "§f] - " . $home);
+        $player->sendMessage("§6Chef§f: " . $leader);
+        $player->sendMessage("§6Officiers§f: " . $officiers);
+        $player->sendMessage("§6Membres§f: " . $members);
+        $player->sendMessage("§6Recrues§f: " . $recruits);
+        $player->sendMessage("§6Powers§f: " . $power);
         $player->sendMessage($bar);
     }
 
@@ -110,7 +110,7 @@ class Info extends FactionCommand
             $player = Main::getInstance()->getServer()->getPlayerExact($member);
 
             if ($player instanceof Player) {
-                $arr[] = "§e" . $player->getName();
+                $arr[] = "§6" . $player->getName();
             } else {
                 $arr[] = "§7" . $member;
             }

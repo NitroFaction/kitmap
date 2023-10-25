@@ -308,20 +308,20 @@ class Box extends FactionCommand
             $amount = $this->getExpandPrice($faction);
 
             if ($amount > $session->data["money"]) {
-                $player->sendMessage(Util::PREFIX . "Votre nombre de pièces est inférieur à §e" . $amount);
+                $player->sendMessage(Util::PREFIX . "Votre nombre de pièces est inférieur à §6" . $amount);
                 return;
             }
 
             $session->addValue("money", $amount, true);
-            Cache::$factions[$faction]["logs"][time()] = "§e" . $player->getName() . " §faugmente la taille de la box";
+            Cache::$factions[$faction]["logs"][time()] = "§6" . $player->getName() . " §faugmente la taille de la box";
 
             Cache::$factions[$faction]["box"]["zone"]["min"] -= 1;
             Cache::$factions[$faction]["box"]["zone"]["max"] += 1;
 
-            Faction::broadcastMessage($faction, "§e[§fF§e] §e" . $player->getName() . " §fvient d'augmenter la taille de la box et a utiliser §e" . Util::formatNumberWithSuffix($amount) . " §fpièces de sa poche");
+            Faction::broadcastMessage($faction, "§6[§fF§6] §6" . $player->getName() . " §fvient d'augmenter la taille de la box et a utiliser §6" . Util::formatNumberWithSuffix($amount) . " §fpièces de sa poche");
         });
         $form->setTitle("Box");
-        $form->setContent(Util::PREFIX . "Le diamètre de la box sera augmenté de 1 bloc pour §e" . Util::formatNumberWithSuffix($amount) . " pièces §f!\n\n§fL'argent sera déduit de votre poche, alors réunissez l'argent au bon endroit\n\n" . Util::PREFIX . "Êtes vous sur de faire cela?");
+        $form->setContent(Util::PREFIX . "Le diamètre de la box sera augmenté de 1 bloc pour §6" . Util::formatNumberWithSuffix($amount) . " pièces §f!\n\n§fL'argent sera déduit de votre poche, alors réunissez l'argent au bon endroit\n\n" . Util::PREFIX . "Êtes vous sur de faire cela?");
         $form->addButton("Oui", -1, "", "yes");
         $form->addButton("Non", -1, "", "no");
         $player->sendForm($form);

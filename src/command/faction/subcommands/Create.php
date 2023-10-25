@@ -95,7 +95,7 @@ class Create extends FactionCommand
 
         $session->data["faction"] = $name;
 
-        $sender->sendMessage(Util::PREFIX . "Vous venez de créer votre faction §e" . $args["nom"] . " §f!");
+        $sender->sendMessage(Util::PREFIX . "Vous venez de créer votre faction §6" . $args["nom"] . " §f!");
         Rank::updateNameTag($sender);
     }
 

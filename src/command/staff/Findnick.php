@@ -40,7 +40,7 @@ class Findnick extends BaseCommand
         if (is_null($found)) {
             $sender->sendMessage(Util::PREFIX . "Aucun joueur ne possede ce nick actuellement connecté sur le serveur");
         } else {
-            $sender->sendMessage(Util::PREFIX . "Le pseudo §e" . $nick . " §fest le nick du joueur §e" . $found);
+            $sender->sendMessage(Util::PREFIX . "Le pseudo §6" . $nick . " §fest le nick du joueur §6" . $found);
         }
     }
 

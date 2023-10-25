@@ -5,6 +5,7 @@ namespace Kitmap\command\staff;
 use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
 use Kitmap\entity\NexusEntity;
+use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
@@ -39,14 +40,16 @@ class Nexus extends BaseCommand
         switch ($args["opt"]) {
             case "start":
                 if (count($entities) !== 0) {
-                    $sender->sendMessage(Util::PREFIX . "Un event nexus est déjà en cours... Vous pouvez l'arrêter avec la commande §e/nexus end");
+                    $sender->sendMessage(Util::PREFIX . "Un event nexus est déjà en cours... Vous pouvez l'arrêter avec la commande §6/nexus end");
                     return;
                 }
 
-                $nexus = new NexusEntity(new Location(-115.5, 63, -177.5, Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld(), 0, 0));
+                [$x, $y, $z] = explode(":", Cache::$config["nexus"]);
+
+                $nexus = new NexusEntity(new Location(floatval($x), floatval($y), floatval($z), Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld(), 0, 0));
                 $nexus->spawnToAll();
 
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Un event nexus vient de commencer ! Vous pouvez vous y téléporter grace à la commande §e/event nexus");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Un event nexus vient de commencer ! Vous pouvez vous y téléporter grace à la commande §6/event nexus");
                 break;
             case "end":
                 Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "L'event nexus a été arrêté, pas de stuff :/");

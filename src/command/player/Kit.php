@@ -53,7 +53,7 @@ class Kit extends BaseCommand
                     return;
                 } else if ($session->inCooldown("kit_" . $data) && !$player->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
                     $format = Util::formatDurationFromSeconds($session->getCooldownData("kit_" . $data)[0] - time(), 1);
-                    $player->sendMessage(Util::PREFIX . "Vous ne pourrez re-prendre le kit §e" . $data . " §fque dans: §e" . $format);
+                    $player->sendMessage(Util::PREFIX . "Vous ne pourrez re-prendre le kit §6" . $data . " §fque dans: §6" . $format);
                     return;
                 }
 

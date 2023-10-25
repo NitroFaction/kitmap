@@ -49,7 +49,7 @@ class Pack
             }
         });
         $form->setTitle("Pack");
-        $form->setContent(Util::PREFIX . "Vous possedez actuellement §e" . $session->data["pack"] . " §fpack(s)");
+        $form->setContent(Util::PREFIX . "Vous possedez actuellement §6" . $session->data["pack"] . " §fpack(s)");
         $form->addButton("Ouvrir un pack");
         $form->addButton("Acheter un pack");
         $form->addButton("Visualiser les lots");
@@ -76,7 +76,7 @@ class Pack
         }
 
         Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'ouvrir un pack (ses lots: " . $prize . ")");
-        Main::getInstance()->getServer()->broadcastTip(Util::PREFIX . "Le joueur §e" . $player->getName() . " §fvient d'ouvrir un pack !");
+        Main::getInstance()->getServer()->broadcastTip(Util::PREFIX . "Le joueur §6" . $player->getName() . " §fvient d'ouvrir un pack !");
 
         $player->sendMessage(Util::PREFIX . "Vous venez d'ouvrir un pack ! Vos lots ont été mis dans votre inventaire");
         $session->addValue("pack", -1);
@@ -134,12 +134,12 @@ class Pack
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§bKit Elite", 1, 3]);
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§bKit Roi", 1, 4]);
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§bKit Roi", 1, 4]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§eBillet de 1k", 0, 1000]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§eBillet de 5k", 0, 1000]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§eBillet de 10k", 0, 10000]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§eBillet de 25k", 0, 10000]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§eBillet de 30k", 0, 30000]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§e1 Pack", 2, 1]);
+        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§6Billet de 1k", 0, 1000]);
+        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§6Billet de 5k", 0, 1000]);
+        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§6Billet de 10k", 0, 10000]);
+        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§6Billet de 25k", 0, 10000]);
+        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§6Billet de 30k", 0, 30000]);
+        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§61 Pack", 2, 1]);
         $items[] = VanillaItems::RABBIT_HIDE()->setCount(1);
         $items[] = VanillaItems::RABBIT_FOOT()->setCount(1);
         $items[] = VanillaItems::RABBIT_FOOT()->setCount(2);
@@ -229,7 +229,7 @@ class Pack
                     }
 
                     $session->addValue("gem", 75, true);
-                    $player->sendMessage(Util::PREFIX . "Vous venez d'acheter un pack avec §e75 §fgemmes");
+                    $player->sendMessage(Util::PREFIX . "Vous venez d'acheter un pack avec §675 §fgemmes");
 
                     Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter un pack avec des pièces");
                     break;
@@ -240,7 +240,7 @@ class Pack
                     }
 
                     $session->addValue("money", 100000, true);
-                    $player->sendMessage(Util::PREFIX . "Vous venez d'acheter un pack avec §e100k §fpièces");
+                    $player->sendMessage(Util::PREFIX . "Vous venez d'acheter un pack avec §6100k §fpièces");
 
                     Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter un pack avec des gemmes");
                     break;
@@ -253,7 +253,7 @@ class Pack
         });
 
         $form->setTitle("Pack");
-        $form->addLabel(Util::PREFIX . "Êtes vous sur d'acheter un pack?\nPrix d'un pack: §e100k §fpièces ou §a75 §fgemmes\n\nVous possedez §e" . $session->data["gem"] . " §fgemme(s)\nVous possedez §e" . $session->data["money"] . " §fpièces(s)\n");
+        $form->addLabel(Util::PREFIX . "Êtes vous sur d'acheter un pack?\nPrix d'un pack: §6100k §fpièces ou §a75 §fgemmes\n\nVous possedez §6" . $session->data["gem"] . " §fgemme(s)\nVous possedez §6" . $session->data["money"] . " §fpièces(s)\n");
         $form->addDropdown("Méthode de payement", ["gemmes", "pièces"]);
         $form->addToggle("Acheter un pack?", true);
         $player->sendForm($form);
@@ -291,7 +291,7 @@ class Pack
                 $session->addValue("money", $data);
 
                 Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'utiliser un billet de " . $data . " pièces");
-                $player->sendMessage(Util::PREFIX . "Vous venez d'utiliser un billet et recevoir §e" . $data . " §fpièces");
+                $player->sendMessage(Util::PREFIX . "Vous venez d'utiliser un billet et recevoir §6" . $data . " §fpièces");
                 break;
             case 1:
                 $name = match ($data) {
@@ -308,7 +308,7 @@ class Pack
                 $session->addValue("pack", $data);
 
                 Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'utiliser un papier de " . $data . " pack");
-                $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §e" . $data . " §fpack(s)");
+                $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §6" . $data . " §fpack(s)");
                 break;
         }
 

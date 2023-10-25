@@ -27,7 +27,7 @@ class Claim extends FactionCommand
     public function onNormalRun(Player $sender, Session $session, ?string $faction, array $args): void
     {
         if (!is_null(Cache::$factions[$faction]["claim"])) {
-            $sender->sendMessage(Util::PREFIX . "Vous avez déjà un claim. Faites §e/f unclaim§f pour le supprimer");
+            $sender->sendMessage(Util::PREFIX . "Vous avez déjà un claim. Faites §6/f unclaim§f pour le supprimer");
             return;
         } else if (!Faction::canClaim($sender->getPosition())) {
             $sender->sendMessage(Util::PREFIX . "Vous ne pouvez pas claim ici");
@@ -44,8 +44,8 @@ class Claim extends FactionCommand
         Cache::$factions[$faction]["claim"] = $claim[2];
         Cache::$claims[$claim[2]] = $faction;
 
-        Cache::$factions[$faction]["logs"][time()] = "§e" . $sender->getName() . " §fa récupéré un nouveau claim";
-        Faction::broadcastMessage($faction, "§e[§fF§r§e] §fVotre faction vient de récuperer un nouveau claim");
+        Cache::$factions[$faction]["logs"][time()] = "§6" . $sender->getName() . " §fa récupéré un nouveau claim";
+        Faction::broadcastMessage($faction, "§6[§fF§r§6] §fVotre faction vient de récuperer un nouveau claim");
     }
 
     protected function prepare(): void
