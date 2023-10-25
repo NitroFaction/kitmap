@@ -30,12 +30,12 @@ class Top extends BaseCommand
         $i = 1;
 
         $page = !isset($args["page"]) ? 1 : $args["page"];
-        $format = "§7{COUNT}. §e{KEY} §8(§f{VALUE}§8)";
+        $format = "§7{COUNT}. §6{KEY} §8(§f{VALUE}§8)";
 
         $top = self::getTopByCategory($args["categorie"]);
         $response = Util::arrayToPage($top, $page, 10);
 
-        $sender->sendMessage(Util::PREFIX . self::getTopName($args["categorie"]) . " §f(Page §e#" . $page . "§f/§e" . $response[0] . "§f)");
+        $sender->sendMessage(Util::PREFIX . self::getTopName($args["categorie"]) . " §f(Page §6#" . $page . "§f/§6" . $response[0] . "§f)");
 
         foreach ($response[1] as $key => $value) {
             if ($args["categorie"] === "nerd") {
@@ -72,12 +72,12 @@ class Top extends BaseCommand
     public static function getTopName(string $category): string
     {
         return match ($category) {
-            "killstreak" => "Joueurs avec les plus gros §ekillstreak",
-            "faction" => "Faction avec le plus de §epowers",
-            "death" => "Joueurs ayant le plus de §emorts",
-            "money" => "Joueurs ayant le plus de §epièces",
-            "nerd" => "Joueurs ayant le plus de §ejoué",
-            default => "Joueurs ayant le plus de §ekills"
+            "killstreak" => "Joueurs avec les plus gros §6killstreak",
+            "faction" => "Faction avec le plus de §6powers",
+            "death" => "Joueurs ayant le plus de §6morts",
+            "money" => "Joueurs ayant le plus de §6pièces",
+            "nerd" => "Joueurs ayant le plus de §6joué",
+            default => "Joueurs ayant le plus de §6kills"
         };
     }
 

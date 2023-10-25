@@ -36,7 +36,7 @@ class PartnerItem extends BaseCommand
             $item->setCount($amount);
 
             Util::addItem($sender, $item);
-            $sender->sendMessage(Util::PREFIX . "Vous venez de recevoir " . $amount . " §e" . $args["item"]);
+            $sender->sendMessage(Util::PREFIX . "Vous venez de recevoir " . $amount . " §6" . $args["item"]);
         }
     }
 

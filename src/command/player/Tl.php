@@ -38,7 +38,7 @@ class Tl extends BaseCommand
             $y = $sender->getPosition()->getFloorY();
             $z = $sender->getPosition()->getFloorZ();
 
-            Faction::broadcastMessage($faction, "§e[§fF§e] §f" . $sender->getName() . " " . Util::PREFIX . "X: §e" . $x . "§f, Y: §e" . $y . "§f, Z: §e" . $z);
+            Faction::broadcastMessage($faction, "§6[§fF§6] §f" . $sender->getName() . " " . Util::PREFIX . "X: §6" . $x . "§f, Y: §6" . $y . "§f, Z: §6" . $z);
         }
     }
 

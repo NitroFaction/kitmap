@@ -32,7 +32,7 @@ class Question extends BaseCommand
             case 1:
                 $code = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 5)), 0, 10);
 
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Soyez le première à réécrire le code pour gagner §e5k$ §f! Code: §e" . $code);
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Soyez le première à réécrire le code pour gagner §65k$ §f! Code: §6" . $code);
 
                 self::$currentEvent = 1;
                 self::$currentReply = $code;
@@ -41,7 +41,7 @@ class Question extends BaseCommand
                 $array = Cache::$config["words-list"];
                 $word = $array[array_rand($array)];
 
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Soyez le première à trouver le bon mot pour gagner §e5k$ §f! Mot: §e" . str_shuffle($word));
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Soyez le première à trouver le bon mot pour gagner §65k$ §f! Mot: §6" . str_shuffle($word));
 
                 self::$currentEvent = 2;
                 self::$currentReply = $word;
@@ -67,7 +67,7 @@ class Question extends BaseCommand
                         break;
                 }
 
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Soyez le première à répondre au calcul pour gagner §e5k$ §f! Calcul: §e" . $number1 . " " . $method . " " . $number2);
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Soyez le première à répondre au calcul pour gagner §65k$ §f! Calcul: §6" . $number1 . " " . $method . " " . $number2);
 
                 self::$currentEvent = 3;
                 self::$currentReply = $result;

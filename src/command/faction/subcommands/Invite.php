@@ -48,10 +48,10 @@ class Invite extends FactionCommand
             $targetSession->data["invite"][] = $faction;
         }
 
-        $target->sendMessage(Util::PREFIX . "Vous avez été invité à rejoindre la faction §e" . Faction::getFactionUpperName($faction) . "\n§f/f accept §e" . $faction . " §fpour accepter l'invitation");
+        $target->sendMessage(Util::PREFIX . "Vous avez été invité à rejoindre la faction §6" . Faction::getFactionUpperName($faction) . "\n§f/f accept §6" . $faction . " §fpour accepter l'invitation");
 
-        Cache::$factions[$faction]["logs"][time()] = "§e" . $sender->getName() . " §finvite §e" . $target->getName();
-        Faction::broadcastMessage($faction, "§e[§fF§e] §fLe joueur §e" . $target->getName() . " §fvient d'être invité dans votre faction");
+        Cache::$factions[$faction]["logs"][time()] = "§6" . $sender->getName() . " §finvite §6" . $target->getName();
+        Faction::broadcastMessage($faction, "§6[§fF§6] §fLe joueur §6" . $target->getName() . " §fvient d'être invité dans votre faction");
     }
 
     protected function prepare(): void

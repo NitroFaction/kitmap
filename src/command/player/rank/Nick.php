@@ -104,7 +104,7 @@ class Nick extends BaseCommand
     private function nickPlayer(Player $player, string $name): void
     {
         $player->setDisplayName($name);
-        $player->sendMessage(Util::PREFIX . "Vous vous appellez désormais §e" . $name);
+        $player->sendMessage(Util::PREFIX . "Vous vous appellez désormais §6" . $name);
 
         Rank::updateNameTag($player);
         ScoreFactory::updateScoreboard($player);

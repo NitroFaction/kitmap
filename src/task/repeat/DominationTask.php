@@ -26,7 +26,7 @@ class DominationTask
     {
         $lines = [
             "§f ",
-            "§fTemps restant: §e" . Util::formatDurationFromSeconds(DominationTask::$time, 1),
+            "§fTemps restant: §6" . Util::formatDurationFromSeconds(DominationTask::$time, 1),
             "§7 ",
         ];
 
@@ -49,8 +49,8 @@ class DominationTask
                 $actual = "Aucune Faction";
             }
 
-            $lines[] = "§f" . $key . " §e(" . $status . "§e)";
-            $lines[] = "  §r§f§l| §r§e" . $actual . "§" . $i;
+            $lines[] = "§f" . $key . " §6(" . $status . "§6)";
+            $lines[] = "  §r§f§l| §r§6" . $actual . "§" . $i;
         }
 
         $lines[] = "§8 ";
@@ -62,20 +62,19 @@ class DominationTask
 
         foreach ($leaderboard as $key => $value) {
             $i++;
-            $lines[] = "§f" . $i . ". §e" . Faction::getFactionUpperName($key) . "§f: " . $value;
+            $lines[] = "§f" . $i . ". §6" . Faction::getFactionUpperName($key) . "§f: " . $value;
 
             if ($i >= 3) {
                 break;
             }
         }
 
-        $lines[] = "§e ";
+        $lines[] = "§6 ";
         $lines[] = "     §7nitrofaction.fr    ";
 
         return $lines;
     }
 
-    /** @noinspection PhpUnused */
     public static function updateZoneBlocks(string $zone, string $status = null): void
     {
         [$minX, $maxX, $minZ, $maxZ, $y] = array_values(Cache::$config["domination"][$zone]);
@@ -126,7 +125,7 @@ class DominationTask
                         $actual[0] = $faction;
                         $actual[1][1] = time();
 
-                        Main::getInstance()->getServer()->broadcastTip(Util::PREFIX . "La faction §e" . Faction::getFactionUpperName($faction) . " §fest entrain de capturer la zone §e" . $key);
+                        Main::getInstance()->getServer()->broadcastTip(Util::PREFIX . "La faction §6" . Faction::getFactionUpperName($faction) . " §fest entrain de capturer la zone §6" . $key);
                     } else {
                         $actual_faction = $actual[0];
 
@@ -134,7 +133,7 @@ class DominationTask
                             $actual[0] = null;
                             $actual[1][1] = time();
                         } else if (time() - $actual[1][1] >= 5) {
-                            Main::getInstance()->getServer()->broadcastTip(Util::PREFIX . "La faction §e" . Faction::getFactionUpperName($actual_faction) . " §fa capturé la zone §e" . $key);
+                            Main::getInstance()->getServer()->broadcastTip(Util::PREFIX . "La faction §6" . Faction::getFactionUpperName($actual_faction) . " §fa capturé la zone §6" . $key);
 
                             $actual[0] = $actual_faction;
                             $actual[1][0] = "captured";
@@ -150,7 +149,7 @@ class DominationTask
                         $actual[1][1] = time();
                         $actual[1][2] = [];
                     } else if (time() - $actual[1][1] >= 5) {
-                        Main::getInstance()->getServer()->broadcastTip(Util::PREFIX . "La faction §e" . Faction::getFactionUpperName($contest_faction) . " §fa contesté la zone §e" . $key . " §fappartenant à la faction §e" . Faction::getFactionUpperName($actual[0]));
+                        Main::getInstance()->getServer()->broadcastTip(Util::PREFIX . "La faction §6" . Faction::getFactionUpperName($contest_faction) . " §fa contesté la zone §6" . $key . " §fappartenant à la faction §6" . Faction::getFactionUpperName($actual[0]));
 
                         $actual[0] = null;
                         $actual[1][0] = "uncaptured";
@@ -178,7 +177,7 @@ class DominationTask
                         $actual[1][1] = time();
                         $actual[1][2] = [$contest_faction];
 
-                        Main::getInstance()->getServer()->broadcastTip(Util::PREFIX . "La faction §e" . Faction::getFactionUpperName($contest_faction) . " §fconteste la zone §e" . $key . " §fappartenant à la faction §e" . Faction::getFactionUpperName($actual[0]));
+                        Main::getInstance()->getServer()->broadcastTip(Util::PREFIX . "La faction §6" . Faction::getFactionUpperName($contest_faction) . " §fconteste la zone §6" . $key . " §fappartenant à la faction §6" . Faction::getFactionUpperName($actual[0]));
                     }
                     break;
             }
@@ -191,9 +190,9 @@ class DominationTask
             arsort($leaderboard);
 
             $leaderboard = array_slice(array_keys($leaderboard), 0, 3);
-            $factions = implode("§f, §e", $leaderboard);
+            $factions = implode("§f, §6", $leaderboard);
 
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "L'event §edomination §fest terminé ! Voici les factions gagnantes: §e" . $factions);
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "L'event §6domination §fest terminé ! Voici les factions gagnantes: §6" . $factions);
             $i = 0;
 
             foreach ($leaderboard as $key) {
@@ -201,7 +200,7 @@ class DominationTask
                 $power = 200 - (($i - 1) * 50);
 
                 Faction::addPower($key, $power);
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La faction §e " . Faction::getFactionUpperName($key) . " §fqui est arrivé §e" . $i . " §fà l'event §edomination §fa remporté §e" . $power . " §fpowers");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La faction §6 " . Faction::getFactionUpperName($key) . " §fqui est arrivé §6" . $i . " §fà l'event §6domination §fa remporté §6" . $power . " §fpowers");
             }
 
             Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "À bientôt pour un prochain event !");

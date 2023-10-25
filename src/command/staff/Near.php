@@ -37,11 +37,11 @@ class Near extends BaseCommand
             $players = $this->getNearestPlayers($sender, $distance);
 
             if (count($players) === 0) {
-                $sender->sendMessage(Util::PREFIX . "Il n'y a personne dans le rayon de §e" . $distance . " §fautour de vous");
+                $sender->sendMessage(Util::PREFIX . "Il n'y a personne dans le rayon de §6" . $distance . " §fautour de vous");
                 return;
             }
 
-            $sender->sendMessage(Util::PREFIX . "Il y a §e" . count($players) . " §fjoueurs dans le rayon de §e" . $distance . " §fatour de vous: §e" . implode("§f, §e", $players));
+            $sender->sendMessage(Util::PREFIX . "Il y a §6" . count($players) . " §fjoueurs dans le rayon de §6" . $distance . " §fatour de vous: §6" . implode("§f, §6", $players));
         }
     }
 
@@ -52,9 +52,9 @@ class Near extends BaseCommand
         foreach ($player->getWorld()->getPlayers() as $target) {
             if ($player !== $target && $distance >= $target->getPosition()->distance($player->getPosition())) {
                 if (Session::get($target)->data["staff_mod"][0]) {
-                    $result[] = $target->getName() . " (§fStaffMode§e)";
+                    $result[] = $target->getName() . " (§fStaffMode§6)";
                 } else if ($target->getDisplayName() !== $target->getName()) {
-                    $result[] = $target->getDisplayName() . " (§fNick de: " . $target->getName() . "§e)";
+                    $result[] = $target->getDisplayName() . " (§fNick de: " . $target->getName() . "§6)";
                 } else {
                     $result[] = $target->getName();
                 }

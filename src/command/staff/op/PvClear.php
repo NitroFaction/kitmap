@@ -39,7 +39,7 @@ class PvClear extends BaseCommand
             $session = Session::get($player);
             unset($session->data["private_vaults"]);
 
-            $sender->sendMessage(Util::PREFIX . "Vous venez de clear les pv de §e" . $sender->getName());
+            $sender->sendMessage(Util::PREFIX . "Vous venez de clear les pv de §6" . $sender->getName());
         }
     }
 

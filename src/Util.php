@@ -48,7 +48,7 @@ use Symfony\Component\Filesystem\Path;
 
 class Util
 {
-    const PREFIX = "§e§l» §r§f";
+    const PREFIX = "§6§l» §r§f";
 
     public static function arrayToPage(array $array, ?int $page, int $separator): array
     {
@@ -321,7 +321,7 @@ class Util
         foreach ($array as $value) {
             $currentPath = Path::join($dir, $value);
 
-            if ($value === "." || $value === '..') {
+            if ($value === "." || $value === "..") {
                 continue;
             } else if (is_file($currentPath)) {
                 $result[] = $currentPath;

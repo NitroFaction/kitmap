@@ -56,7 +56,7 @@ class Addvalue extends BaseCommand
             return;
         }
 
-        $sender->sendMessage(Util::PREFIX . "Vous venez d'ajouter §e" . $amount . " §f" . $data . " au joueur §e" . $target);
+        $sender->sendMessage(Util::PREFIX . "Vous venez d'ajouter §6" . $amount . " §f" . $data . " au joueur §6" . $target);
         Addvalue::addValue($sender->getName(), $target, $data, $amount);
     }
 
@@ -68,9 +68,9 @@ class Addvalue extends BaseCommand
             Session::get($player)->addValue($column, $value);
 
             if ($value > 0) {
-                $player->sendMessage(Util::PREFIX . "Le staff §e" . $staff . " §fvient de vous ajouter §e" . $value . " §f" . $column);
+                $player->sendMessage(Util::PREFIX . "Le staff §6" . $staff . " §fvient de vous ajouter §6" . $value . " §f" . $column);
             } else {
-                $player->sendMessage(Util::PREFIX . "Le staff §e" . $staff . " §fvient de vous retirer §e" . $value . " §f" . $column);
+                $player->sendMessage(Util::PREFIX . "Le staff §6" . $staff . " §fvient de vous retirer §6" . $value . " §f" . $column);
             }
         } else {
             $file = Util::getFile("data/players/" . $key);

@@ -162,7 +162,7 @@ class PrivateVaults extends BaseCommand
 
             $session->data["private_vaults"][$vault]["name"] = $name;
 
-            $player->sendMessage(Util::PREFIX . "Vous venez de renommer votre coffre privé §e" . $name . " §f(" . $vault . ")");
+            $player->sendMessage(Util::PREFIX . "Vous venez de renommer votre coffre privé §6" . $name . " §f(" . $vault . ")");
         });
         $form->setTitle("Coffres Privés");
         $form->addInput(Util::PREFIX . "Choissisez le nouveau nom du coffre:");

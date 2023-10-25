@@ -134,7 +134,7 @@ class Sanction
             $data = Session::get($targetPlayer)->data;
             $target = strtolower($targetPlayer->getName());
 
-            $targetPlayer->kick("§fVous êtes banni de nitrofaction.\n\n§fTemps restant: §e" . $format . "\n§fRaison: §e" . $sanction);
+            $targetPlayer->kick("§fVous êtes banni de nitrofaction.\n\n§fTemps restant: §6" . $format . "\n§fRaison: §6" . $sanction);
             Main::getInstance()->getServer()->getNetwork()->blockAddress($targetPlayer->getNetworkSession()->getIp(), min(300, $time));
         } else {
             $file = Util::getFile("data/players/" . $target);
@@ -148,7 +148,7 @@ class Sanction
         }
 
         Cache::$bans[$target] = [($player), time() + $time, $sanction];
-        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §e" . $target . " §fa été banni pendant §e" . $format . "§f par §e" . $player . "§f, raison: §e" . $sanction);
+        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §6" . $target . " §fa été banni pendant §6" . $format . "§f par §6" . $player . "§f, raison: §6" . $sanction);
 
         $embed = new EmbedBuilder();
         $embed->setDescription("**Ban**\n\n**Joueur**\n" . $target . "\n**Temps**\n" . $format . "\n**Raison**\n" . $sanction . "\n\n*Banni par le staff: " . $player . "*");
@@ -166,10 +166,10 @@ class Sanction
             return;
         }
 
-        $targetPlayer->kick("§fVous avez été expulsé de nitrofaction.\n\nPar: §e" . $player->getName() . "\n§fRaison: §e" . $sanction);
-        $player->sendMessage(Util::PREFIX . "Vous avez expulsé du serveur §e" . $targetPlayer->getName());
+        $targetPlayer->kick("§fVous avez été expulsé de nitrofaction.\n\nPar: §6" . $player->getName() . "\n§fRaison: §6" . $sanction);
+        $player->sendMessage(Util::PREFIX . "Vous avez expulsé du serveur §6" . $targetPlayer->getName());
 
-        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §e" . $targetPlayer->getName() . " §fa été expulsé du serveur par §e" . $player->getName() . "§f, raison: §e" . $sanction);
+        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §6" . $targetPlayer->getName() . " §fa été expulsé du serveur par §6" . $player->getName() . "§f, raison: §6" . $sanction);
 
         $embed = new EmbedBuilder();
         $embed->setDescription("**Kick**\n\n**Joueur**\n" . $targetPlayer->getName() . "\n**Raison**\n" . $sanction . "\n\n*Kick par le staff: " . $player->getName() . "*");
@@ -196,9 +196,9 @@ class Sanction
         }
 
         $session->setCooldown("mute", $time);
-        $targetPlayer->sendMessage(Util::PREFIX . "Vous avez été mute pendant §e" . $format . "§f, par §e" . $player->getName() . "§f, raison: §e" . $sanction);
+        $targetPlayer->sendMessage(Util::PREFIX . "Vous avez été mute pendant §6" . $format . "§f, par §6" . $player->getName() . "§f, raison: §6" . $sanction);
 
-        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §e" . $targetPlayer->getName() . " §fa été mute pendant §e" . $format . " §fpar §e" . $player->getName() . "§f, raison: §e" . $sanction);
+        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §6" . $targetPlayer->getName() . " §fa été mute pendant §6" . $format . " §fpar §6" . $player->getName() . "§f, raison: §6" . $sanction);
 
         $embed = new EmbedBuilder();
         $embed->setDescription("**Mute**\n\n**Joueur**\n" . $targetPlayer->getName() . "\n**Temps**\n" . $format . "\n**Raison**\n" . $sanction . "\n\n*Mute par le staff: " . $player->getName() . "*");

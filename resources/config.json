@@ -13,8 +13,8 @@
       "pv": 2
     },
     "champion": {
-      "gamertag": "§e[§7{fac}§e] §7{name}",
-      "chat": "§e[§7{fac}§e][Champion] §7{name}§e:§7 {msg}",
+      "gamertag": "§6[§7{fac}§6] §7{name}",
+      "chat": "§6[§7{fac}§6][Champion] §7{name}§6:§7 {msg}",
       "outpost": 5000,
       "tax": 4,
       "pack": 1,
@@ -61,8 +61,8 @@
       "chat": "§a[{fac}][Guide] §a{name}:§a {msg}"
     },
     "moderateur": {
-      "gamertag": "§e[{fac}] {name}",
-      "chat": "§e[{fac}][Modo] §e{name}:§e {msg}"
+      "gamertag": "§6[{fac}] {name}",
+      "chat": "§6[{fac}][Modo] §6{name}:§6 {msg}"
     },
     "sm": {
       "gamertag": "§6[{fac}] {name}",
@@ -181,8 +181,10 @@
     "mbappe",
     "myma",
     "nitropablo",
+    "sempiternel",
     "ganni",
     "claim",
+    "maxoooz",
     "skyblock",
     "trap",
     "money",
@@ -203,6 +205,8 @@
     "train",
     "tarte",
     "sandwich",
+    "neosse",
+    "lardon",
     "plage",
     "lait",
     "araignee",
@@ -235,6 +239,13 @@
     "coffre",
     "victoire",
     "france",
+    "palestine",
+    "naruto",
+    "luffy",
+    "upamecano",
+    "tartiflette",
+    "cochon",
+    "contributeur",
     "quebec",
     "belgique",
     "ecole",
@@ -262,19 +273,19 @@
     "paradis"
   ],
   "partneritems": {
-    "ninjastar": "nether_star:\n§r§7Faites un clic droit sur cet item pour\npour vous téléporter au dernier joueur que vous avez frappé ou\nqui vous a frappé durant les 15 dernières secondes\n\n§r§7Obtenable dans les §epacks:§r§dNinjaStar:1",
-    "repairstick": "stick:\n§r§7Faites un clic droit sur cet item pour\nque 1 pièce au hasard de votre inventaire\nse répare\n\n§r§7Obtenable dans les §epacks:§r§aRepairStick:1",
-    "rocket": "red_dye:\n§r§7Faites un clic droit sur cet item pour\nvous expulser dans les airs\n\n§r§7Obtenable dans les §epacks:§r§cRocket:1",
-    "focusmode": "golden_nugget:\n§r§7Faites un clic droit sur cet item pour\nque le dernier joueur que vous avez frappé prenne\n15% de dégats de plus lorsque vous le frappez\nles 10 prochaine secondes\n\n§r§7Obtenable dans les §epacks:§r§2FocusMode:1",
-    "resistance": "iron_ingot:\n§r§7Faites un clic droit sur cet item pour\nobtenir resistance III pendant 5 à 10 secondes\n\n§r§7Obtenable dans les §epacks:§r§6Resistance III:1",
-    "strength": "blaze_powder:\n§r§7Faites un clic droit sur cet item pour\nobtenir force II pendant 5 à 10 secondes\n\n§r§7Obtenable dans les §epacks:§r§cForce II:1",
-    "timewarp": "feather:\n§r§7Faites un clic droit sur cet item pour\nactiver un timer de 3 secondes qui vous teleportera à lemplacement de\nvotre dernière perle des 15 dernières secondes\n\n§r§7Obtenable dans les §epacks:§r§bTime-Warp:1",
-    "switchball": "snowball:\n§r§7Lancer sur un autre joueur\npour inverser sa position et la votre\n\n§r§7Obtenable dans les §epacks:§r§cSwitchBall:1",
-    "antibackball": "egg:\n§r§7Lancer sur un autre joueur\npour le freeze pendant 2 secondes\net le mettre en combat\n\n§r§7Obtenable dans les §epacks:§r§eAntiBackBall:1",
-    "antibuild": "blaze_rod:\n§r§7Frappez un joueur pour quil ne puisse\nplus placer de blocs pendant 15 secondes\n\n§r§7Obtenable dans les §epacks:§r§4AntiBuild:2",
-    "partneritemblocker": "redstone:\n§r§7Frappez un joueur et il ne pourra\nplus utiliser de partener items pendant 30 secondes\n\n§r§7Obtenable dans les §epacks:§r§cPartnerItem Blocker:2",
-    "antipearl": "ender_pearl:\n§r§7Frappez un joueur et il ne pourra plus\nutiliser de pearl pendant 30 secondes\n\n§r§7Obtenable dans les §epacks:§r§bAntiPearl:2",
-    "pumpkinaxe": "golden_axe:\n§r§7Frappez un joueur et son casque sera\nchanger par une citrouille pendant 5 secondes\n\n§r§7Obtenable dans les §epacks:§r§6Pumpkin Axe:2"
+    "ninjastar": "nether_star:\n§r§7Faites un clic droit sur cet item pour\npour vous téléporter au dernier joueur que vous avez frappé ou\nqui vous a frappé durant les 15 dernières secondes\n\n§r§7Obtenable dans les §6packs:§r§dNinjaStar:1",
+    "repairstick": "stick:\n§r§7Faites un clic droit sur cet item pour\nque 1 pièce au hasard de votre inventaire\nse répare\n\n§r§7Obtenable dans les §6packs:§r§aRepairStick:1",
+    "rocket": "red_dye:\n§r§7Faites un clic droit sur cet item pour\nvous expulser dans les airs\n\n§r§7Obtenable dans les §6packs:§r§cRocket:1",
+    "focusmode": "golden_nugget:\n§r§7Faites un clic droit sur cet item pour\nque le dernier joueur que vous avez frappé prenne\n15% de dégats de plus lorsque vous le frappez\nles 10 prochaine secondes\n\n§r§7Obtenable dans les §6packs:§r§2FocusMode:1",
+    "resistance": "iron_ingot:\n§r§7Faites un clic droit sur cet item pour\nobtenir resistance III pendant 5 à 10 secondes\n\n§r§7Obtenable dans les §6packs:§r§6Resistance III:1",
+    "strength": "blaze_powder:\n§r§7Faites un clic droit sur cet item pour\nobtenir force II pendant 5 à 10 secondes\n\n§r§7Obtenable dans les §6packs:§r§cForce II:1",
+    "timewarp": "feather:\n§r§7Faites un clic droit sur cet item pour\nactiver un timer de 3 secondes qui vous teleportera à lemplacement de\nvotre dernière perle des 15 dernières secondes\n\n§r§7Obtenable dans les §6packs:§r§bTime-Warp:1",
+    "switchball": "snowball:\n§r§7Lancer sur un autre joueur\npour inverser sa position et la votre\n\n§r§7Obtenable dans les §6packs:§r§cSwitchBall:1",
+    "antibackball": "egg:\n§r§7Lancer sur un autre joueur\npour le freeze pendant 2 secondes\net le mettre en combat\n\n§r§7Obtenable dans les §6packs:§r§6AntiBackBall:1",
+    "antibuild": "blaze_rod:\n§r§7Frappez un joueur pour quil ne puisse\nplus placer de blocs pendant 15 secondes\n\n§r§7Obtenable dans les §6packs:§r§4AntiBuild:2",
+    "partneritemblocker": "redstone:\n§r§7Frappez un joueur et il ne pourra\nplus utiliser de partener items pendant 30 secondes\n\n§r§7Obtenable dans les §6packs:§r§cPartnerItem Blocker:2",
+    "antipearl": "ender_pearl:\n§r§7Frappez un joueur et il ne pourra plus\nutiliser de pearl pendant 30 secondes\n\n§r§7Obtenable dans les §6packs:§r§bAntiPearl:2",
+    "pumpkinaxe": "golden_axe:\n§r§7Frappez un joueur et son casque sera\nchanger par une citrouille pendant 5 secondes\n\n§r§7Obtenable dans les §6packs:§r§6Pumpkin Axe:2"
   },
   "elevator": {
     "cookie": "49.5:124:78.5",
@@ -350,7 +361,7 @@
   },
   "events": {
     "nexus": {
-      "description": "§r§fInformations:\n\nTuez lentité qui apparaît dans la place au centre,\nlorsque cette entité naura plus de vie elle donnera\n§e30 §fitems aléatoire provenant des lots de §epack §f!\n\nHoraires:\n\nCet event se lance toutes les 2h à partir de 13h jusquà 23h",
+      "description": "§r§fInformations:\n\nTuez lentité qui apparaît dans la place au centre,\nlorsque cette entité naura plus de vie elle donnera\n§630 §fitems aléatoire provenant des lots de §6pack §f!\n\nHoraires:\n\nCet event se lance toutes les 2h à partir de 13h jusquà 23h",
       "item": "diamond_sword",
       "positions": [
         "76.5:65:82.5:360:0",
@@ -361,7 +372,7 @@
       "slot": 0
     },
     "koth": {
-      "description": "§r§fInformations:\n\nRestez le plus longtemps possible sur la platforme de §e5x5 §fau\nbout de 3minutes dessus vous remportez §e25k §fpièces,\nentre §e15 §fet §e25 §fde power pour votre faction et §e2 §fpacks !\n\nHoraires:\n\nCet event se lance toutes les heures à partir de 12h30 jusquà 23h30",
+      "description": "§r§fInformations:\n\nRestez le plus longtemps possible sur la platforme de §65x5 §fau\nbout de 3minutes dessus vous remportez §625k §fpièces,\nentre §615 §fet §625 §fde power pour votre faction et §62 §fpacks !\n\nHoraires:\n\nCet event se lance toutes les heures à partir de 12h30 jusquà 23h30",
       "item": "netherite_sword",
       "positions": [
         "-114.5:65:102.5:135:0",
@@ -371,7 +382,7 @@
       "slot": 1
     },
     "domination": {
-      "description": "§r§fInformations:\n\nCet event dure 15 minutes, vous devez capturé les §e3 §fzones\navec votre faction et obtenir le plus de point, les §e3 §ffactions\nobtiendrons du power à la fin de levent.\n\nHoraires:\n\nCet event se lance tous les jours à 18h et à 21h sauf si il ny a pas plus de §e30 §fjoueurs",
+      "description": "§r§fInformations:\n\nCet event dure 15 minutes, vous devez capturé les §63 §fzones\navec votre faction et obtenir le plus de point, les §63 §ffactions\nobtiendrons du power à la fin de levent.\n\nHoraires:\n\nCet event se lance tous les jours à 18h et à 21h sauf si il ny a pas plus de §630 §fjoueurs",
       "item": "iron_sword",
       "positions": [
         "110.5:65:47.5:180:0",
@@ -384,7 +395,7 @@
       "slot": 3
     },
     "outpost": {
-      "description": "§r§fInformations:\n\nCapturez avec laide de votre faction la platforme !\nLorsque loutpost est capturé par une faction, celle-ci\ngagne §e8 §fpowers tous les 5 minutes et les joueurs\nconnectés de la faction gagnent entre §e5k §fet §e7.5k §fpièces !\n\nHoraires:\n\nCet event est 24h sur 24 lancé",
+      "description": "§r§fInformations:\n\nCapturez avec laide de votre faction la platforme !\nLorsque loutpost est capturé par une faction, celle-ci\ngagne §68 §fpowers tous les 5 minutes et les joueurs\nconnectés de la faction gagnent entre §65k §fet §67.5k §fpièces !\n\nHoraires:\n\nCet event est 24h sur 24 lancé",
       "item": "golden_sword",
       "positions": [
         "-60.5:65:150.5:180:0",
@@ -396,49 +407,50 @@
     }
   },
   "zones": {
-    "spawn": "83:-64:-111:-74:355:37:map",
-    "koth": "175:60:-86:169:70:-80:map",
-    "outpost": "65:60:-184:59:70:-190:map",
-    "blocks-tp": "-30:63:-38:-30:66:-37:map",
-    "mine-tp": "-31:62:-30:-31:66:-26:map",
-    "money-zone": "0:60:-126:-2:65:-128:map"
+    "spawn": "-74:-999:-74:74:999:74:map",
+    "koth": "-131:68:58:-135:73:54:map",
+    "outpost": "-58:64:123:-62:68:127:map",
+    "mine-tp": "-12:71:49:-12:75:47:map",
+    "blocks-tp": "11:70:49:13:70:47:map",
+    "money-zone": "1:65:83:-1:69:85:map"
   },
   "floatings": {
-    "62.5:63.5:-186.5:map": "outpost",
-    "172.5:63.5:-82.5:map": "koth",
-    "-0.5:65:-55.5:map": "pack",
-    "-144.5:63.5:-17.5:map": "domination",
-    "-170.5:67.5:-12.5:map": "domination",
-    "-193.5:63.5:-16.5:map": "domination",
-    "-36.5:62.5:-27.5:map": "mine",
-    "-34.5:63:-37:map": "blocs",
-    "-19.5:73.5:-14.5:map": "teleporteur",
+    "-59.5:66:125.5:map": "outpost",
+    "-132.5:70:56.5:map": "koth",
+    "0.5:71:23.5:map": "pack",
+    "111.5:65:0.5:map": "domination",
+    "112.5:74:-31.5:map": "domination",
+    "108.5:72:18.5:map": "domination",
+    "-9.5:72:48.5:map": "mine",
+    "12.5:72:48.5:map": "blocs",
     "10055.5:7:10058:mine": "blocks",
-    "-0.5:64.5:-126.5:map": "money-zone"
+    "0.5:67.5:84.5:map": "money-zone"
   },
   "domination": {
     "Alpha": {
-      "minX": -196,
-      "maxX": -192,
-      "minZ": -19,
-      "maxZ": -15,
-      "y": 61
+      "minX": 110,
+      "maxX": 114,
+      "minZ": -34,
+      "maxZ": -30,
+      "y": 72
     },
     "Bravo": {
-      "minX": -173,
-      "maxX": -169,
-      "minZ": -15,
-      "maxZ": -11,
-      "y": 65
+      "minX": 109,
+      "maxX": 113,
+      "minZ": -2,
+      "maxZ": 2,
+      "y": 63
     },
     "Charlie": {
-      "minX": -147,
-      "maxX": -143,
-      "minZ": -20,
-      "maxZ": -16,
-      "y": 61
+      "minX": 106,
+      "maxX": 110,
+      "minZ": 16,
+      "maxZ": 20,
+      "y": 70
     }
   },
+  "pack": "0:69:23",
+  "nexus": "76.5:69:117.5",
   "permissions": {
     "delete": "Supprimer la faction §c(Risqué)",
     "leader": "Promouvoir chef un membre §c(Risqué)",
@@ -482,11 +494,11 @@
     "29.5:121.3:137.5:247"
   ],
   "forgeron-positions": [
-    "-13.5:56:-30.5:180",
-    "21.5:70:-106.5:360",
-    "-63.5:65:-66.5:270",
-    "52.5:66:10.5:90",
-    "48.5:62:-51.5:90"
+    "55.5:75:-35.5:0",
+    "-43.5:74:51.5:270",
+    "-43.5:73:-2.5:300",
+    "29.5:70:27.5:90",
+    "16.5:70:73.5:90"
   ],
   "sanctions": {
     "ban": {

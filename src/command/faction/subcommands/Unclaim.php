@@ -36,8 +36,8 @@ class Unclaim extends FactionCommand
         Cache::$factions[$faction]["claim"] = null;
         unset(Cache::$claims[$claim]);
 
-        Cache::$factions[$faction]["logs"][time()] = "§e" . $sender->getName() . " §funclaim l'ancien claim";
-        Faction::broadcastMessage($faction, "§e[§fF§r§e] §fVotre faction vient de supprimer votre claim actuel");
+        Cache::$factions[$faction]["logs"][time()] = "§6" . $sender->getName() . " §funclaim l'ancien claim";
+        Faction::broadcastMessage($faction, "§6[§fF§r§6] §fVotre faction vient de supprimer votre claim actuel");
     }
 
     protected function prepare(): void

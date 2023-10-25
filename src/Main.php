@@ -11,9 +11,6 @@ use Kitmap\handler\Rank;
 use Kitmap\listener\PlayerListener;
 use Kitmap\task\repeat\PlayerTask;
 use muqsit\invmenu\InvMenuHandler;
-use pocketmine\data\bedrock\EnchantmentIdMap;
-use pocketmine\item\enchantment\Enchantment;
-use pocketmine\item\enchantment\ItemFlags;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\SingletonTrait;
 

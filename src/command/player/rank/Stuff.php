@@ -41,7 +41,7 @@ class Stuff extends BaseCommand
                 return;
             } else if ($session->inCooldown("stuff")) {
                 $format = Util::formatDurationFromSeconds($session->getCooldownData("stuff")[0] - time());
-                $sender->sendMessage(Util::PREFIX . "Vous ne pourrez ré-utiliser la commande §e/stuff §fque dans: §e" . $format);
+                $sender->sendMessage(Util::PREFIX . "Vous ne pourrez ré-utiliser la commande §6/stuff §fque dans: §6" . $format);
                 return;
             } else if (!$player instanceof Player) {
                 $sender->sendMessage(Util::PREFIX . "Le joueur indiqué n'est pas connecté sur le serveur");

@@ -58,10 +58,10 @@ class Kick extends FactionCommand
             Rank::updateNameTag($target);
         }
 
-        Cache::$factions[$faction]["logs"][time()] = "§e" . $sender->getName() . " §fkick §e" . $args["membre"];
+        Cache::$factions[$faction]["logs"][time()] = "§6" . $sender->getName() . " §fkick §6" . $args["membre"];
 
         unset(Cache::$factions[$faction]["members"][$target_rank . "s"][array_search($args["membre"], Cache::$factions[$faction]["members"][$target_rank . "s"])]);
-        Faction::broadcastMessage($faction, "§e[§fF§e] §fLe joueur §e" . $args["membre"] . " §fvient d'être expulsé de votre faction");
+        Faction::broadcastMessage($faction, "§6[§fF§6] §fLe joueur §6" . $args["membre"] . " §fvient d'être expulsé de votre faction");
     }
 
     protected function prepare(): void

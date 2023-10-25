@@ -40,7 +40,7 @@ class Clearlagg extends BaseCommand
             }
         }
 
-        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§e" . $count . " §fentitée(s) ont été supprimée(s) lors d'un nettoyage forcé");
+        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6" . $count . " §fentitée(s) ont été supprimée(s) lors d'un nettoyage forcé");
     }
 
     protected function prepare(): void
