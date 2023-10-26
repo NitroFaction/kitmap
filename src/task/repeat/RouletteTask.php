@@ -27,7 +27,9 @@ class RouletteTask extends Task
     private int $time;
     private int $cooldown = 0;
     private int $close = 40;
+    private int $resultColorId;
     private bool $started = false;
+    private ?bool $win = null;
     private bool $force = false;
 
     public function __construct(Player $player, Inventory $inventory, int $bet, array $roulette)
@@ -65,23 +67,18 @@ class RouletteTask extends Task
                 } else {
                     $this->doEndAnimation();
                     if ($this->close === 40) {
-                        $this->player->broadcastSound(new BellRingSound(), [$this->player]);
                         $this->update();
-                    }
-                    if ($this->close <= 0) {
                         $resultColor = $this->getResultColor();
                         $resultColorIds = [
                             DyeColor::RED()->name() => 0,
                             DyeColor::BLACK()->name() => 1,
                             DyeColor::LIME()->name() => 2
                         ];
-                        $resultColorId = $resultColorIds[$resultColor->name()];
-                        if (intval(Casino::$games[$this->name]["color"]) === $resultColorId) {
-                            $gain = $resultColorId === 2 ? $this->bet * 14 : $this->bet * 2;
-                            Casino::winGame($this->player, "roulette", $gain);
-                        } else {
-                            Casino::loseGame($this->player, "roulette");
-                        }
+                        $this->resultColorId = $resultColorIds[$resultColor->name()];
+                        $this->win = intval(Casino::$games[$this->name]["color"]) === $this->resultColorId;
+                        $this->player->broadcastSound(new BellRingSound(), [$this->player]);
+                    }
+                    if ($this->close <= 0) {
                         $this->getHandler()?->cancel();
                     } else {
                         $this->close--;
@@ -99,9 +96,16 @@ class RouletteTask extends Task
     public function onCancel(): void
     {
         if ($this->player->isConnected()) {
-            if ($this->force) {
+            if ($this->force && is_null($this->win)) {
                 Session::get($this->player)->addValue("money", $this->bet);
                 $this->player->sendMessage(Util::PREFIX . "Votre mise à la Roulette a été annulée, vous venez de récupérer votre mise initiale");
+            } else {
+                if ($this->win) {
+                    $gain = $this->resultColorId === 2 ? $this->bet * 14 : $this->bet * 2;
+                    Casino::winGame($this->player, "roulette", $gain);
+                } else {
+                    Casino::loseGame($this->player, "roulette");
+                }
             }
             if (array_key_exists($this->name, Casino::$games)) {
                 unset(Casino::$games[$this->name]);

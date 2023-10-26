@@ -66,12 +66,9 @@ class Enchant extends BaseCommand
 
         if ($item instanceof Sword) {
             $form->addButton("Tranchant", label: EnchantmentIds::SHARPNESS . ";Tranchant;2");
-<<<<<<< Updated upstream
             $form->addButton("Pilleur", label: CustomEnchantmentIds::LOOTER . ";Pilleur;3");
             $form->addButton("Foudroiement", label: CustomEnchantmentIds::LIGHTNING_STRIKE . ";Foudroiement;3");
             $form->addButton("Arès", label: CustomEnchantmentIds::ARES . ";Arès;1");
-=======
->>>>>>> Stashed changes
         } else if ($item instanceof Armor) {
             $form->addButton("Protection", label: EnchantmentIds::PROTECTION . ";Protection;2");
         } else if ($item instanceof Pickaxe || $item instanceof Axe || $item instanceof Shovel) {
@@ -79,12 +76,6 @@ class Enchant extends BaseCommand
         }
 
         $form->addButton("Solidité", label: EnchantmentIds::UNBREAKING . ";Solidité;3");
-
-        if ($item instanceof Sword) {
-            $form->addButton("Pilleur", label: CustomEnchantmentIds::LOOTER . ";Pilleur;3");
-            $form->addButton("Foudroiement", label: CustomEnchantmentIds::LIGHTNING_STRIKE . ";Foudroiement;3");
-            $form->addButton("Arès", label: CustomEnchantmentIds::ARES . ";Arès;1");
-        }
 
         $player->sendForm($form);
     }
@@ -189,7 +180,6 @@ class Enchant extends BaseCommand
 
         $item->addEnchantment($enchantInstance);
 
-<<<<<<< Updated upstream
         if (is_string($enchantName)) {
             $lore = $item->getLore();
             $lore[] = $formattedEnchant;
@@ -202,8 +192,6 @@ class Enchant extends BaseCommand
             $player->getInventory()->removeItem(VanillaItems::EMERALD()->setCount($price));
         }
 
-=======
->>>>>>> Stashed changes
         $player->getInventory()->setItemInHand($item);
         $player->sendMessage(Util::PREFIX . "L'item dans votre main a été enchanté");
     }
