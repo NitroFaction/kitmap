@@ -135,9 +135,9 @@ class Pack
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§bKit Roi", 1, 4]);
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§bKit Roi", 1, 4]);
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§6Billet de 1k", 0, 1000]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§6Billet de 5k", 0, 1000]);
+        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§6Billet de 5k", 0, 5000]);
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§6Billet de 10k", 0, 10000]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§6Billet de 25k", 0, 10000]);
+        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§6Billet de 25k", 0, 25000]);
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§6Billet de 30k", 0, 30000]);
         $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§61 Pack", 2, 1]);
         $items[] = VanillaItems::RABBIT_HIDE()->setCount(1);

@@ -370,7 +370,7 @@ class Casino
                 Server::getInstance()->broadcastMessage(Util::PREFIX . "§6" . $player->getName() . " §fa remporté §6" . $formattedFinalGain . " pièces §fen réussissant §6" . $score . " palier(s) §fau §6Dragon Tower §f! §8(§6/casino§8)");
                 break;
             case "mines":
-                if ($multiplier >= 1.0) {
+                if ($multiplier > 1) {
                     Server::getInstance()->broadcastMessage(Util::PREFIX . "§6" . $player->getName() . " §fa remporté §6" . $formattedFinalGain . " pièces §8[§7x" . $multiplier . "§8] §fen esquivant §6" . $score . "/" . $scoreToComplete . " mine(s) §fdans les §6Mines §f! §8(§6/casino§8)");
                 }
                 break;
@@ -437,17 +437,15 @@ class Casino
             $formattedBet = Util::formatNumberWithSuffix($bet);
 
             if ($score > 0) {
-                $multiplier = round((round(25 / $scoreToComplete, 2) - 1) * $score, 2);
-                $possibleGain = round((($bet * $multiplier) * 0.85) * 0.90, 2);
-                $possibleMultiplier = round($possibleGain / $bet, 2);
+                $multiplier = max(1, round((round(25 / $scoreToComplete, 2) - 1) * $score, 2) + 1);
             } else {
-                $possibleGain = 0;
-                $possibleMultiplier = 0;
+                $multiplier = 1;
             }
 
-            $gainColor = $possibleGain >= $bet ? TextFormat::GREEN : TextFormat::RED;
-            $collectGainBlock = VanillaBlocks::CONCRETE()->setColor(DyeColor::YELLOW())->asItem()->setCustomName("§r§l§6» §r§6Récupérer ses gains §l§6«§r\n§l§6| §r§fMise initial§8: §b" . $formattedBet . "\n§l§6| §r§fRécompense§8: " . $gainColor . Util::formatNumberWithSuffix($possibleGain) . " §8(§7x" . $possibleMultiplier . "§8)");
+            $possibleGain = round((($bet * $multiplier) - $bet) * 0.90, 2) * 0.90;
+            $multiplier = round((($multiplier - 1) * 0.90) + 1, 2);
 
+            $collectGainBlock = VanillaBlocks::CONCRETE()->setColor(DyeColor::YELLOW())->asItem()->setCustomName("§r§l§6» §r§6Récupérer ses gains §l§6«§r\n§l§6| §r§fMise initial§8: §b" . $formattedBet . "\n§l§6| §r§fRécompense§8: §a" . Util::formatNumberWithSuffix($possibleGain) . " §8(§7x" . $multiplier . "§8)");
             $invMenuInventory->setItem(49, $collectGainBlock);
         };
 
@@ -547,10 +545,10 @@ class Casino
             $scoreToComplete = 25 - $data["mine"];
             $score = $data["score"];
 
-            $multiplier = round((round(25 / $scoreToComplete, 2) - 1) * $score, 2);
+            $multiplier = max(1, round((round(25 / $scoreToComplete, 2) - 1) * $score, 2) + 1);
 
-            $gain = round(($bet * $multiplier) * 0.85, 2);
-            $finalMultiplier = round(($gain * 0.90) / $bet, 2);
+            $gain = round((($bet * $multiplier) - $bet) * 0.90, 2);
+            $finalMultiplier = round((($multiplier - 1) * 0.90) + 1, 2);
 
             switch ($data["end-status"]) {
                 case 0:

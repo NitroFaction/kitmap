@@ -3,8 +3,6 @@
 namespace Kitmap\task;
 
 use Kitmap\handler\Casino;
-use Kitmap\Session;
-use Kitmap\Util;
 use pocketmine\block\Concrete;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
@@ -31,8 +29,6 @@ class RouletteTask extends Task
     private int $close = 40;
 
     private bool $started = false;
-    private bool $force = false;
-    private bool $finished = false;
 
     public function __construct(Player $player, Inventory $inventory, int $bet, array $roulette)
     {
@@ -130,13 +126,9 @@ class RouletteTask extends Task
         if (!$this->player->isConnected()) {
             $this->getHandler()?->cancel();
             return;
-        } else if (is_null($this->player->getCurrentWindow()) && !$this->finished) {
-            $this->force = true;
-            $this->getHandler()?->cancel();
-            return;
-        } else if (is_null($this->player->getCurrentWindow()) && $this->finished) {
+        } else if (is_null($this->player->getCurrentWindow())) {
             $this->close = 0;
-
+            $this->time = 0;
         }
 
         if ($this->time > 0) {
@@ -157,6 +149,7 @@ class RouletteTask extends Task
             $this->time--;
         } else {
             $this->doEndAnimation();
+            $resultColor = $this->getResultColor();
 
             if ($this->close === 40) {
                 $this->player->broadcastSound(new BellRingSound(), [$this->player]);
@@ -164,8 +157,6 @@ class RouletteTask extends Task
             }
 
             if ($this->close <= 0) {
-                $resultColor = $this->getResultColor();
-
                 $resultColorIds = [
                     DyeColor::RED()->name() => 0,
                     DyeColor::BLACK()->name() => 1,
@@ -186,7 +177,6 @@ class RouletteTask extends Task
                 $this->close--;
             }
         }
-
     }
 
     private function doEndAnimation(): void
@@ -200,9 +190,7 @@ class RouletteTask extends Task
 
         foreach ($this->inventory->getContents(true) as $slot => $item) {
             if ($slot !== 13) {
-                $this->finished = true;
                 $color = $slot % 2 === 0 ? 0 : 1;
-
                 $this->inventory->setItem($slot, VanillaBlocks::STAINED_GLASS()->setColor($colors[$order[$color]])->asItem());
             }
         }
@@ -210,8 +198,17 @@ class RouletteTask extends Task
 
     private function getResultColor(): DyeColor
     {
-        $block = $this->inventory->getItem(13)->getBlock();
-        /* @var Concrete $block */
+        $rand = mt_rand(0, 36);
+
+        if ($rand == 0) {
+            $block = VanillaBlocks::CONCRETE()->setColor(DyeColor::LIME());
+        } else if ($rand % 2 == 0) {
+            $block = VanillaBlocks::CONCRETE()->setColor(DyeColor::RED());
+        } else {
+            $block = VanillaBlocks::CONCRETE()->setColor(DyeColor::BLACK());
+        }
+
+        $this->inventory->setItem(13, $block->asItem());
         return $block->getColor();
     }
 
@@ -219,11 +216,6 @@ class RouletteTask extends Task
     {
         if (!$this->player->isConnected()) {
             goto cancel;
-        }
-
-        if ($this->force) {
-            Session::get($this->player)->addValue("money", $this->bet);
-            $this->player->sendMessage(Util::PREFIX . "Votre mise à la Roulette a été annulée, vous venez de récupérer votre mise initiale");
         }
 
         if (array_key_exists($this->name, Casino::$games)) {

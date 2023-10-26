@@ -75,6 +75,8 @@ class Addvalue extends BaseCommand
         } else {
             $file = Util::getFile("data/players/" . $key);
 
+            Cache::$players[$column][$key] = $file->get($column) + $value;
+
             if ($file->getAll() !== []) {
                 $file->set($column, $file->get($column) + $value);
                 $file->save();
