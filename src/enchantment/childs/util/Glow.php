@@ -8,7 +8,6 @@ use pocketmine\lang\Translatable;
 
 class Glow extends Enchantment
 {
-
     public function __construct()
     {
         parent::__construct(
@@ -23,11 +22,6 @@ class Glow extends Enchantment
     public function getName(): Translatable|string
     {
         return "glow";
-    }
-
-    public function getMaxLevel(): int
-    {
-        return 1;
     }
 
     public function getRarity(): int
@@ -45,4 +39,8 @@ class Glow extends Enchantment
         return ItemFlags::NONE;
     }
 
+    public function getMaxLevel(): int
+    {
+        return 1;
+    }
 }

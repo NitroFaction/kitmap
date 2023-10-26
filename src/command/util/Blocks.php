@@ -39,7 +39,7 @@ class Blocks extends BaseCommand
                 return;
             }
 
-            $position = new Position(10055.5, 5, 10058, Main::getInstance()->getServer()->getWorldManager()->getWorldByName("mine"));
+            $position = new Position(50013.5, 12.5, 89, Main::getInstance()->getServer()->getWorldManager()->getWorldByName("mine"));
             Main::getInstance()->getScheduler()->scheduleRepeatingTask(new TeleportationTask($sender, $position), 20);
         }
     }

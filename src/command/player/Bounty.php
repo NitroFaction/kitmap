@@ -37,7 +37,6 @@ class Bounty extends BaseCommand
     {
         if ($sender instanceof Player) {
             $username = strtolower($args["joueur"] ?? $sender->getName());
-
             $target = Main::getInstance()->getServer()->getPlayerByPrefix($username);
 
             if (!isset(Cache::$players["upper_name"][$username])) {
@@ -50,10 +49,18 @@ class Bounty extends BaseCommand
             $upperName = $data["upper_name"];
             $bounty = $data["bounty"];
 
-            if ($bounty > 0) {
-                $sender->sendMessage(Util::PREFIX . "La prime de §6" . $upperName . " §fs'élève à §6" . $bounty . " pièce(s) §f!");
+            if ($username === strtolower($sender->getName())) {
+                if ($bounty > 0) {
+                    $sender->sendMessage(Util::PREFIX . "Votre prime s'élève à §6" . $bounty . " pièce(s) §f!");
+                } else {
+                    $sender->sendMessage(Util::PREFIX ."Vous ne possèdez pas de prime");
+                }
             } else {
-                $sender->sendMessage(Util::PREFIX . $upperName . " ne possède pas de prime");
+                if ($bounty > 0) {
+                    $sender->sendMessage(Util::PREFIX . "La prime de §6" . $upperName . " §fs'élève à §6" . $bounty . " pièce(s) §f!");
+                } else {
+                    $sender->sendMessage(Util::PREFIX . $upperName . " ne possède pas de prime");
+                }
             }
         }
     }

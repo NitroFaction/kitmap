@@ -12,7 +12,8 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
-class Casino extends BaseCommand {
+class Casino extends BaseCommand
+{
 
     public function __construct(PluginBase $plugin)
     {
@@ -38,12 +39,13 @@ class Casino extends BaseCommand {
             $money = $session->data["money"];
 
             if ($money < 10000) {
-                $sender->sendMessage(Util::PREFIX . "Vous devez possédez au moins 10k pièces pour miser au casino.");
+                $sender->sendMessage(Util::PREFIX . "Vous devez possédez au moins 10k pièces pour miser au casino");
                 return;
             }
 
             $game = $args["jeu"] ?? null;
             $form = !is_null($game) ? Api::openCasinoGameForm($game) : Api::openCasinoForm();
+
             $sender->sendForm($form);
         }
     }

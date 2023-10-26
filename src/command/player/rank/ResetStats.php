@@ -3,6 +3,7 @@
 namespace Kitmap\command\player\rank;
 
 use CortexPE\Commando\BaseCommand;
+use Kitmap\handler\Cache;
 use Kitmap\handler\Rank;
 use Kitmap\Session;
 use Kitmap\Util;
@@ -38,6 +39,12 @@ class ResetStats extends BaseCommand
             $session->data["kill"] = 0;
             $session->data["death"] = 0;
             $session->data["killstreak"] = 0;
+
+            $username = strtolower($sender->getName());
+
+            Cache::$players["kill"][$username] = 0;
+            Cache::$players["death"][$username] = 0;
+            Cache::$players["killstreak"][$username] = 0;
 
             $sender->sendMessage(Util::PREFIX . "Vous venez de réinitialiser vos statistiques");
         }

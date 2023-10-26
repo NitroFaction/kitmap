@@ -28,7 +28,7 @@ class Baninfo extends BaseCommand
         $player = strtolower($args["joueur"]);
 
         if (!isset(Cache::$bans[$player])) {
-            $sender->sendMessage(Util::PREFIX . "Le joueur " . $player . " n'est pas banni (verifiez bien les caractères), le joueur peut être banni depuis une ip, un deviceId..");
+            $sender->sendMessage(Util::PREFIX . "Le joueur " . $player . " n'est pas banni (verifiez bien les caractères), le joueur peut être banni depuis une ip, un deviceId...");
             return;
         }
 

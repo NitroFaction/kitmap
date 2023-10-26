@@ -21,6 +21,8 @@ class Scoreboard extends BaseCommand
             "scoreboard",
             "Active ou désactive le scoreboard"
         );
+
+        $this->setAliases(["sc", "hud"]);
         $this->setPermissions([DefaultPermissions::ROOT_USER]);
     }
 

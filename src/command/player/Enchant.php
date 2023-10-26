@@ -62,13 +62,10 @@ class Enchant extends BaseCommand
         });
 
         $form->setTitle("Enchantement");
-        $form->setContent(Util::PREFIX . "Cliquez sur l'enchantement de votre choix");
+        $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
 
         if ($item instanceof Sword) {
             $form->addButton("Tranchant", label: EnchantmentIds::SHARPNESS . ";Tranchant;2");
-            $form->addButton("Pilleur", label: CustomEnchantmentIds::LOOTER . ";Pilleur;3");
-            $form->addButton("Foudroiement", label: CustomEnchantmentIds::LIGHTNING_STRIKE . ";Foudroiement;3");
-            $form->addButton("Arès", label: CustomEnchantmentIds::ARES . ";Arès;1");
         } else if ($item instanceof Armor) {
             $form->addButton("Protection", label: EnchantmentIds::PROTECTION . ";Protection;2");
         } else if ($item instanceof Pickaxe || $item instanceof Axe || $item instanceof Shovel) {
@@ -76,6 +73,12 @@ class Enchant extends BaseCommand
         }
 
         $form->addButton("Solidité", label: EnchantmentIds::UNBREAKING . ";Solidité;3");
+
+        if ($item instanceof Sword) {
+            $form->addButton("Pilleur", label: CustomEnchantmentIds::LOOTER . ";Pilleur;3");
+            $form->addButton("Foudroiement", label: CustomEnchantmentIds::LIGHTNING_STRIKE . ";Foudroiement;3");
+            $form->addButton("Arès", label: CustomEnchantmentIds::ARES . ";Arès;1");
+        }
 
         $player->sendForm($form);
     }
@@ -171,10 +174,9 @@ class Enchant extends BaseCommand
         $enchantInstance = new EnchantmentInstance($enchant, $enchantLevel);
 
         $enchantName = $enchantInstance->getType()->getName();
-        $formattedEnchant = "§r§7" . $enchantName . " " . Util::formatToRomanNumber($enchantInstance->getLevel());
 
-        if ($item->hasEnchantment($enchant)) {
-            $player->sendMessage(Util::PREFIX . "Votre item possède déjà cet enchantement.");
+        if ($item->hasEnchantment($enchant, $enchantLevel)) {
+            $player->sendMessage(Util::PREFIX . "Votre item possède déjà cet enchantement");
             return;
         }
 
@@ -182,7 +184,12 @@ class Enchant extends BaseCommand
 
         if (is_string($enchantName)) {
             $lore = $item->getLore();
-            $lore[] = $formattedEnchant;
+
+            if (1 > count($lore)) {
+                $lore[] = "§r§9 ";
+            }
+
+            $lore[] = "§r§7" . $enchantName . " " . Util::formatToRomanNumber($enchantInstance->getLevel());
             $item->setLore($lore);
         }
 

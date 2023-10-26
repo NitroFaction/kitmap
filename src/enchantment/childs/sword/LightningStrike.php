@@ -26,11 +26,6 @@ class LightningStrike extends Enchantment
         return "Foudroiement";
     }
 
-    public function getMaxLevel(): int
-    {
-        return 3;
-    }
-
     public function getRarity(): int
     {
         return Rarity::RARE;
@@ -44,6 +39,11 @@ class LightningStrike extends Enchantment
     public function getSecondaryItemFlags(): int
     {
         return ItemFlags::NONE;
+    }
+
+    public function getMaxLevel(): int
+    {
+        return 3;
     }
 
 }

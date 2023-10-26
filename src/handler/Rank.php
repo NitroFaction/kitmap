@@ -79,9 +79,7 @@ class Rank
     public static function setRank(string $name, string $rank): void
     {
         $name = strtolower($name);
-
-        /** @noinspection PhpDeprecationInspection */
-        $player = Main::getInstance()->getServer()->getPlayerByPrefix($name);
+        $player = Main::getInstance()->getServer()->getPlayerExact($name);
 
         if ($player instanceof Player) {
             $session = Session::get($player);
@@ -90,7 +88,7 @@ class Rank
             self::updateNameTag($player);
             self::addPermissions($player);
 
-            self::saveRank($player->getXuid(), $rank);
+            self::saveRank($name, $rank);
         } else {
             $file = Util::getFile("data/players/" . $name);
 
@@ -98,7 +96,7 @@ class Rank
                 $file->set("rank", $rank);
                 $file->save();
 
-                self::saveRank($file->get("xuid"), $rank);
+                self::saveRank($name, $rank);
             }
         }
     }
@@ -153,12 +151,9 @@ class Rank
 
     public static function saveRank(string $value, string $key): void
     {
-        $file = Util::getFile("ownings");
-        /*$data = $file->get($value, []);
+        $ownings = Util::getFile("ownings");
 
-        $data["rank"] = $key;*/
-
-        $file->set(strtolower($value), $key);
-        $file->save();
+        $ownings->set($value, $key);
+        $ownings->save();
     }
 }

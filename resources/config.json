@@ -425,7 +425,7 @@
     "108.5:72:18.5:map": "domination",
     "-9.5:72:48.5:map": "mine",
     "12.5:72:48.5:map": "blocs",
-    "10055.5:7:10058:mine": "blocks",
+    "50013.5:12.5:89:mine": "blocks",
     "0.5:67.5:84.5:map": "money-zone"
   },
   "domination": {
@@ -451,6 +451,11 @@
       "y": 70
     }
   },
+  "messages": [
+    "Tu souhaite nous rejoindre sur §6Discord §f? Rejoins nous via ce lien: §6https://discord.gg/nitrofaction §f!",
+    "Tu souhaites avoir des §6packs §fsupplémentaire gratuitement ? Vote via ce lien: §6https://nitrofaction.fr/vote",
+    "Tu souhaites avoir un grade sur le serveur pour une meilleur expérience ? Achete le via ma boutique: §6https://nitrofaction.tebex.io"
+  ],
   "pack": "0:69:23",
   "nexus": "76.5:69:117.5",
   "permissions": {
@@ -556,6 +561,14 @@
       "number": 18
     }
   },
+  "bounties": [
+    5000,
+    6000,
+    7000,
+    8000,
+    9000,
+    10000
+  ],
   "sanctions": {
     "ban": {
       "Cheat": [

@@ -26,11 +26,6 @@ class Looter extends Enchantment
         return "Pilleur";
     }
 
-    public function getMaxLevel(): int
-    {
-        return 3;
-    }
-
     public function getRarity(): int
     {
         return Rarity::COMMON;
@@ -44,6 +39,11 @@ class Looter extends Enchantment
     public function getSecondaryItemFlags(): int
     {
         return ItemFlags::NONE;
+    }
+
+    public function getMaxLevel(): int
+    {
+        return 3;
     }
 
 }

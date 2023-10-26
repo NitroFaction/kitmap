@@ -8,7 +8,6 @@ use Kitmap\handler\Cache;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
 class ListClaims extends BaseCommand
@@ -26,7 +25,7 @@ class ListClaims extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
-            $sender->sendMessage(Util::PREFIX . "Voici la liste des claims: §6" . implode("§f, §6", Cache::$data["claims"]));
+        $sender->sendMessage(Util::PREFIX . "Voici la liste des claims: §6" . implode("§f, §6", Cache::$data["claims"]));
     }
 
     protected function prepare(): void

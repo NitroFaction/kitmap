@@ -23,10 +23,8 @@ use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
@@ -150,16 +148,17 @@ class Util
             $player->getEffects()->add(new EffectInstance(VanillaEffects::HASTE(), 20 * 60 * 60 * 24, 1, false));
             $player->getEffects()->add(new EffectInstance(VanillaEffects::JUMP_BOOST(), 20 * 60 * 60 * 24, 2, false));
         }
-
-        self::updateBounty($player);
     }
 
     public static function updateBounty(Player $player): void
     {
-        $bounty = Session::get($player)->data["bounty"];
+        $sup = "";
 
-        $scoreTag = $bounty > 0 ? ("§l§6" . $bounty . "\u{E101}") : "";
-        $player->setScoreTag($scoreTag);
+        if (($bounty = Session::get($player)->data["bounty"]) > 0) {
+            $sup .= " §7| §6" . Util::formatNumberWithSuffix($bounty) . " \u{E102}";
+        }
+
+        $player->setScoreTag("§7" . round($player->getHealth(), 2) . " §c❤" . $sup);
     }
 
     public static function getItemByName(string $name): Item
@@ -178,7 +177,7 @@ class Util
     public static function formatToRomanNumber(int $integer): string
     {
         $romanNumber = "";
-        $units = ['X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1];
+        $units = ["X" => 10, "IX" => 9, "V" => 5, "IV" => 4, "I" => 1];
 
         foreach ($units as $unit => $value) {
             while ($integer >= $value) {
@@ -186,46 +185,8 @@ class Util
                 $romanNumber .= $unit;
             }
         }
-
         return $romanNumber;
     }
-
-    public static function displayEnchants(ItemStack $itemStack): ItemStack
-    {
-        $item = TypeConverter::getInstance()->netItemStackToCore($itemStack);
-        if (count($item->getEnchantments()) > 0) {
-            $informations = "§r§b" . $item->getName();
-
-            foreach ($item->getEnchantments() as $enchantmentInstance) {
-                $enchantmentName = $enchantmentInstance->getType()->getName();
-                if (is_string($enchantmentName)) {
-                    $informations .= "\n§r§7" . $enchantmentName . " " . self::formatToRomanNumber($enchantmentInstance->getLevel());
-                }
-            }
-
-            if ($item->getNamedTag()->getTag(Item::TAG_DISPLAY)) {
-                $item->getNamedTag()->setTag("OriginalDisplayTag", $item->getNamedTag()->getTag(Item::TAG_DISPLAY)->safeClone());
-            }
-
-            $item = $item->setCustomName($informations);
-        }
-        return TypeConverter::getInstance()->coreItemStackToNet($item);
-    }
-
-    /*public static function filterDisplayedEnchants(ItemStack $itemStack): ItemStack
-    {
-        $item = TypeConverter::getInstance()->netItemStackToCore($itemStack);
-        $tag = $item->getNamedTag();
-        if (count($item->getEnchantments()) > 0) {
-            $tag->removeTag(Item::TAG_DISPLAY);
-        }
-        if ($tag->getTag("OriginalDisplayTag") instanceof CompoundTag) {
-            $tag->setTag(Item::TAG_DISPLAY, $tag->getTag("OriginalDisplayTag"));
-            $tag->removeTag("OriginalDisplayTag");
-        }
-        $item->setNamedTag($tag);
-        return TypeConverter::getInstance()->coreItemStackToNet($item);
-    }*/
 
     public static function readInventory(CompoundTag $nbt): array
     {
@@ -523,7 +484,7 @@ class Util
         $position = $player->getPosition();
 
         Main::getInstance()->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($player, $position) {
-            if ($player->isOnline()) {
+            if ($player->isOnline() && $position instanceof Position && $position->isValid()) {
                 $player->teleport($position, 180, -90);
             }
         }), $delay);

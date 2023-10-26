@@ -72,10 +72,6 @@ class Addvalue extends BaseCommand
             } else {
                 $player->sendMessage(Util::PREFIX . "Le staff §6" . $staff . " §fvient de vous retirer §6" . $value . " §f" . $column);
             }
-
-            if ($value == "bounty") {
-                Util::updateBounty($player);
-            }
         } else {
             $file = Util::getFile("data/players/" . $key);
 

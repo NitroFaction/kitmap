@@ -37,7 +37,7 @@ class Alias extends BaseCommand
         $bar = "§l§8-----------------------";
 
         if (count($alias) === 0) {
-            $sender->sendMessage(Util::PREFIX . "Le joueur §6" . $target . " §fne possède aucun double compte lié à son ip, did etc..");
+            $sender->sendMessage(Util::PREFIX . "Le joueur §6" . $target . " §fne possède aucun double compte lié à son ip, did etc...");
             return;
         }
 

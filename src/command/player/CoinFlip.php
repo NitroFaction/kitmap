@@ -59,7 +59,7 @@ class CoinFlip extends BaseCommand
         $form = new CustomForm(function (Player $player, mixed $data) {
             if (!is_array($data) || !isset($data[0])) {
                 return;
-            } else if (!ctype_digit($data[0])) {
+            } else if (!is_numeric($data[0])) {
                 $player->sendMessage(Util::PREFIX . "Le prix indiqué est invalide");
                 return;
             }
@@ -135,13 +135,13 @@ class CoinFlip extends BaseCommand
                     unset(CoinFlip::$coinflip[$id]);
                 }
 
-                $player->sendMessage(Util::PREFIX . "Le coinflip que vous venez de choisir n'existe plus..");
+                $player->sendMessage(Util::PREFIX . "Le coinflip que vous venez de choisir n'existe plus");
                 return;
             } else {
                 $target = Main::getInstance()->getServer()->getPlayerExact(CoinFlip::$coinflip[$id]["username"]);
 
                 if (!$target instanceof Player || !$target->isOnline()) {
-                    $player->sendMessage(Util::PREFIX . "Le coinflip que vous venez de choisir n'existe plus..");
+                    $player->sendMessage(Util::PREFIX . "Le coinflip que vous venez de choisir n'existe plus");
                     return;
                 }
             }

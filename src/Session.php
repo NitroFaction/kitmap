@@ -122,6 +122,10 @@ class Session
         $value = intval($value);
         $this->data[$key] = ($substraction ? $this->data[$key] - $value : $this->data[$key] + $value);
 
+        if ($key === "bounty") {
+            Util::updateBounty($this->player);
+        }
+
         if (isset(Cache::$players[$key])) {
             $username = strtolower($this->player->getName());
             Cache::$players[$key][$username] = $this->data[$key];

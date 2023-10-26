@@ -1,4 +1,4 @@
-<?php /* @noinspection PhpDeprecationInspection */
+<?php
 
 namespace Kitmap\enchantment;
 

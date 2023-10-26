@@ -9,7 +9,6 @@ use Kitmap\Util;
 use MaXoooZ\Util\entity\MessageEntity;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\color\Color;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 

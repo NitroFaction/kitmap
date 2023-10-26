@@ -26,11 +26,6 @@ class Ares extends Enchantment
         return "Arès";
     }
 
-    public function getMaxLevel(): int
-    {
-        return 1;
-    }
-
     public function getRarity(): int
     {
         return Rarity::UNCOMMON;
@@ -44,6 +39,11 @@ class Ares extends Enchantment
     public function getSecondaryItemFlags(): int
     {
         return ItemFlags::NONE;
+    }
+
+    public function getMaxLevel(): int
+    {
+        return 1;
     }
 
 }

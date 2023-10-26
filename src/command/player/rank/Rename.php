@@ -4,9 +4,7 @@ namespace Kitmap\command\player\rank;
 
 use CortexPE\Commando\BaseCommand;
 use jojoe77777\FormAPI\CustomForm;
-use Kitmap\enchantment\childs\sword\Ares;
 use Kitmap\enchantment\EnchantmentIds;
-use Kitmap\enchantment\Enchantments;
 use Kitmap\handler\Rank;
 use Kitmap\Main;
 use Kitmap\Session;

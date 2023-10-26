@@ -17,6 +17,7 @@ use WeakMap;
 class PlayerTask extends Task
 {
     public static array $blocks = [];
+
     /* @var WeakMap<Player, Vector3> */
     private static WeakMap $lastPosition;
     private int $tick = 0;
@@ -37,6 +38,11 @@ class PlayerTask extends Task
 
         if ($this->tick % 3 == 0) {
             MoneyZoneTask::run();
+        }
+
+        if ($this->tick % 180 == 0) {
+            $messages = Cache::$config["messages"];
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . $messages[array_rand($messages)]);
         }
 
         self::updateBlocks();

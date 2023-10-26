@@ -5,9 +5,9 @@ namespace Kitmap\listener;
 use Kitmap\command\player\{Anvil, Enchant, rank\Enderchest};
 use Kitmap\command\staff\{Ban, LastInventory, Question, Vanish};
 use Kitmap\command\util\Bienvenue;
+use Kitmap\enchantment\EnchantmentIds;
 use Kitmap\entity\{AntiBackBallEntity, LightningBolt, LogoutEntity, SwitcherEntity};
 use Kitmap\handler\{Cache, Faction, Pack, PartnerItems, Rank, Sanction};
-use Kitmap\enchantment\EnchantmentIds;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\task\repeat\PlayerTask;
@@ -32,10 +32,10 @@ use pocketmine\block\{Barrel,
     Trapdoor,
     utils\DyeColor,
     VanillaBlocks,
-    Wheat
-};
+    Wheat};
+use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\HurtAnimation;
-use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\entity\effect\{EffectInstance, VanillaEffects};
 use pocketmine\event\block\{BlockBreakEvent, BlockGrowEvent, BlockPlaceEvent, BlockSpreadEvent, BlockUpdateEvent};
 use pocketmine\event\entity\{EntityDamageByEntityEvent,
@@ -45,11 +45,8 @@ use pocketmine\event\entity\{EntityDamageByEntityEvent,
     EntityTeleportEvent,
     EntityTrampleFarmlandEvent,
     ItemSpawnEvent,
-    ProjectileHitEntityEvent
-};
+    ProjectileHitEntityEvent};
 use pocketmine\event\inventory\{CraftItemEvent, InventoryOpenEvent, InventoryTransactionEvent};
-use pocketmine\data\bedrock\EnchantmentIdMap;
-use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerBucketEvent,
     PlayerChatEvent,
@@ -65,8 +62,6 @@ use pocketmine\event\player\{PlayerBucketEvent,
     PlayerRespawnEvent};
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketDecodeEvent;
-use pocketmine\event\server\DataPacketReceiveEvent;
-use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
@@ -81,35 +76,24 @@ use pocketmine\item\{Axe,
     PotionType,
     Shovel,
     Stick,
-    VanillaItems
-};
+    VanillaItems};
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\DataPacket;
-use pocketmine\network\mcpe\protocol\InventoryContentPacket;
-use pocketmine\network\mcpe\protocol\InventorySlotPacket;
-use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\network\mcpe\protocol\OpenSignPacket;
-use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\protocol\SetTimePacket;
-use pocketmine\network\mcpe\protocol\StartGamePacket;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\{GameMode, Player};
 use pocketmine\player\chat\LegacyRawChatFormatter;
 use pocketmine\scheduler\ClosureTask;
-use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\particle\BlockBreakParticle;
-use pocketmine\world\Position;
 use pocketmine\world\sound\AmethystBlockChimeSound;
 use pocketmine\world\sound\BlockBreakSound;
 use pocketmine\world\sound\EndermanTeleportSound;
 use Symfony\Component\Filesystem\Path;
 
-class PlayerListener implements Listener
+class EventsListener implements Listener
 {
     public function onInteract(PlayerInteractEvent $event): void
     {
@@ -145,7 +129,7 @@ class PlayerListener implements Listener
             Enchant::openEnchantTable($player, false);
         }
 
-        [$x,$y,$z] = explode(":", Cache::$config["pack"]);
+        [$x, $y, $z] = explode(":", Cache::$config["pack"]);
 
         if ($block->getPosition()->getX() === intval($x) && $block->getPosition()->getY() === intval($y) && $block->getPosition()->getZ() === intval($z)) {
             $event->cancel();
@@ -390,11 +374,10 @@ class PlayerListener implements Listener
                 }
 
                 if ($damagerKillstreak % 5 == 0) {
-                    $bounties = [5000, 6000, 7000, 8000, 9000, 10000];
-                    $bountyToAdd = $bounties[array_rand($bounties)];
-                    $damagerSession->addValue("bounty", $bountyToAdd);
-                    Util::updateBounty($damager);
-                    Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6" . $damager->getName() . " §fa fait §6" . $damagerSession->data["killstreak"] . " §fkills sans mourrir ! Sa mort est désormais mise à prix à §6" . Session::get($damager)->data["bounty"] . " pièce(s) §8(§7+" . $bountyToAdd . "§8) §f!");
+                    $amount = Cache::$config["bounties"][array_rand(Cache::$config["bounties"])];
+                    $damagerSession->addValue("bounty", $amount);
+
+                    Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6" . $damager->getName() . " §fa fait §6" . $damagerSession->data["killstreak"] . " §fkills sans mourrir ! Sa mort est désormais mise à prix à §6" . Session::get($damager)->data["bounty"] . " pièce(s) §8(§7+" . $amount . "§8) §f!");
                 }
 
                 $item = $damager->getInventory()->getItemInHand();
@@ -405,17 +388,13 @@ class PlayerListener implements Listener
 
                 if ($item->hasEnchantment($looter)) {
                     $enchantLevel = $item->getEnchantment($looter)?->getLevel();
-                    $multiplier = 0.04 * $enchantLevel;
-                    $playerMoney = $session->data["money"];
-                    $moneyToLoot = round($playerMoney * $multiplier);
-
-                    $formattedEnchant = "Pilleur " . Util::formatToRomanNumber($enchantLevel);
+                    $moneyToLoot = round($session->data["money"] * (0.04 * $enchantLevel));
 
                     $session->addValue("money", $moneyToLoot, true);
-                    $player->sendMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvous a volé §6" . $moneyToLoot . " pièce(s) §fà cause de l'enchantement §6" .$formattedEnchant . " §fsur son épée !");
+                    $player->sendMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvous a volé §6" . $moneyToLoot . " pièce(s) §fà cause de l'enchantement §6Pilleur " . Util::formatToRomanNumber($enchantLevel) . " §fsur son épée !");
 
                     $damagerSession->addValue("money", $moneyToLoot);
-                    $damager->sendMessage(Util::PREFIX . "§fVous avez volé §6" . $moneyToLoot . " pièce(s) §fà §6" . $player->getName() . " §fgrâce à votre enchantement §6" . $formattedEnchant . " §f!");
+                    $damager->sendMessage(Util::PREFIX . "§fVous avez volé §6" . $moneyToLoot . " pièce(s) §fà §6" . $player->getName() . " §fgrâce à votre enchantement §6Pilleur " . Util::formatToRomanNumber($enchantLevel) . " §f!");
                 }
 
                 if ($item->hasEnchantment($ares)) {
@@ -423,6 +402,7 @@ class PlayerListener implements Listener
 
                     if (!is_null($updatedItem->getNamedTag()->getTag("kills"))) {
                         $kills = $updatedItem->getNamedTag()->getInt("kills");
+
                         $updatedItem->getNamedTag()->setInt("kills", ($updatedKills = $kills + 1));
                         $updatedItem->setCustomName("§r§bÉpée de " . $damager->getName() . " §8(§7" . $updatedKills . " kill(s)§8)");
                     } else {
@@ -601,7 +581,6 @@ class PlayerListener implements Listener
         }
     }
 
-
     public function onOpenInventory(InventoryOpenEvent $event): void
     {
         $player = $event->getPlayer();
@@ -663,8 +642,7 @@ class PlayerListener implements Listener
 
     public function onMissSwing(PlayerMissSwingEvent $event): void
     {
-        $player = $event->getPlayer();
-        $player->broadcastAnimation(new ArmSwingAnimation($player), $player->getViewers());
+        $event->getPlayer()->broadcastAnimation(new ArmSwingAnimation($event->getPlayer()), $event->getPlayer()->getViewers());
         $event->cancel();
     }
 
@@ -683,7 +661,7 @@ class PlayerListener implements Listener
 
         $session = Session::get($player);
 
-        if (!$player->isCreative() && $player->getPosition()->getWorld()->getFolderName() === "mine" && $player->getPosition()->getFloorX() > 10000) {
+        if (!$player->isCreative() && $player->getPosition()->getWorld()->getFolderName() === "mine" && $player->getPosition()->getFloorX() > 4500) {
             $event->cancel();
             $drop = false;
 
@@ -705,7 +683,7 @@ class PlayerListener implements Listener
             $event->setDrops([]);
         }
 
-        if (!$player->isCreative() && $block->getPosition()->getWorld()->getFolderName() === "mine" && $player->getPosition()->getFloorX() < 10000) {
+        if (!$player->isCreative() && $block->getPosition()->getWorld()->getFolderName() === "mine" && $player->getPosition()->getFloorX() < 4500) {
             $respawn = 0;
             $bedrock = false;
 
@@ -974,6 +952,7 @@ class PlayerListener implements Listener
 
             if ($event instanceof EntityDamageByEntityEvent) {
                 $damager = $event->getDamager();
+
                 if ($damager instanceof Player) {
                     if (Util::insideZone($damager->getPosition(), "spawn")) {
                         $event->cancel();
@@ -1017,12 +996,6 @@ class PlayerListener implements Listener
                         return;
                     }
 
-                    if ($damager->getInventory()->getItemInHand()->getTypeId() === VanillaItems::NETHERITE_SWORD()->getTypeId()) {
-                        $event->setBaseDamage(7);
-                    } else if ($damager->getInventory()->getItemInHand()->getTypeId() === VanillaItems::DIAMOND_SWORD()->getTypeId()) {
-                        $event->setBaseDamage(6);
-                    }
-
                     PartnerItems::executeHitPartnerItem($damager, $entity);
 
                     $damagerSession->setCooldown("combat", 20, [$entity->getName()]);
@@ -1037,20 +1010,27 @@ class PlayerListener implements Listener
                         $event->setBaseDamage($event->getBaseDamage() + (($event->getBaseDamage() / 100) * 15));
                     }
 
-                    $entity->setScoreTag("§7" . round($entity->getHealth(), 2) . " §c❤");
+                    $sup = "";
+
+                    if (($bounty = $entitySession->data["bounty"]) > 0) {
+                        $sup .= " §7| §6" . Util::formatNumberWithSuffix($bounty) . " \u{E102}";
+                    }
+
+                    $entity->setScoreTag("§7" . round($entity->getHealth(), 2) . " §c❤" . $sup);
 
                     if (!$event->isCancelled()) {
-
                         $item = $damager->getInventory()->getItemInHand();
                         $lightningStrike = EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::LIGHTNING_STRIKE);
 
                         if ($item->hasEnchantment($lightningStrike)) {
                             $level = $item->getEnchantment($lightningStrike)?->getLevel();
+
                             $chance = match ($level) {
                                 1 => 300,
                                 2 => 225,
                                 3 => 150
                             };
+
                             if (mt_rand(0, $chance) < 1) {
                                 $lightning = new LightningBolt($entity->getLocation());
                                 $lightning->spawnToAll();
@@ -1060,13 +1040,13 @@ class PlayerListener implements Listener
 
                                 $hurtAnimation = new HurtAnimation($entity);
                                 $viewers = array_merge($entity->getViewers(), $damager->getViewers());
+
                                 NetworkBroadcastUtils::broadcastPackets(array_unique($viewers), $hurtAnimation->encode());
                                 $entity->getWorld()->broadcastPacketToViewers($entity->getPosition()->asVector3(), LevelSoundEventPacket::create(LevelSoundEvent::THUNDER, $entity->getLocation(), -1, "minecraft:lightning_bolt", false, false));
 
                                 $entity->sendMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §6Foudroiement §f!");
                             }
                         }
-
                     }
                 }
             }
@@ -1095,57 +1075,17 @@ class PlayerListener implements Listener
         $entity->setDespawnDelay(intval(15 * Main::getInstance()->getServer()->getTicksPerSecondAverage()));
     }
 
-    public function onDataPacketSend(DataPacketSendEvent $event): void
-    {
-        $packets = $event->getPackets();
-        foreach ($packets as $packet) {
-            switch ($packet) {
-                case $packet instanceof InventorySlotPacket:
-                    $packet->item = new ItemStackWrapper($packet->item->getStackId(), Util::displayEnchants($packet->item->getItemStack()));
-                    break;
-                case $packet instanceof InventoryContentPacket:
-                    foreach ($packet->items as $i => $item) {
-                        $packet->items[$i] = new ItemStackWrapper($item->getStackId(), Util::displayEnchants($item->getItemStack()));
-                    }
-                    break;
-                case $packet instanceof OpenSignPacket:
-                    $blockPosition = $packet->getBlockPosition();
-                    $position = new Position($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ(), Server::getInstance()->getWorldManager()->getDefaultWorld());
-                    if (Util::insideZone($position, "warzone")) {
-                        $event->cancel();
-                    }
-                    break;
-                case $packet instanceof SetTimePacket:
-                    $packet->time = 12500; // on sait jamais parfois le stoptime il a la flemme
-                    break;
-                case $packet instanceof StartGamePacket:
-                    $packet->levelSettings->muteEmoteAnnouncements = true;
-                    break;
-            }
-        }
-    }
-
-    /*public function onDataPacketReceive(DataPacketReceiveEvent $event): void
-    {
-        $packet = $event->getPacket();
-        if ($packet instanceof InventoryTransactionPacket) {
-            $transactionData = $packet->trData;
-            foreach ($transactionData->getActions() as $action) {
-                $action->oldItem = new ItemStackWrapper($action->oldItem->getStackId(), Util::filterDisplayedEnchants($action->oldItem->getItemStack()));
-                $action->newItem = new ItemStackWrapper($action->newItem->getStackId(), Util::filterDisplayedEnchants($action->newItem->getItemStack()));
-            }
-        }
-    }*/
-
     public function onDataPacketDecode(DataPacketDecodeEvent $event): void
     {
-        $origin = $event->getOrigin();
         $packetId = $event->getPacketId();
         $packetBuffer = $event->getPacketBuffer();
-        if (strlen($packetBuffer) > 8096 and $packetId !== ProtocolInfo::LOGIN_PACKET) {
-            Main::getInstance()->getLogger()->warning("ID de paquet non décodé: $packetId (" . strlen($packetBuffer) . ") venant de : " . (($player = $origin->getPlayer()) instanceof Player ? $player->getName() : $origin->getIp()));
-            $origin->disconnect("§cUne erreur est survenue lors de l'encodage d'un paquet.");
+
+        if (strlen($packetBuffer) > 8096 && $packetId !== ProtocolInfo::LOGIN_PACKET) {
+            $origin = $event->getOrigin();
             $event->cancel();
+
+            Main::getInstance()->getLogger()->warning("ID de paquet non décodé: $packetId (" . strlen($packetBuffer) . ") venant de : " . $origin->getPlayer() instanceof Player ? $origin->getPlayer()->getName() : $origin->getIp());
+            Main::getInstance()->getServer()->getNetwork()->blockAddress($origin->getIp(), 250);
         }
     }
 }
