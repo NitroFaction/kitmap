@@ -89,6 +89,7 @@ use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\OpenSignPacket;
 use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
@@ -99,8 +100,10 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\{GameMode, Player};
 use pocketmine\player\chat\LegacyRawChatFormatter;
 use pocketmine\scheduler\ClosureTask;
+use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\particle\BlockBreakParticle;
+use pocketmine\world\Position;
 use pocketmine\world\sound\AmethystBlockChimeSound;
 use pocketmine\world\sound\BlockBreakSound;
 use pocketmine\world\sound\EndermanTeleportSound;
@@ -1103,6 +1106,13 @@ class PlayerListener implements Listener
                 case $packet instanceof InventoryContentPacket:
                     foreach ($packet->items as $i => $item) {
                         $packet->items[$i] = new ItemStackWrapper($item->getStackId(), Util::displayEnchants($item->getItemStack()));
+                    }
+                    break;
+                case $packet instanceof OpenSignPacket:
+                    $blockPosition = $packet->getBlockPosition();
+                    $position = new Position($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ(), Server::getInstance()->getWorldManager()->getDefaultWorld());
+                    if (Util::insideZone($position, "warzone")) {
+                        $event->cancel();
                     }
                     break;
                 case $packet instanceof SetTimePacket:
