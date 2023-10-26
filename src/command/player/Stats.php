@@ -69,6 +69,7 @@ class Stats extends BaseCommand
             $sender->sendMessage("§6Kills: §f" . $data["kill"]);
             $sender->sendMessage("§6Morts: §f" . $data["death"]);
             $sender->sendMessage("§6Killstreak: §f" . $data["killstreak"]);
+            $sender->sendMessage("§6Prime: §f" . $data["bounty"]);
             $sender->sendMessage("§6Temps de jeu: §f" . $playtime);
             $sender->sendMessage($bar);
         }

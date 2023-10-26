@@ -150,6 +150,16 @@ class Util
             $player->getEffects()->add(new EffectInstance(VanillaEffects::HASTE(), 20 * 60 * 60 * 24, 1, false));
             $player->getEffects()->add(new EffectInstance(VanillaEffects::JUMP_BOOST(), 20 * 60 * 60 * 24, 2, false));
         }
+
+        self::updateBounty($player);
+    }
+
+    public static function updateBounty(Player $player): void
+    {
+        $bounty = Session::get($player)->data["bounty"];
+
+        $scoreTag = $bounty > 0 ? ("§l§6" . $bounty . "\u{E101}") : "";
+        $player->setScoreTag($scoreTag);
     }
 
     public static function getItemByName(string $name): Item

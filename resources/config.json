@@ -302,6 +302,7 @@
     "kill": 0,
     "death": 0,
     "killstreak": 0,
+    "bounty": 0,
     "played_time": 0,
     "pack": 0,
     "faction_chat": false,

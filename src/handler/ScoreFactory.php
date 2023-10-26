@@ -52,7 +52,7 @@ class ScoreFactory
                     "§fConnectés: §6" . count(Main::getInstance()->getServer()->getOnlinePlayers()),
                     "§fVoteParty: §6" . $voteparty . "§f/§6100",
                     "§7 ",
-                    "     §7nitrofaction.fr    "
+                    "   §7nitrofaction.fr  "
                 ];
             }
 

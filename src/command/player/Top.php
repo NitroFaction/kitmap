@@ -77,13 +77,14 @@ class Top extends BaseCommand
             "death" => "Joueurs ayant le plus de §6morts",
             "money" => "Joueurs ayant le plus de §6pièces",
             "nerd" => "Joueurs ayant le plus de §6joué",
+            "bounty" => "Joueurs ayant la plus grosse §6prime",
             default => "Joueurs ayant le plus de §6kills"
         };
     }
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new OptionArgument("categorie", ["killstreak", "kill", "money", "death", "faction", "nerd"]));
+        $this->registerArgument(0, new OptionArgument("categorie", ["bounty", "killstreak", "kill", "money", "death", "faction", "nerd"]));
         $this->registerArgument(1, new IntegerArgument("page", true));
     }
 }

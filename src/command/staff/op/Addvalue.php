@@ -72,6 +72,10 @@ class Addvalue extends BaseCommand
             } else {
                 $player->sendMessage(Util::PREFIX . "Le staff §6" . $staff . " §fvient de vous retirer §6" . $value . " §f" . $column);
             }
+
+            if ($value == "bounty") {
+                Util::updateBounty($player);
+            }
         } else {
             $file = Util::getFile("data/players/" . $key);
 
@@ -87,6 +91,6 @@ class Addvalue extends BaseCommand
         $this->registerArgument(0, new TargetArgument("joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
         $this->registerArgument(1, new IntegerArgument("montant"));
-        $this->registerArgument(2, new OptionArgument("valeur", ["money", "pack", "kill", "gem", "killstreak", "death"]));
+        $this->registerArgument(2, new OptionArgument("valeur", ["bounty", "death", "gem", "kill", "killstreak", "money", "pack"]));
     }
 }

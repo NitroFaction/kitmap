@@ -353,6 +353,13 @@ class PlayerListener implements Listener
         $session->removeCooldown("combat");
         $session->addValue("death", 1);
 
+        $playerBounty = $session->data["bounty"];
+
+        if ($playerBounty > 0) {
+            $session->addValue("bounty", $playerBounty, true);
+            Util::updateBounty($player);
+        }
+
         $killstreak = $session->data["killstreak"];
         $session->data["killstreak"] = 0;
 
@@ -378,8 +385,19 @@ class PlayerListener implements Listener
                 if (Faction::hasFaction($damager)) Faction::addPower($damagerSession->data["faction"], 6);
                 if (Faction::hasFaction($player)) Faction::addPower($session->data["faction"], -4);
 
-                if ($damagerSession->data["killstreak"] % 5 == 0) {
-                    Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §6" . $damager->getName() . " §fa fait §6" . $damagerSession->data["killstreak"] . " §fkill sans mourrir !");
+                $damagerKillstreak = $damagerSession->data["killstreak"];
+
+                if ($playerBounty > 0) {
+                    $damagerSession->addValue("money", $playerBounty);
+                    Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvient de remporter un prime de §6" . $playerBounty . " pièce(s) §fen tuant §6" . $player->getName() . " §f!");
+                }
+
+                if ($damagerKillstreak % 5 == 0) {
+                    $bounties = [5000, 6000, 7000, 8000, 9000, 10000];
+                    $bountyToAdd = $bounties[array_rand($bounties)];
+                    $damagerSession->addValue("bounty", $bountyToAdd);
+                    Util::updateBounty($damager);
+                    Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6" . $damager->getName() . " §fa fait §6" . $damagerSession->data["killstreak"] . " §fkills sans mourrir ! Sa mort est désormais mise à prix à §6" . Session::get($damager)->data["bounty"] . " pièce(s) §8(§7+" . $bountyToAdd . "§8) §f!");
                 }
 
                 $item = $damager->getInventory()->getItemInHand();
@@ -390,7 +408,7 @@ class PlayerListener implements Listener
 
                 if ($item->hasEnchantment($looter)) {
                     $enchantLevel = $item->getEnchantment($looter)?->getLevel();
-                    $multiplier = 0.03 * $enchantLevel;
+                    $multiplier = 0.04 * $enchantLevel;
                     $playerMoney = $session->data["money"];
                     $moneyToLoot = round($playerMoney * $multiplier);
 
@@ -1049,7 +1067,6 @@ class PlayerListener implements Listener
                                 $entity->getWorld()->broadcastPacketToViewers($entity->getPosition()->asVector3(), LevelSoundEventPacket::create(LevelSoundEvent::THUNDER, $entity->getLocation(), -1, "minecraft:lightning_bolt", false, false));
 
                                 $entity->sendMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §6Foudroiement §f!");
-                                $damager->sendMessage(Util::PREFIX . "§fVous venez d'envoyer un éclair sur §6" . $entity->getName() . " §fgrâce à votre enchantement §6Foudroiement §f!");
                             }
                         }
 
