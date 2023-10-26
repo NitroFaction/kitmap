@@ -35,9 +35,7 @@ use pocketmine\block\{Barrel,
     Wheat
 };
 use pocketmine\entity\animation\HurtAnimation;
-use pocketmine\entity\Attribute;
 use pocketmine\network\mcpe\NetworkBroadcastUtils;
-use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\entity\effect\{EffectInstance, VanillaEffects};
 use pocketmine\event\block\{BlockBreakEvent, BlockGrowEvent, BlockPlaceEvent, BlockSpreadEvent, BlockUpdateEvent};
 use pocketmine\event\entity\{EntityDamageByEntityEvent,
@@ -52,7 +50,6 @@ use pocketmine\event\entity\{EntityDamageByEntityEvent,
 use pocketmine\event\inventory\{CraftItemEvent, InventoryOpenEvent, InventoryTransactionEvent};
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\entity\animation\ArmSwingAnimation;
-use pocketmine\entity\Entity;
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerBucketEvent,
     PlayerChatEvent,
@@ -86,9 +83,7 @@ use pocketmine\item\{Axe,
     Stick,
     VanillaItems
 };
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
@@ -98,7 +93,6 @@ use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
-use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 use pocketmine\permission\DefaultPermissions;
@@ -1044,7 +1038,6 @@ class PlayerListener implements Listener
 
                     if (!$event->isCancelled()) {
 
-<<<<<<< Updated upstream
                         $item = $damager->getInventory()->getItemInHand();
                         $lightningStrike = EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::LIGHTNING_STRIKE);
 
@@ -1069,29 +1062,6 @@ class PlayerListener implements Listener
 
                                 $entity->sendMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §6Foudroiement §f!");
                             }
-=======
-                    if ($item->hasEnchantment($lightningStrike)) {
-                        $level = $item->getEnchantment($lightningStrike)?->getLevel();
-                        $chance = match ($level) {
-                            1 => 300,
-                            2 => 225,
-                            3 => 150
-                        };
-                        if (mt_rand(0, $chance) < 1) {
-                            $packets = [];
-                            $packets[] = LevelSoundEventPacket::create(LevelSoundEvent::THUNDER, $entity->getLocation(), -1, "minecraft:lightning_bolt", false, false);
-                            $packets[] = AddActorPacket::create(($id = Entity::nextRuntimeId()), $id, "minecraft:lightning_bolt", $entity->getLocation(), new Vector3(0, 0, 0), 0, 0, 0, 0, array_map(function (Attribute $attribute): NetworkAttribute {
-                                return new NetworkAttribute($attribute->getId(), $attribute->getMinValue(), $attribute->getMaxValue(), $attribute->getValue(), $attribute->getDefaultValue(), []);
-                            }, $entity->getAttributeMap()->getAll()), [], new PropertySyncData([], []), []);
-                            $hurtAnimation = new HurtAnimation($entity);
-                            $healthToRemove = mt_rand(1.5, 2);
-                            $entity->setLastDamageCause(new EntityDamageByEntityEvent($damager, $entity, $event::CAUSE_CUSTOM, $healthToRemove));
-                            $entity->setHealth(max($entity->getHealth() - mt_rand(2, 3), 0));
-                            $viewers = array_merge($entity->getViewers(), $damager->getViewers());
-                            NetworkBroadcastUtils::broadcastPackets([array_unique($viewers)], [$packets, $hurtAnimation->encode()]);
-                            $entity->sendMessage(Util::PREFIX . "§e" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §eFoudroiement §f!");
-                            $damager->sendMessage(Util::PREFIX . "§fVous venez d'envoyer un éclair sur §e" . $entity->getName() . " §fgrâce à votre enchantement §eFoudroiement §f!");
->>>>>>> Stashed changes
                         }
 
                     }

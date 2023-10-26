@@ -62,6 +62,7 @@ class Cache
             self::$players["kill"][$username] = $file->get("kill", 0);
             self::$players["death"][$username] = $file->get("death", 0);
             self::$players["killstreak"][$username] = $file->get("killstreak", 0);
+            self::$players["bounty"][$username] = $file->get("bounty", 0);
             self::$players["played_time"][$username] = $file->get("played_time", 0);
             self::$players["upper_name"][strtolower($username)] = $file->get("upper_name", $username);
 
