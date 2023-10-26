@@ -1044,6 +1044,7 @@ class PlayerListener implements Listener
 
                     if (!$event->isCancelled()) {
 
+<<<<<<< Updated upstream
                         $item = $damager->getInventory()->getItemInHand();
                         $lightningStrike = EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::LIGHTNING_STRIKE);
 
@@ -1068,6 +1069,29 @@ class PlayerListener implements Listener
 
                                 $entity->sendMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §6Foudroiement §f!");
                             }
+=======
+                    if ($item->hasEnchantment($lightningStrike)) {
+                        $level = $item->getEnchantment($lightningStrike)?->getLevel();
+                        $chance = match ($level) {
+                            1 => 300,
+                            2 => 225,
+                            3 => 150
+                        };
+                        if (mt_rand(0, $chance) < 1) {
+                            $packets = [];
+                            $packets[] = LevelSoundEventPacket::create(LevelSoundEvent::THUNDER, $entity->getLocation(), -1, "minecraft:lightning_bolt", false, false);
+                            $packets[] = AddActorPacket::create(($id = Entity::nextRuntimeId()), $id, "minecraft:lightning_bolt", $entity->getLocation(), new Vector3(0, 0, 0), 0, 0, 0, 0, array_map(function (Attribute $attribute): NetworkAttribute {
+                                return new NetworkAttribute($attribute->getId(), $attribute->getMinValue(), $attribute->getMaxValue(), $attribute->getValue(), $attribute->getDefaultValue(), []);
+                            }, $entity->getAttributeMap()->getAll()), [], new PropertySyncData([], []), []);
+                            $hurtAnimation = new HurtAnimation($entity);
+                            $healthToRemove = mt_rand(1.5, 2);
+                            $entity->setLastDamageCause(new EntityDamageByEntityEvent($damager, $entity, $event::CAUSE_CUSTOM, $healthToRemove));
+                            $entity->setHealth(max($entity->getHealth() - mt_rand(2, 3), 0));
+                            $viewers = array_merge($entity->getViewers(), $damager->getViewers());
+                            NetworkBroadcastUtils::broadcastPackets([array_unique($viewers)], [$packets, $hurtAnimation->encode()]);
+                            $entity->sendMessage(Util::PREFIX . "§e" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §eFoudroiement §f!");
+                            $damager->sendMessage(Util::PREFIX . "§fVous venez d'envoyer un éclair sur §e" . $entity->getName() . " §fgrâce à votre enchantement §eFoudroiement §f!");
+>>>>>>> Stashed changes
                         }
 
                     }
@@ -1103,14 +1127,14 @@ class PlayerListener implements Listener
         $packets = $event->getPackets();
         foreach ($packets as $packet) {
             switch ($packet) {
-                /*case $packet instanceof InventorySlotPacket:
+                case $packet instanceof InventorySlotPacket:
                     $packet->item = new ItemStackWrapper($packet->item->getStackId(), Util::displayEnchants($packet->item->getItemStack()));
                     break;
                 case $packet instanceof InventoryContentPacket:
                     foreach ($packet->items as $i => $item) {
                         $packet->items[$i] = new ItemStackWrapper($item->getStackId(), Util::displayEnchants($item->getItemStack()));
                     }
-                    break;*/
+                    break;
                 case $packet instanceof SetTimePacket:
                     $packet->time = 12500; // on sait jamais parfois le stoptime il a la flemme
                     break;

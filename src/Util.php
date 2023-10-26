@@ -415,6 +415,11 @@ class Util
         return $x >= $minX && $x <= $maxX && $y >= $minY && $y <= $maxY && $z >= $minZ && $z <= $maxZ && $position->getWorld()->getFolderName() === $world;
     }
 
+    public static function reprocess(string $input): string
+    {
+        return strtolower(str_replace([" ", "minecraft:"], ["_", ""], trim($input)));
+    }
+
     public static function generateBourse(): void
     {
         $bourse = [];

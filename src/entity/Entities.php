@@ -6,6 +6,7 @@ use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\EntityFactory;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
+use pocketmine\item\enchantment;
 
 class Entities
 {

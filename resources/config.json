@@ -13,8 +13,8 @@
       "pv": 2
     },
     "champion": {
-      "gamertag": "§6[§7{fac}§6] §7{name}",
-      "chat": "§6[§7{fac}§6][Champion] §7{name}§6:§7 {msg}",
+      "gamertag": "§e[§7{fac}§e] §7{name}",
+      "chat": "§e[§7{fac}§e][Champion] §7{name}§e:§7 {msg}",
       "outpost": 5000,
       "tax": 4,
       "pack": 1,
@@ -61,8 +61,8 @@
       "chat": "§a[{fac}][Guide] §a{name}:§a {msg}"
     },
     "moderateur": {
-      "gamertag": "§6[{fac}] {name}",
-      "chat": "§6[{fac}][Modo] §6{name}:§6 {msg}"
+      "gamertag": "§e[{fac}] {name}",
+      "chat": "§e[{fac}][Modo] §e{name}:§e {msg}"
     },
     "sm": {
       "gamertag": "§6[{fac}] {name}",
@@ -502,6 +502,60 @@
     "29.5:70:27.5:90",
     "16.5:70:73.5:90"
   ],
+  "forgeron": {
+    "iron_helmet": {
+      "type": "emerald",
+      "number": 405
+    },
+    "iron_chestplate": {
+      "type": "emerald",
+      "number": 648
+    },
+    "iron_leggings": {
+      "type": "emerald",
+      "number": 567
+    },
+    "iron_boots": {
+      "type": "emerald",
+      "number": 324
+    },
+    "chainmail_helmet": {
+      "type": "emerald",
+      "number": 45
+    },
+    "chainmail_chestplate": {
+      "type": "emerald",
+      "number": 72
+    },
+    "chainmail_leggings": {
+      "type": "emerald",
+      "number": 63
+    },
+    "chainmail_boots": {
+      "type": "iris",
+      "number": 36
+    },
+    "iron_sword": {
+      "type": "emerald",
+      "number": 162
+    },
+    "golden_sword": {
+      "type": "iris",
+      "number": 18
+    },
+    "turtle_helmet": {
+      "type": "emerald",
+      "number": 36
+    },
+    "iron_axe": {
+      "type": "emerald",
+      "number": 171
+    },
+    "stone_axe": {
+      "type": "iris",
+      "number": 18
+    }
+  },
   "sanctions": {
     "ban": {
       "Cheat": [

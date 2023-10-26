@@ -52,7 +52,7 @@ class MoneyZoneTask
     private static function setBlock(bool $claimed): void
     {
         $world = Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld();
-        $block = $claimed ? VanillaBlocks::CONCRETE_POWDER()->setColor(DyeColor::GREEN()) : VanillaBlocks::CONCRETE_POWDER()->setColor(DyeColor::GRAY());
+        $block = $claimed ? VanillaBlocks::CONCRETE_POWDER()->setColor(DyeColor::GREEN()) : VanillaBlocks::CONCRETE_POWDER()->setColor(DyeColor::LIGHT_GRAY());
 
         [$x1, $y, $z1, $x2, , $z2,] = explode(":", Cache::$config["zones"]["money-zone"]);
 

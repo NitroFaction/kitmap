@@ -2,19 +2,18 @@
 
 namespace Kitmap\entity;
 
+use Kitmap\handler\Cache;
 use Kitmap\Util;
-use MaXoooZ\Util\item\Crafts;
 use muqsit\invmenu\InvMenu;
 use muqsit\invmenu\transaction\InvMenuTransaction;
 use muqsit\invmenu\transaction\InvMenuTransactionResult;
 use muqsit\invmenu\type\InvMenuTypeIds;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Villager;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\Inventory;
-use pocketmine\item\Armor;
-use pocketmine\item\Item;
-use pocketmine\item\Sword;
+use pocketmine\item\VanillaItems;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 
@@ -32,36 +31,73 @@ class Forgeron extends Villager
                 $menu->setListener(function (InvMenuTransaction $transaction): InvMenuTransactionResult {
                     $item = $transaction->getIn();
 
-                    if (!$item instanceof Sword && !$item instanceof Armor) {
+                    $name = Util::reprocess($item->getVanillaName());
+
+                    if (!isset(Cache::$config["forgeron"][$name])) {
                         return $transaction->discard();
                     }
                     return $transaction->continue();
                 });
 
                 $menu->setInventoryCloseListener(function (Player $player, Inventory $inventory): void {
-                    $shapes = Crafts::$uncondenseShapes;
                     $items = $inventory->getContents();
 
-                    $give = 0;
+                    if (1 > count($items)) {
+                        return;
+                    }
+
+                    $arr = [
+                        "emerald" => 0,
+                        "iris" => 0
+                    ];
 
                     foreach ($items as $item) {
-                        foreach ($shapes as $shape) {
-                            $output = $shape["output"];
-                            $input = $shape["input"];
+                        $name = Util::reprocess($item->getVanillaName());
 
-                            $count = $shape["count"];
+                        $type = Cache::$config["forgeron"][$name]["type"];
+                        $number = Cache::$config["forgeron"][$name]["number"];
 
-                            if ($output instanceof Item && $input instanceof Item && $output->getTypeId() === $item->getTypeId()) {
-                                $rand = mt_rand(1, ceil($count / 3));
-                                Util::addItem($player, $input->setCount($rand));
-                                $give++;
-                            }
-                        }
+                        $arr[$type] += intval($number);
                     }
 
-                    if ($give > 0) {
-                        $player->sendMessage(Util::PREFIX . "Vous venez de recevoir les items décondensé");
+                    $arr["iris"] = mt_rand(0, $arr["iris"]);
+                    $arr["emerald"] = mt_rand(0, $arr["emerald"]);
+
+                    $irisIngot = intval($arr["iris"] / 9);
+                    $arr["iris"] = $arr["iris"] - ($irisIngot * 9);
+
+                    $emeraldBlock = intval($arr["emerald"] / 9 / 9);
+                    $arr["emerald"] = $arr["emerald"] - ($emeraldBlock * 9 * 9);
+
+                    $emeraldIngot = intval($arr["emerald"] / 9);
+                    $arr["emerald"] = $arr["emerald"] - ($emeraldIngot * 9);
+
+                    $items = [
+                        VanillaItems::RABBIT_HIDE()->setCount($irisIngot),
+                        VanillaItems::RABBIT_FOOT()->setCount($arr["iris"]),
+                        VanillaBlocks::EMERALD()->asItem()->setCount($emeraldBlock),
+                        VanillaItems::EMERALD()->setCount($emeraldIngot),
+                        VanillaItems::GOLD_NUGGET()->setCount($arr["emerald"]),
+                    ];
+
+                    $sentences = [
+                        $irisIngot > 0 ? $irisIngot . " §flingot" . ($irisIngot > 1 ? "s" : "") . " d'iris" : "",
+                        $arr["iris"] > 0 ? $arr["iris"] . " §ffragment" . ($arr["iris"] > 1 ? "s" : "") . " d'iris" : "",
+                        $emeraldBlock > 0 ? $emeraldBlock . " §fblocs" . ($emeraldBlock > 1 ? "s" : "") . " d'émeraude" : "",
+                        $emeraldIngot > 0 ? $emeraldIngot . " §flingot" . ($emeraldIngot > 1 ? "s" : "") . " d'émeraude" : "",
+                        $arr["emerald"] > 0 ? $arr["emerald"] . " §fpépites" . ($arr["emerald"] > 1 ? "s" : "") . " d'émeraude" : ""
+                    ];
+
+                    $sentences = array_filter($sentences, fn($val) => $val !== "");
+                    $sentence = implode(", §6", $sentences);
+
+                    $player->getInventory()->addItem(...$items);
+
+                    if (($lastCommaPosition = strrpos($sentence, ",")) !== false) {
+                        $sentence = substr_replace($sentence, " et", $lastCommaPosition, 1);
                     }
+
+                    $player->sendMessage(Util::PREFIX . "Le forgeron a travaillé dur sur vos items, au final il en a " . (strlen($sentence) > 1 ? "ressorti: §6" . $sentence . " !" : "rien ressorti, désolé."));
                 });
 
                 $menu->send($damager);
