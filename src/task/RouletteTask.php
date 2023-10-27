@@ -3,6 +3,7 @@
 namespace Kitmap\task;
 
 use Kitmap\handler\Casino;
+use pocketmine\block\Block;
 use pocketmine\block\Concrete;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
@@ -29,6 +30,7 @@ class RouletteTask extends Task
     private int $close = 40;
 
     private bool $started = false;
+    private ?Block $result = null;
 
     public function __construct(Player $player, Inventory $inventory, int $bet, array $roulette)
     {
@@ -149,7 +151,9 @@ class RouletteTask extends Task
             $this->time--;
         } else {
             $this->doEndAnimation();
+
             $resultColor = $this->getResultColor();
+            $this->inventory->setItem(13, $this->result->asItem());
 
             if ($this->close === 40) {
                 $this->player->broadcastSound(new BellRingSound(), [$this->player]);
@@ -198,6 +202,10 @@ class RouletteTask extends Task
 
     private function getResultColor(): DyeColor
     {
+        if ($this->result instanceof Concrete) {
+            return $this->result->getColor();
+        }
+
         $rand = mt_rand(0, 36);
 
         if ($rand == 0) {
@@ -208,7 +216,7 @@ class RouletteTask extends Task
             $block = VanillaBlocks::CONCRETE()->setColor(DyeColor::BLACK());
         }
 
-        $this->inventory->setItem(13, $block->asItem());
+        $this->result = $block;
         return $block->getColor();
     }
 

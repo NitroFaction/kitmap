@@ -351,12 +351,12 @@ class Casino
         unset(self::$games[strtolower($player->getName())]);
     }
 
-    public static function winGame(Player $player, string $game, float $gain, int $score = 0, int $scoreToComplete = 0, float $multiplier = 0.0): void
+    public static function winGame(Player $player, string $game, float $gain, int $score = 0, int $scoreToComplete = 0, float $multiplier = 0.0, float $bet = 0.0): void
     {
         $session = Session::get($player);
-        $finalGain = round($gain * 0.90);
+        $finalGain = round(($gain + $bet) * 0.90);
 
-        $formattedFinalGain = Util::formatNumberWithSuffix($finalGain);
+        $formattedFinalGain = Util::formatNumberWithSuffix($finalGain-$bet);
         $session->addValue("money", $finalGain);
 
         $playerName = strtolower($player->getName());
@@ -559,10 +559,10 @@ class Casino
                     self::loseGame($player, $game);
                     break;
                 case 2:
-                    $gain > 0 ? self::winGame($player, $game, $gain, $score, $scoreToComplete, $finalMultiplier) : self::loseGame($player, $game);
+                    $gain > 0 ? self::winGame($player, $game, $gain, $score, $scoreToComplete, $finalMultiplier, $bet) : self::loseGame($player, $game);
                     break;
                 case 3:
-                    self::winGame($player, $game, $gain, $score, $scoreToComplete, $finalMultiplier);
+                    self::winGame($player, $game, $gain, $score, $scoreToComplete, $finalMultiplier, $bet);
                     break;
             }
 

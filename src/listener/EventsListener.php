@@ -710,7 +710,7 @@ class EventsListener implements Listener
                 } else if ($block->hasSameTypeId(VanillaBlocks::DEEPSLATE_EMERALD_ORE())) {
                     $emerald = VanillaItems::GOLD_NUGGET()->setCount(mt_rand(1, 4));
 
-                    if (mt_rand(0, 250) === 1) {
+                    if (mt_rand(0, 500) === 1) {
                         $event->setDrops([$emerald, VanillaItems::RABBIT_FOOT()]);
                     } else {
                         $event->setDrops([$emerald]);
