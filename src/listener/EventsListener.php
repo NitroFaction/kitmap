@@ -1026,9 +1026,9 @@ class EventsListener implements Listener
                             $level = $item->getEnchantment($lightningStrike)?->getLevel();
 
                             $chance = match ($level) {
-                                1 => 300,
-                                2 => 225,
-                                3 => 150
+                                1 => 200,
+                                2 => 150,
+                                3 => 100
                             };
 
                             if (mt_rand(0, $chance) < 1) {
