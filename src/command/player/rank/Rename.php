@@ -34,7 +34,7 @@ class Rename extends BaseCommand
         if ($sender instanceof Player) {
             $session = Session::get($sender);
 
-            if (!Rank::hasRank($sender, "champion")) {
+            if (!Rank::hasRank($sender, "prince")) {
                 $sender->sendMessage(Util::PREFIX . "Vous n'avez pas la permission de faire cela");
                 return;
             }
@@ -50,25 +50,18 @@ class Rename extends BaseCommand
                     return;
                 }
 
-                if ($player->getInventory()->getItemInHand()->equals(VanillaItems::AIR())) {
-                    $player->sendMessage(Util::PREFIX . "L'item dans votre main ne peut pas être renommer");
-                    return;
-                }
-
-                $customName = "§r§f" . $data[0];
                 $item = $player->getInventory()->getItemInHand();
 
                 if ($item->hasEnchantment(EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::ARES))) {
                     $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas renommer un item possédant l'enchantement Arès");
                     return;
-                }
-
-                $item->setCustomName($customName);
-
-                if ($item->equals(VanillaItems::PAPER()) || !is_null($item->getNamedTag()->getTag("partneritem")) || !is_null($item->getNamedTag()->getTag("type")) || !is_null($item->getNamedTag()->getTag("data"))) {
-                    $player->sendMessage(Util::PREFIX . "L'item dans votre main ne peut pas être renommé !");
+                } else if ($item->equals(VanillaItems::AIR()) || $item->getTypeId() === VanillaItems::PAPER()->getTypeId() || $item->getTypeId() === VanillaItems::EXPERIENCE_BOTTLE()->getTypeId() || !is_null($item->getNamedTag()->getTag("partneritem")) || !is_null($item->getNamedTag()->getTag("type")) || !is_null($item->getNamedTag()->getTag("data"))) {
+                    $player->sendMessage(Util::PREFIX . "L'item dans votre main ne peut pas être renommé");
                     return;
                 }
+
+                $customName = "§r§f" . $data[0];
+                $item->setCustomName($customName);
 
                 $player->getInventory()->setItemInHand($item);
                 $session->setCooldown("rename", (60 * 3));

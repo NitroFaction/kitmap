@@ -320,10 +320,10 @@ class Casino
                     $player->sendMessage(Util::PREFIX . "Votre mise au dragon tower a été annulée, vous venez de récupérer votre mise initiale");
                     break;
                 case 1:
-                    self::loseGame($player, $game);
+                    self::loseGame($player, $game, $bet);
                     break;
                 case 2:
-                    $gain > $bet ? self::winGame($player, $game, $gain, $multiplier) : self::loseGame($player, $game);
+                    $gain > $bet ? self::winGame($player, $game, $gain, $multiplier) : self::loseGame($player, $game, $bet);
                     break;
                 case 3:
                     self::winGame($player, $game, $gain, $multiplier);
@@ -338,14 +338,25 @@ class Casino
 
     private static function closeInventory(Player $player, int $endStatus): void
     {
-        $playerName = strtolower($player->getName());
-        self::$games[$playerName]["end-status"] = $endStatus;
-        $player->removeCurrentWindow();
+        self::$games[strtolower($player->getName())]["end-status"] = $endStatus;
+        Util::removeCurrentWindow($player);
     }
 
-    public static function loseGame(Player $player, string $game): void
+    public static function loseGame(Player $player, string $game, float $bet): void
     {
-        $player->sendMessage(Util::PREFIX . "Vous n'avez rien gagné en jouant à " . ucfirst($game));
+        $suffix = match ($game) {
+            "roulette" => "à la",
+            "mines" => "aux",
+            default => "au"
+        };
+
+        $game = ucwords(implode(" ", explode("-", $game)));
+
+        if ($bet > 99999) {
+            Server::getInstance()->broadcastMessage(Util::PREFIX . "§6" . $player->getName() . " §fa perdu §6" . Util::formatNumberWithSuffix($bet) . " pièces " . $suffix . " " . $game);
+        }
+
+        $player->sendMessage(Util::PREFIX . "Vous n'avez rien gagné en jouant " . $suffix . " " . $game);
         $player->broadcastSound(new ExplodeSound(), [$player]);
 
         unset(self::$games[strtolower($player->getName())]);
@@ -356,7 +367,7 @@ class Casino
         $session = Session::get($player);
         $finalGain = round(($gain + $bet) * 0.90);
 
-        $formattedFinalGain = Util::formatNumberWithSuffix($finalGain-$bet);
+        $formattedFinalGain = Util::formatNumberWithSuffix($finalGain - $bet);
         $session->addValue("money", $finalGain);
 
         $playerName = strtolower($player->getName());
@@ -556,10 +567,10 @@ class Casino
                     $player->sendMessage(Util::PREFIX . "Votre mise dans les Mines a été annulée, vous venez de récupérer votre mise initiale");
                     break;
                 case 1:
-                    self::loseGame($player, $game);
+                    self::loseGame($player, $game, $bet);
                     break;
                 case 2:
-                    $gain > 0 ? self::winGame($player, $game, $gain, $score, $scoreToComplete, $finalMultiplier, $bet) : self::loseGame($player, $game);
+                    $gain > 0 ? self::winGame($player, $game, $gain, $score, $scoreToComplete, $finalMultiplier, $bet) : self::loseGame($player, $game, $bet);
                     break;
                 case 3:
                     self::winGame($player, $game, $gain, $score, $scoreToComplete, $finalMultiplier, $bet);

@@ -6,10 +6,11 @@ use Kitmap\command\player\{Anvil, Enchant, rank\Enderchest};
 use Kitmap\command\staff\{Ban, LastInventory, Question, Vanish};
 use Kitmap\command\util\Bienvenue;
 use Kitmap\enchantment\EnchantmentIds;
-use Kitmap\entity\{AntiBackBallEntity, LightningBolt, LogoutEntity, SwitcherEntity};
+use Kitmap\entity\{AntiBackBallEntity, DeadEntity, LightningBolt, LogoutEntity, SwitcherEntity};
 use Kitmap\handler\{Cache, Faction, Pack, PartnerItems, Rank, Sanction};
 use Kitmap\Main;
 use Kitmap\Session;
+use Kitmap\task\repeat\GamblingTask;
 use Kitmap\task\repeat\PlayerTask;
 use Kitmap\Util;
 use MaXoooZ\Util\item\ExtraVanillaItems;
@@ -52,6 +53,7 @@ use pocketmine\event\player\{PlayerBucketEvent,
     PlayerChatEvent,
     PlayerDataSaveEvent,
     PlayerDeathEvent,
+    PlayerDropItemEvent,
     PlayerInteractEvent,
     PlayerItemConsumeEvent,
     PlayerItemUseEvent,
@@ -119,12 +121,12 @@ class EventsListener implements Listener
             }
         } else if (!$player->isSneaking() && $event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK && $block->hasSameTypeId(VanillaBlocks::ANVIL())) {
             $event->cancel();
-            $player->removeCurrentWindow();
+            Util::removeCurrentWindow($player);
 
             Anvil::openAnvil($player);
         } else if (!$player->isSneaking() && $event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK && $block->hasSameTypeId(VanillaBlocks::ENCHANTING_TABLE())) {
             $event->cancel();
-            $player->removeCurrentWindow();
+            Util::removeCurrentWindow($player);
 
             Enchant::openEnchantTable($player, false);
         }
@@ -133,8 +135,8 @@ class EventsListener implements Listener
 
         if ($block->getPosition()->getX() === intval($x) && $block->getPosition()->getY() === intval($y) && $block->getPosition()->getZ() === intval($z)) {
             $event->cancel();
-            $player->removeCurrentWindow();
 
+            Util::removeCurrentWindow($player);
             Pack::openPackUI($player);
         }
     }
@@ -315,7 +317,10 @@ class EventsListener implements Listener
         Main::getInstance()->getServer()->broadcastTip("§c- " . $player->getName() . " -");
         $event->setQuitMessage("");
 
-        if (Util::getTpTime($player) > 0) {
+        if (in_array($player->getName(), GamblingTask::$players)) {
+            $ev = new PlayerDeathEvent($player, [], 0, "");
+            $ev->call();
+        } else if (Util::getTpTime($player) > 0) {
             $entity = new LogoutEntity($player->getLocation(), $player->getSkin());
             $entity->initEntityB($player);
             $entity->spawnToAll();
@@ -330,10 +335,33 @@ class EventsListener implements Listener
         $session = Session::get($player);
 
         $event->setDeathMessage("");
-
         $session->removeCooldown("combat");
-        $session->addValue("death", 1);
 
+        if (in_array($player->getName(), GamblingTask::$players)) {
+            $otherPlayerName = (GamblingTask::$players[0] === $player->getName()) ? GamblingTask::$players[1] : GamblingTask::$players[0];
+            GamblingTask::stop($otherPlayerName);
+
+            if (Faction::hasFaction($player)) {
+                Faction::addPower($session->data["faction"], -4);
+            }
+
+            $cause = $player->getLastDamageCause();
+
+            if (!$cause instanceof EntityDamageByEntityEvent) {
+                return;
+            }
+
+            $damager = $cause->getDamager();
+
+            if ($damager instanceof Player && Faction::hasFaction($damager)) {
+                $damagerSession = Session::get($damager);
+                Faction::addPower($damagerSession->data["faction"], 6);
+            }
+
+            return;
+        }
+
+        $session->addValue("death", 1);
         $playerBounty = $session->data["bounty"];
 
         if ($playerBounty > 0) {
@@ -460,7 +488,16 @@ class EventsListener implements Listener
             return;
         }
 
-        if ($item instanceof EnderPearl) {
+        if (!is_null($item->getNamedTag()->getTag("xp_bottle"))) {
+            $xp = $item->getNamedTag()->getInt("xp_bottle");
+
+            $player->getXpManager()->addXpLevels($xp);
+            $player->getInventory()->removeItem($item->setCount(1));
+
+            $player->sendMessage(Util::PREFIX . "§fVous venez de récupérer §6" . $xp . " §fniveaux d'expérience");
+
+            $event->cancel();
+        } else if ($item instanceof EnderPearl) {
             if ($session->inCooldown("enderpearl")) {
                 $player->sendMessage(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("enderpearl")[0] - time()) . " §fsecondes avant de relancer une nouvelle perle");
                 $event->cancel();
@@ -649,6 +686,13 @@ class EventsListener implements Listener
     public function onTrampleFarmland(EntityTrampleFarmlandEvent $event): void
     {
         $event->cancel();
+    }
+
+    public function onDrop(PlayerDropItemEvent $event): void
+    {
+        if (in_array($event->getPlayer()->getName(), GamblingTask::$players)) {
+            $event->cancel();
+        }
     }
 
     public function onBreak(BlockBreakEvent $event): void
@@ -872,7 +916,11 @@ class EventsListener implements Listener
                 }
             }
 
-            if ($sender->hasNoClientPredictions()) {
+            if (in_array($sender->getName(), GamblingTask::$players)) {
+                $sender->sendMessage(Util::PREFIX . "Vous ne pouvez pas executer de commande en plein gambling");
+                $event->cancel();
+                return;
+            } else if ($sender->hasNoClientPredictions()) {
                 $event->cancel();
                 return;
             }
@@ -942,7 +990,7 @@ class EventsListener implements Listener
             } else if (
                 $event->getCause() === EntityDamageEvent::CAUSE_FALL ||
                 $event->getCause() === EntityDamageEvent::CAUSE_SUFFOCATION ||
-                Util::insideZone($entity->getPosition(), "spawn") ||
+                (Util::insideZone($entity->getPosition(), "spawn") && !in_array($entity->getName(), GamblingTask::$players)) ||
                 $entitySession->data["staff_mod"][0] ||
                 str_starts_with($entity->getPosition()->getWorld()->getFolderName(), "box-") ||
                 $entity->getPosition()->getWorld()->getFolderName() === "mine"
@@ -954,7 +1002,7 @@ class EventsListener implements Listener
                 $damager = $event->getDamager();
 
                 if ($damager instanceof Player) {
-                    if (Util::insideZone($damager->getPosition(), "spawn")) {
+                    if (Util::insideZone($damager->getPosition(), "spawn") && !in_array($damager->getName(), GamblingTask::$players)) {
                         $event->cancel();
                     }
 
@@ -993,7 +1041,11 @@ class EventsListener implements Listener
                         return;
                     }
                     if ($entity->getGamemode() === GameMode::CREATIVE() || $damager->getGamemode() === GameMode::CREATIVE() || $entity->hasNoClientPredictions()) {
-                        return;
+                        goto skip;
+                    }
+
+                    if ($damager->getInventory()->getItemInHand() instanceof Axe) {
+                        $event->setBaseDamage(max(1, $event->getBaseDamage() - 2));
                     }
 
                     PartnerItems::executeHitPartnerItem($damager, $entity);
@@ -1018,37 +1070,42 @@ class EventsListener implements Listener
 
                     $entity->setScoreTag("§7" . round($entity->getHealth(), 2) . " §c❤" . $sup);
 
-                    if (!$event->isCancelled()) {
-                        $item = $damager->getInventory()->getItemInHand();
-                        $lightningStrike = EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::LIGHTNING_STRIKE);
+                    $item = $damager->getInventory()->getItemInHand();
+                    $lightningStrike = EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::LIGHTNING_STRIKE);
 
-                        if ($item->hasEnchantment($lightningStrike)) {
-                            $level = $item->getEnchantment($lightningStrike)?->getLevel();
+                    if ($item->hasEnchantment($lightningStrike)) {
+                        $level = $item->getEnchantment($lightningStrike)?->getLevel();
 
-                            $chance = match ($level) {
-                                1 => 200,
-                                2 => 150,
-                                3 => 100
-                            };
+                        $chance = match ($level) {
+                            1 => 200,
+                            2 => 150,
+                            3 => 100
+                        };
 
-                            if (mt_rand(0, $chance) < 1) {
-                                $lightning = new LightningBolt($entity->getLocation());
-                                $lightning->spawnToAll();
+                        if (mt_rand(0, $chance) < 1) {
+                            $lightning = new LightningBolt($entity->getLocation());
+                            $lightning->spawnToAll();
 
-                                $entity->setLastDamageCause(new EntityDamageByEntityEvent($damager, $entity, $event::CAUSE_CUSTOM, 2));
-                                $entity->setHealth(max($entity->getHealth() - 2, 0));
+                            $entity->setLastDamageCause(new EntityDamageByEntityEvent($damager, $entity, $event::CAUSE_CUSTOM, 2));
+                            $entity->setHealth(max($entity->getHealth() - 2, 0));
 
-                                $hurtAnimation = new HurtAnimation($entity);
-                                $viewers = array_merge($entity->getViewers(), $damager->getViewers());
+                            $hurtAnimation = new HurtAnimation($entity);
+                            $viewers = array_merge($entity->getViewers(), $damager->getViewers());
 
-                                NetworkBroadcastUtils::broadcastPackets(array_unique($viewers), $hurtAnimation->encode());
-                                $entity->getWorld()->broadcastPacketToViewers($entity->getPosition()->asVector3(), LevelSoundEventPacket::create(LevelSoundEvent::THUNDER, $entity->getLocation(), -1, "minecraft:lightning_bolt", false, false));
+                            NetworkBroadcastUtils::broadcastPackets(array_unique($viewers), $hurtAnimation->encode());
+                            $entity->getWorld()->broadcastPacketToViewers($entity->getPosition()->asVector3(), LevelSoundEventPacket::create(LevelSoundEvent::THUNDER, $entity->getLocation(), -1, "minecraft:lightning_bolt", false, false));
 
-                                $entity->sendMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §6Foudroiement §f!");
-                            }
+                            $entity->sendMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §6Foudroiement §f!");
                         }
                     }
                 }
+            }
+
+            skip:
+
+            if (in_array($entity->getName(), GamblingTask::$players) && $event->getFinalDamage() >= $entity->getHealth()) {
+                $ev = new PlayerDeathEvent($entity, [], 0, "");
+                $ev->call();
             }
         }
     }
@@ -1061,7 +1118,7 @@ class EventsListener implements Listener
         foreach ($input as $item) {
             if (!is_null($item->getNamedTag()->getTag("partneritem"))) {
                 $event->cancel();
-                $player->removeCurrentWindow();
+                Util::removeCurrentWindow($player);
 
                 $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser des partneritems pour craft des items ou autre");
                 break;

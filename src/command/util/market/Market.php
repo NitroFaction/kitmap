@@ -178,7 +178,7 @@ class Market extends BaseCommand
                 $this->checkAuctionHouse($player, $item, $type);
             }
 
-            $player->removeCurrentWindow();
+            Util::removeCurrentWindow($player);
         }));
 
         $confirm = VanillaBlocks::STAINED_GLASS_PANE()->setColor(DyeColor::GREEN())->asItem()->setCustomName("§r§aConfirmer");

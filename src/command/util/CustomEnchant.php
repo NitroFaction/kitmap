@@ -51,7 +51,7 @@ class CustomEnchant extends BaseCommand
 
     private function openInformationsEnchantForm(Player $player, string $enchant): void
     {
-        $form = new SimpleForm(fn (Player $player, mixed $data) => $this->openListEnchantForm($player));
+        $form = new SimpleForm(fn(Player $player, mixed $data) => $this->openListEnchantForm($player));
 
         $form->setTitle($enchant);
         $form->setContent($this->getInformationsByEnchant($enchant));

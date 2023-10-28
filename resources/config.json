@@ -77,6 +77,10 @@
       "chat": "§4[{fac}][Fonda] §4{name}:§4 {msg}"
     }
   },
+  "gambling": {
+    "first-spawn": "0.5:62:17.5:0",
+    "second-spawn": "0.5:62:41.5:180"
+  },
   "unicodes": {
     "0": "",
     "1": "",
@@ -414,19 +418,21 @@
     "outpost": "-58:64:123:-62:68:127:map",
     "mine-tp": "-12:71:49:-12:75:47:map",
     "blocks-tp": "11:70:49:13:70:47:map",
-    "money-zone": "1:65:83:-1:69:85:map"
+    "money-zone": "1:65:83:-1:69:85:map",
+    "gambling": "8:67:43:-8:60:15:map"
   },
   "floatings": {
     "-59.5:66:125.5:map": "outpost",
     "-132.5:70:56.5:map": "koth",
-    "0.5:71:23.5:map": "pack",
+    "0.5:71:59.5:map": "pack",
     "111.5:65:0.5:map": "domination",
     "112.5:74:-31.5:map": "domination",
     "108.5:72:18.5:map": "domination",
     "-9.5:72:48.5:map": "mine",
     "12.5:72:48.5:map": "blocs",
     "50013.5:12.5:89:mine": "blocks",
-    "0.5:67.5:84.5:map": "money-zone"
+    "0.5:67.5:84.5:map": "money-zone",
+    "0.5:71:29.5:map": "gambling"
   },
   "domination": {
     "Alpha": {
@@ -455,9 +461,9 @@
     "Tu souhaite nous rejoindre sur §6Discord §f? Rejoins nous via ce lien: §6https://discord.gg/nitrofaction",
     "Tu souhaites avoir des §6packs §fsupplémentaire gratuitement ? Vote via ce lien: §6https://nitrofaction.fr/vote",
     "Tu souhaites avoir un grade sur le serveur pour une meilleur expérience ? Achete le via ma boutique: §6https://nitrofaction.tebex.io",
-    "Tu souhaites avoir une information à propos du serveur ? Un salon §6#wiki §fest disponible sur notre discord: §7https://discord.gg/nitrofaction"
+    "Tu souhaites avoir une information à propos du serveur ? Un salon §6#wiki §fest disponible sur notre discord: §6https://discord.gg/nitrofaction"
   ],
-  "pack": "0:69:23",
+  "pack": "0:69:59",
   "nexus": "76.5:69:117.5",
   "permissions": {
     "delete": "Supprimer la faction §c(Risqué)",
@@ -740,15 +746,15 @@
     }
   },
   "bourse": [
-    "Cactus:cactus:3:6",
-    "Betterave:beetroot:3:7",
-    "Pomme de Terre:potato:3:7",
-    "Pastèque:melon_slice:3:7",
-    "Carotte:carrot:3:7",
-    "Bambou:bamboo:3:7",
-    "Baies sucrées:sweet_berries:2:8",
-    "Blé:wheat:3:7",
-    "Cannes à Sucres:sugar_cane:3:7"
+    "Cactus:cactus:6:12",
+    "Betterave:beetroot:6:14",
+    "Pomme de Terre:potato:6:14",
+    "Pastèque:melon_slice:6:14",
+    "Carotte:carrot:6:14",
+    "Bambou:bamboo:6:14",
+    "Baies sucrées:sweet_berries:4:16",
+    "Blé:wheat:6:14",
+    "Cannes à Sucres:sugar_cane:6:14"
   ],
   "interval": {
     "60": "unloadboxs",

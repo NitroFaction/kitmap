@@ -9,8 +9,6 @@ use Kitmap\command\player\Kit;
 use Kitmap\Main;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
-use pocketmine\item\Armor;
-use pocketmine\item\VanillaItems;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
@@ -44,20 +42,7 @@ class GiveKit extends BaseCommand
             return;
         }
 
-        foreach ($items as $item) {
-            if ($item instanceof Armor) {
-                if ($target->getArmorInventory()->getItem($item->getArmorSlot())->equals(VanillaItems::AIR())) {
-                    $target->getArmorInventory()->setItem($item->getArmorSlot(), $item);
-                    continue;
-                }
-            }
-
-            if ($target->getInventory()->canAddItem($item)) {
-                Util::addItem($target, $item);
-            } else {
-                $target->getWorld()->dropItem($target->getPosition()->asVector3(), $item);
-            }
-        }
+        Util::addItems($target, false, ...$items);
 
         $sender->sendMessage(Util::PREFIX . "Vous venez de donner un kit §6" . $args["kit"] . " §fau joueur §6" . $target->getName());
         $target->sendMessage(Util::PREFIX . "Vous venez de recevoir le kit §6" . $args["kit"] . " §fde la part de §6" . $sender->getName());

@@ -231,7 +231,7 @@ class Pack
                     $session->addValue("gem", 75, true);
                     $player->sendMessage(Util::PREFIX . "Vous venez d'acheter un pack avec §675 §fgemmes");
 
-                    Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter un pack avec des pièces");
+                    Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter un pack avec des gemmes");
                     break;
                 case 1:
                     if (100000 > $session->data["money"]) {
@@ -242,7 +242,7 @@ class Pack
                     $session->addValue("money", 100000, true);
                     $player->sendMessage(Util::PREFIX . "Vous venez d'acheter un pack avec §6100k §fpièces");
 
-                    Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter un pack avec des gemmes");
+                    Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter un pack avec des pièces");
                     break;
                 default:
                     return;

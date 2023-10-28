@@ -147,7 +147,7 @@ class LastInventory extends BaseCommand
         $inventory = $file->getAll()["save"][$data] ?? null;
 
         if (is_null($inventory)) {
-            $player->removeCurrentWindow();
+            Util::removeCurrentWindow($player);
             $player->sendMessage(Util::PREFIX . "L'inventaire vient d'être rendu");
             return;
         }
@@ -162,7 +162,7 @@ class LastInventory extends BaseCommand
             if ($transaction->getItemClicked()->getCustomName() !== "§r§6Rendre l'inventaire") {
                 return;
             } else if (is_null($inventory)) {
-                $player->removeCurrentWindow();
+                Util::removeCurrentWindow($player);
                 $player->sendMessage(Util::PREFIX . "L'inventaire vient d'être rendu");
                 return;
             }
@@ -173,7 +173,7 @@ class LastInventory extends BaseCommand
             $file->setAll($array);
             $file->save();
 
-            $player->removeCurrentWindow();
+            Util::removeCurrentWindow($player);
 
             $player->sendMessage(Util::PREFIX . "Vous venez de rendre l'inventaire du joueur §6" . $target . " §fde sa mort datant du §6" . $inventory["date"]);
             Main::getInstance()->getLogger()->info("Le staff " . $player->getName() . " vient de rembourser l'inventaire d'une precedente mort du joueur " . $target);

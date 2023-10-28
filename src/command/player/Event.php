@@ -64,7 +64,7 @@ class Event extends BaseCommand
                 $event = array_keys($eventsData)[$event];
 
                 $this->tpToEvent($player, $event);
-                $player->removeCurrentWindow();
+                Util::removeCurrentWindow($player);
             }));
 
             foreach ($eventsData as $name => $data) {

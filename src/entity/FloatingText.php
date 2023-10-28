@@ -2,9 +2,11 @@
 
 namespace Kitmap\entity;
 
+use Kitmap\command\player\Gambling;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Faction;
 use Kitmap\task\repeat\DominationTask;
+use Kitmap\task\repeat\GamblingTask;
 use Kitmap\task\repeat\KothTask;
 use Kitmap\task\repeat\OutpostTask;
 use Kitmap\Util;
@@ -83,6 +85,12 @@ class FloatingText extends FloatingTextEntity
                 } else {
                     $remaining = Util::formatDurationFromSeconds(OutpostTask::$currentOutpost);
                     return Util::PREFIX . "Outpost §6§l«\n§6Aucune §ffaction ne contrôle l'outpost\n§fOutpost contrôlé dans §6" . $remaining;
+                }
+            case "gambling":
+                if (GamblingTask::$currently) {
+                    return Util::PREFIX . "Gambling §6§l«\nUn gambling est actuellement en cours depuis §6" . Util::formatDurationFromSeconds(GamblingTask::$since, 1) . "\nLe gambling actuel oppose §6" . GamblingTask::$players[0] . " §fet §6" . GamblingTask::$players[1] . "\n\n§6" . count(Gambling::$gamblings) . " §fautre(s) §6gambling(s) §fsont en attente d'adversaire";
+                } else {
+                    return Util::PREFIX . "Gambling §6§l«\nAucun gambling n'est actuellement en cours\n§6" . count(Gambling::$gamblings) . " gambling(s) §fsont en attente d'adversaire\nPour rejoindre un gambling utiliser la commande §6/gambling";
                 }
             case "money-zone":
                 $this->period = null;

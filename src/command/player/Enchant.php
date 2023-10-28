@@ -184,12 +184,25 @@ class Enchant extends BaseCommand
 
         if (is_string($enchantName)) {
             $lore = $item->getLore();
+            $writed = false;
 
             if (1 > count($lore)) {
-                $lore[] = "§r§9 ";
+                $lore[] = "§r§6 ";
             }
 
-            $lore[] = "§r§7" . $enchantName . " " . Util::formatToRomanNumber($enchantInstance->getLevel());
+            $text = "§r§7" . $enchantName . " " . Util::formatToRomanNumber($enchantInstance->getLevel());
+
+            foreach ($lore as $index => $line) {
+                if (str_contains($line, $enchantName)) {
+                    $line[$index] = $text;
+                    $writed = true;
+                }
+            }
+
+            if (!$writed) {
+                $lore[] = $text;
+            }
+
             $item->setLore($lore);
         }
 

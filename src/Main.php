@@ -9,6 +9,7 @@ use Kitmap\entity\Entities;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Rank;
 use Kitmap\listener\EventsListener;
+use Kitmap\task\repeat\GamblingTask;
 use Kitmap\task\repeat\PlayerTask;
 use muqsit\invmenu\InvMenuHandler;
 use pocketmine\plugin\PluginBase;
@@ -52,6 +53,8 @@ class Main extends PluginBase
     protected function onDisable(): void
     {
         PlayerTask::updateBlocks(true);
+        GamblingTask::stop();
+
         Cache::getInstance()->saveAll();
 
         foreach ($this->getServer()->getOnlinePlayers() as $player) {

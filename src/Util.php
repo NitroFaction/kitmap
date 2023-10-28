@@ -12,9 +12,11 @@ use pocketmine\color\Color;
 use pocketmine\command\CommandSender;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\data\bedrock\EffectIdMap;
+use pocketmine\data\java\GameModeIdMap;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\inventory\Inventory;
+use pocketmine\item\Armor;
 use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
 use pocketmine\item\VanillaItems;
@@ -161,6 +163,23 @@ class Util
         $player->setScoreTag("§7" . round($player->getHealth(), 2) . " §c❤" . $sup);
     }
 
+    public static function formatNumberWithSuffix(int|float $value): string
+    {
+        $value = intval($value);
+        $value = (0 + str_replace(",", "", $value));
+
+        if ($value > 1000000000000) {
+            return round($value / 1000000000000, 2) . "MD";
+        } else if ($value > 1000000000) {
+            return round($value / 1000000000, 2) . "B";
+        } else if ($value > 1000000) {
+            return round($value / 1000000, 2) . "M";
+        } else if ($value > 1000) {
+            return round($value / 1000, 2) . "k";
+        }
+        return number_format($value);
+    }
+
     public static function getItemByName(string $name): Item
     {
         $name = str_replace(" ", "_", strtolower($name));
@@ -186,79 +205,6 @@ class Util
             }
         }
         return $romanNumber;
-    }
-
-    public static function readInventory(CompoundTag $nbt): array
-    {
-        $_ = [];
-        $inventory = [];
-
-        self::readInventoryAndArmorInventory($nbt, $inventory, $_);
-        return $inventory;
-    }
-
-    private static function readInventoryAndArmorInventory(CompoundTag $nbt, array &$inventory, array &$armor_inventory): void
-    {
-        $inventory = [];
-        $armor_inventory = [];
-
-        $tag = $nbt->getListTag("Inventory");
-
-        if ($tag === null) {
-            return;
-        }
-
-        /** @var CompoundTag $item */
-        foreach ($tag->getIterator() as $item) {
-            $slot = $item->getByte("Slot");
-
-            /** @noinspection PhpStatementHasEmptyBodyInspection */
-            if ($slot >= 0 && $slot < 9) {
-                // old hotbar stuff
-            } else if ($slot >= 100 && $slot < 104) {
-                $armor_inventory[$slot - 100] = Item::nbtDeserialize($item);
-            } else {
-                $inventory[$slot - 9] = Item::nbtDeserialize($item);
-            }
-        }
-    }
-
-    public static function readArmorInventory(CompoundTag $nbt): array
-    {
-        $_ = [];
-        $inventory = [];
-
-        self::readInventoryAndArmorInventory($nbt, $_, $inventory);
-        return $inventory;
-    }
-
-    public static function deserializePlayerData(string $identifier, string $contents): CompoundTag
-    {
-        try {
-            return (new BigEndianNbtSerializer())->read(utf8_decode($contents))->mustGetCompoundTag();
-        } catch (NbtDataException $e) {
-            throw new PlayerDataLoadException("Failed to decode NBT data for \"" . $identifier . "\": " . $e->getMessage(), 0, $e);
-        }
-    }
-
-    public static function readEffects(CompoundTag $nbt): array
-    {
-        $effects = [];
-        $tag = $nbt->getListTag("ActiveEffects");
-
-        if ($tag !== null) {
-            /** @var CompoundTag $effect */
-            foreach ($tag->getIterator() as $effect) {
-                $effects[] = new EffectInstance(
-                    EffectIdMap::getInstance()->fromId($effect->getByte("Id")),
-                    $effect->getInt("Duration"),
-                    Binary::unsignByte(($effect->getByte("Amplifier"))),
-                    $effect->getByte("ShowParticles"),
-                    $effect->getByte("Ambient")
-                );
-            }
-        }
-        return $effects;
     }
 
     public static function savePlayerData(Player $player): string|null|bool
@@ -335,6 +281,20 @@ class Util
         return floor($player->getPosition()->getX() + $player->getPosition()->getY() + $player->getPosition()->getZ());
     }
 
+    public static function addItems(Player $player, bool $noDrop = false, Item...$items): void
+    {
+        foreach ($items as $item) {
+            if ($item instanceof Armor) {
+                if ($player->getArmorInventory()->getItem($item->getArmorSlot())->equals(VanillaItems::AIR())) {
+                    $player->getArmorInventory()->setItem($item->getArmorSlot(), $item);
+                    continue;
+                }
+            }
+
+            Util::addItem($player, $item, $noDrop);
+        }
+    }
+
     public static function addItem(Player $player, Item $item, bool $noDrop = false): void
     {
         if (!$noDrop && !$player->getInventory()->canAddItem($item)) {
@@ -400,6 +360,13 @@ class Util
         Cache::$data["bourse"] = $bourse;
     }
 
+    public static function removeCurrentWindow(Player $player): void
+    {
+        if (!is_null($player->getCurrentWindow())) {
+            $player->removeCurrentWindow();
+        }
+    }
+
     public static function isPlayerAimOnAntiBack(Player $player): bool
     {
         $blocks = $player->getLineOfSight(10, 2);
@@ -412,21 +379,106 @@ class Util
         return false;
     }
 
-    public static function formatNumberWithSuffix(int|float $value): string
+    public static function restorePlayer(Player $player, string $nbt): void
     {
-        $value = intval($value);
-        $value = (0 + str_replace(",", "", $value));
+        $nbt = Util::deserializePlayerData($player->getName(), $nbt);
 
-        if ($value > 1000000000000) {
-            return round($value / 1000000000000, 2) . "MD";
-        } else if ($value > 1000000000) {
-            return round($value / 1000000000, 2) . "B";
-        } else if ($value > 1000000) {
-            return round($value / 1000000, 2) . "M";
-        } else if ($value > 1000) {
-            return round($value / 1000, 2) . "k";
+        $gamemode = $nbt->getInt("playerGameType");
+        $xpLevel = $nbt->getInt("XpLevel");
+        $xpProgress = $nbt->getFloat("XpP");
+        $litetimeXpTotal = $nbt->getInt("XpTotal");
+
+        $inventory = Util::readInventory($nbt);
+        $armorInventory = Util::readArmorInventory($nbt);
+        $effects = Util::readEffects($nbt);
+
+        $player->setGamemode(GameModeIdMap::getInstance()->fromId($gamemode));
+        $player->getXpManager()->setXpLevel($xpLevel);
+        $player->getXpManager()->setXpProgress($xpProgress);
+        $player->getXpManager()->setLifetimeTotalXp($litetimeXpTotal);
+
+        $player->getInventory()->setContents($inventory);
+        $player->getArmorInventory()->setContents($armorInventory);
+
+        $player->getInventory()->setHeldItemIndex($nbt->getInt("SelectedInventorySlot"));
+        $player->setHealth($nbt->getFloat("Health"));
+
+        foreach ($effects as $effect) {
+            $player->getEffects()->add($effect);
         }
-        return number_format($value);
+    }
+
+    public static function deserializePlayerData(string $identifier, string $contents): CompoundTag
+    {
+        try {
+            return (new BigEndianNbtSerializer())->read(utf8_decode($contents))->mustGetCompoundTag();
+        } catch (NbtDataException $e) {
+            throw new PlayerDataLoadException("Failed to decode NBT data for \"" . $identifier . "\": " . $e->getMessage(), 0, $e);
+        }
+    }
+
+    public static function readInventory(CompoundTag $nbt): array
+    {
+        $_ = [];
+        $inventory = [];
+
+        self::readInventoryAndArmorInventory($nbt, $inventory, $_);
+        return $inventory;
+    }
+
+    private static function readInventoryAndArmorInventory(CompoundTag $nbt, array &$inventory, array &$armor_inventory): void
+    {
+        $inventory = [];
+        $armor_inventory = [];
+
+        $tag = $nbt->getListTag("Inventory");
+
+        if ($tag === null) {
+            return;
+        }
+
+        /** @var CompoundTag $item */
+        foreach ($tag->getIterator() as $item) {
+            $slot = $item->getByte("Slot");
+
+            /** @noinspection PhpStatementHasEmptyBodyInspection */
+            if ($slot >= 0 && $slot < 9) {
+                // old hotbar stuff
+            } else if ($slot >= 100 && $slot < 104) {
+                $armor_inventory[$slot - 100] = Item::nbtDeserialize($item);
+            } else {
+                $inventory[$slot - 9] = Item::nbtDeserialize($item);
+            }
+        }
+    }
+
+    public static function readArmorInventory(CompoundTag $nbt): array
+    {
+        $_ = [];
+        $inventory = [];
+
+        self::readInventoryAndArmorInventory($nbt, $_, $inventory);
+        return $inventory;
+    }
+
+    public static function readEffects(CompoundTag $nbt): array
+    {
+        $effects = [];
+        $tag = $nbt->getListTag("ActiveEffects");
+
+        if ($tag !== null) {
+            /** @var CompoundTag $effect */
+            foreach ($tag->getIterator() as $effect) {
+                $effects[] = new EffectInstance(
+                    EffectIdMap::getInstance()->fromId($effect->getByte("Id")),
+                    $effect->getInt("Duration"),
+                    Binary::unsignByte(($effect->getByte("Amplifier"))),
+                    $effect->getByte("ShowParticles"),
+                    $effect->getByte("Ambient")
+                );
+            }
+        }
+        return $effects;
     }
 
     public static function formatDurationFromSeconds(float|int $seconds, int $type = 0): string

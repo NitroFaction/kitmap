@@ -3,6 +3,7 @@
 namespace Kitmap;
 
 use Kitmap\command\player\CoinFlip;
+use Kitmap\command\player\Gambling;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Casino;
 use pocketmine\player\Player;
@@ -97,6 +98,7 @@ class Session
                 }
             }
 
+            unset(Gambling::$gamblings[$username]);
             unset(self::$sessions[$player]);
         }
 

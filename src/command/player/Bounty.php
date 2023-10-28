@@ -53,7 +53,7 @@ class Bounty extends BaseCommand
                 if ($bounty > 0) {
                     $sender->sendMessage(Util::PREFIX . "Votre prime s'élève à §6" . $bounty . " pièce(s) §f!");
                 } else {
-                    $sender->sendMessage(Util::PREFIX ."Vous ne possèdez pas de prime");
+                    $sender->sendMessage(Util::PREFIX . "Vous ne possèdez pas de prime");
                 }
             } else {
                 if ($bounty > 0) {

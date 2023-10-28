@@ -3,7 +3,7 @@
 namespace Kitmap\task;
 
 use Kitmap\handler\Casino;
-use pocketmine\block\Block;
+use Kitmap\Util;
 use pocketmine\block\Concrete;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
@@ -30,7 +30,6 @@ class RouletteTask extends Task
     private int $close = 40;
 
     private bool $started = false;
-    private ?Block $result = null;
 
     public function __construct(Player $player, Inventory $inventory, int $bet, array $roulette)
     {
@@ -126,11 +125,8 @@ class RouletteTask extends Task
     public function onRun(): void
     {
         if (!$this->player->isConnected()) {
-            $this->getHandler()?->cancel();
+            $this->getHandler()->cancel();
             return;
-        } else if (is_null($this->player->getCurrentWindow())) {
-            $this->close = 0;
-            $this->time = 0;
         }
 
         if ($this->time > 0) {
@@ -153,7 +149,6 @@ class RouletteTask extends Task
             $this->doEndAnimation();
 
             $resultColor = $this->getResultColor();
-            $this->inventory->setItem(13, $this->result->asItem());
 
             if ($this->close === 40) {
                 $this->player->broadcastSound(new BellRingSound(), [$this->player]);
@@ -173,10 +168,10 @@ class RouletteTask extends Task
                     $gain = $resultColorId === 2 ? $this->bet * 14 : $this->bet * 2;
                     Casino::winGame($this->player, "roulette", $gain);
                 } else {
-                    Casino::loseGame($this->player, "roulette");
+                    Casino::loseGame($this->player, "roulette", $this->bet);
                 }
 
-                $this->getHandler()?->cancel();
+                $this->getHandler()->cancel();
             } else {
                 $this->close--;
             }
@@ -202,21 +197,8 @@ class RouletteTask extends Task
 
     private function getResultColor(): DyeColor
     {
-        if ($this->result instanceof Concrete) {
-            return $this->result->getColor();
-        }
-
-        $rand = mt_rand(0, 36);
-
-        if ($rand == 0) {
-            $block = VanillaBlocks::CONCRETE()->setColor(DyeColor::LIME());
-        } else if ($rand % 2 == 0) {
-            $block = VanillaBlocks::CONCRETE()->setColor(DyeColor::RED());
-        } else {
-            $block = VanillaBlocks::CONCRETE()->setColor(DyeColor::BLACK());
-        }
-
-        $this->result = $block;
+        $block = $this->inventory->getItem(13)->getBlock();
+        /* @var Concrete $block */
         return $block->getColor();
     }
 
@@ -230,7 +212,7 @@ class RouletteTask extends Task
             unset(Casino::$games[$this->name]);
         }
 
-        $this->player->removeCurrentWindow();
+        Util::removeCurrentWindow($this->player);
 
         cancel:
         parent::onCancel();

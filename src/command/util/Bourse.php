@@ -31,7 +31,7 @@ class Bourse extends BaseCommand
         foreach ($items as $item) {
             list($name, , , $sell) = explode(":", $item);
 
-            $sender->sendMessage("§a" . $name . "§f - Prix de vente: §a" . $sell . " §fpièces§a/u");
+            $sender->sendMessage("§a" . $name . "§f - Prix de vente: §6" . $sell . " §fpièces§6/u");
         }
 
         $sender->sendMessage($bar);

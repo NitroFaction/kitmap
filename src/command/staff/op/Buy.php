@@ -2,8 +2,6 @@
 
 namespace Kitmap\command\staff\op;
 
-use CortexPE\Commando\args\IntegerArgument;
-use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\args\RawStringArgument;
 use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
@@ -21,7 +19,7 @@ class Buy extends BaseCommand
         parent::__construct(
             $plugin,
             "buy",
-            "Ajoute un grade à un joueur ou des gemmes avec un message"
+            "Commande permettant de gérer les achats de la boutique"
         );
 
         $this->setPermissions([DefaultPermissions::ROOT_OPERATOR]);
@@ -29,12 +27,35 @@ class Buy extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
-        if (isset($args["gemme"])) {
-            Util::executeCommand("addvalue \"" . $args["joueur"] . "\" " . $args["gemme"] . " gem");
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6Le joueur §f" . $args["joueur"] . " §6vient d'acheter §f" . $args["gemme"] . " §6gemmes sur la boutique !! §fhttps://shop.nitrofaction.fr");
-        } else if (isset($args["grade"])) {
-            Util::executeCommand("setrank \"" . $args["joueur"] . "\" " . $args["grade"]);
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6Le joueur §f" . $args["joueur"] . " §6vient d'acheter le grade §f" . $args["grade"] . " §6sur la boutique !! §fhttps://shop.nitrofaction.fr");
+        $value = $args["valeur"];
+        $player = $args["joueur"];
+
+        if (is_numeric($value)) {
+            Util::executeCommand("addvalue \"" . $player . "\" " . $value . " gem");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §6" . $player . " §fvient d'acheter §6" . $value . " §fgemmes sur la boutique ! §6https://nitrofaction.tebex.io");
+        } else if (isset(Cache::$config["ranks"][$value])) {
+            Util::executeCommand("setrank \"" . $player . "\" " . $value);
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §6" . $player . " §fvient d'acheter le grade §6" . $value . " §fsur la boutique ! §6https://nitrofaction.tebex.io");
+        } else {
+            if (str_contains($value, "unban")) {
+                if (!isset(Cache::$bans[$player])) {
+                    return;
+                }
+
+                $maxDays = explode("-", $value)[1];
+                $maxDays = intval($maxDays);
+
+                $data = Cache::$bans[$player];
+
+                $seconds = $data[1] - time();
+                $days = $seconds / 86400;
+
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §6" . $player . " §fvient d'acheter un §6unban §fsur la boutique ! §6https://nitrofaction.tebex.io");
+
+                if ($maxDays > $days) {
+                    Util::executeCommand("unban \"" . $player . "\"");
+                }
+            }
         }
     }
 
@@ -42,7 +63,6 @@ class Buy extends BaseCommand
     {
         $this->registerArgument(0, new TargetArgument("joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
-        $this->registerArgument(1, new IntegerArgument("gemme"));
-        $this->registerArgument(1, new OptionArgument("grade", array_keys(Cache::$config["ranks"])));
+        $this->registerArgument(1, new RawStringArgument("valeur"));
     }
 }

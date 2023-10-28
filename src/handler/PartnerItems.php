@@ -6,6 +6,7 @@ use Kitmap\entity\AntiBackBallEntity;
 use Kitmap\entity\SwitcherEntity;
 use Kitmap\Main;
 use Kitmap\Session;
+use Kitmap\task\repeat\GamblingTask;
 use Kitmap\Util;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\effect\EffectInstance;
@@ -31,7 +32,7 @@ class PartnerItems
 
         if (is_null($item->getNamedTag()->getTag("partneritem"))) {
             return false;
-        } else if (Util::insideZone($player->getPosition(), "spawn")) {
+        } else if (Util::insideZone($player->getPosition(), "spawn") && !in_array($player->getName(), GamblingTask::$players)) {
             $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utilisé cet item au spawn");
             return false;
         } else if ($session->inCooldown("_partneritemblocker")) {

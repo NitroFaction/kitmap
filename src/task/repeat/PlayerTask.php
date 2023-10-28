@@ -34,13 +34,14 @@ class PlayerTask extends Task
 
         DominationTask::run();
         KothTask::run();
+        GamblingTask::run();
         OutpostTask::run();
 
         if ($this->tick % 3 == 0) {
             MoneyZoneTask::run();
         }
 
-        if ($this->tick % 180 == 0) {
+        if ($this->tick % 250 == 0) {
             $messages = Cache::$config["messages"];
             Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . $messages[array_rand($messages)]);
         }
@@ -48,7 +49,7 @@ class PlayerTask extends Task
         self::updateBlocks();
 
         foreach (Cache::$combatPlayers as $player => $ignore) {
-            if (!$player->isConnected()) {
+            if (!$player instanceof Player || !$player->isConnected() || in_array($player->getName(), GamblingTask::$players)) {
                 continue;
             }
 

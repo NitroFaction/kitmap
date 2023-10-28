@@ -9,7 +9,6 @@ use Kitmap\Util;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
-use pocketmine\data\java\GameModeIdMap;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\VanillaItems;
@@ -46,31 +45,7 @@ class Staff extends BaseCommand
                 $sender->sendMessage(Util::PREFIX . "Vous venez d'activer le staff mod");
                 $this->sendItems($sender);
             } else {
-                $nbt = Util::deserializePlayerData($sender->getName(), $data[1]);
-
-                $gamemode = $nbt->getInt("playerGameType");
-                $xpLevel = $nbt->getInt("XpLevel");
-                $xpProgress = $nbt->getFloat("XpP");
-                $litetimeXpTotal = $nbt->getInt("XpTotal");
-
-                $inventory = Util::readInventory($nbt);
-                $armorInventory = Util::readArmorInventory($nbt);
-                $effects = Util::readEffects($nbt);
-
-                $sender->setGamemode(GameModeIdMap::getInstance()->fromId($gamemode));
-                $sender->getXpManager()->setXpLevel($xpLevel);
-                $sender->getXpManager()->setXpProgress($xpProgress);
-                $sender->getXpManager()->setLifetimeTotalXp($litetimeXpTotal);
-
-                $sender->getInventory()->setContents($inventory);
-                $sender->getArmorInventory()->setContents($armorInventory);
-
-                $sender->getInventory()->setHeldItemIndex($nbt->getInt("SelectedInventorySlot"));
-                $sender->setHealth($nbt->getFloat("Health"));
-
-                foreach ($effects as $effect) {
-                    $sender->getEffects()->add($effect);
-                }
+                Util::restorePlayer($sender, $data[1]);
 
                 $session->data["staff_mod"] = [false, []];
                 $sender->sendMessage(Util::PREFIX . "Vous venez de désactiver le staff mod");
