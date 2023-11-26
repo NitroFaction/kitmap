@@ -5,6 +5,7 @@ namespace Kitmap\command\player;
 use CortexPE\Commando\args\IntegerArgument;
 use CortexPE\Commando\BaseCommand;
 use Kitmap\Main;
+use Kitmap\Session;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
 use pocketmine\item\VanillaItems;
@@ -30,11 +31,16 @@ class XpBottle extends BaseCommand
             $amount = $args["montant"] ?? $sender->getXpManager()->getXpLevel();
             $amount = intval($amount);
 
+            $session = Session::get($sender);
+
             if ($amount < 1 || $amount > 1000) {
                 $sender->sendMessage(Util::PREFIX . "Le montant indiqué est invalide");
                 return;
             } else if ($amount > $sender->getXpManager()->getXpLevel()) {
                 $sender->sendMessage(Util::PREFIX . "Vous n'avez pas assez de niveaux");
+                return;
+            } else if ($session->inCooldown("xp_bottle")) {
+                $sender->sendMessage(Util::PREFIX . "Vous devez encore attendre §6" . Util::formatDurationFromSeconds($session->getCooldownData("xp_bottle")[0] - time()) . " §favant de pouvoir re-créer un coinflip");
                 return;
             }
 
@@ -43,6 +49,7 @@ class XpBottle extends BaseCommand
             $item->setCustomName("§r§fBouteille d'expérience §6(" . $amount . ")");
 
             Util::addItem($sender, $item);
+            $session->setCooldown("xp_bottle", 5 * 60);
 
             $sender->getXpManager()->setXpLevel($sender->getXpManager()->getXpLevel() - $amount);
             $sender->sendMessage(Util::PREFIX . "Vous avez crée une bouteille d'expérience avec §6" . $amount . " niveaux §fà l'intérieur");

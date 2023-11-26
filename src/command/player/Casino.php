@@ -29,6 +29,9 @@ class Casino extends BaseCommand
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
         if ($sender instanceof Player) {
+            $sender->sendMessage(Util::PREFIX . "Le casino est malheuresement désactivé :'( ! À bientot");
+            return;
+
             $session = Session::get($sender);
 
             if ($session->inCooldown("combat")) {

@@ -8,7 +8,6 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 
 class LightningBolt extends Entity
 {
-
     protected int $age = 0;
 
     public static function getNetworkTypeId(): string
@@ -38,5 +37,4 @@ class LightningBolt extends Entity
     {
         return 0.0;
     }
-
 }

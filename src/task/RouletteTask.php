@@ -127,6 +127,8 @@ class RouletteTask extends Task
         if (!$this->player->isConnected()) {
             $this->getHandler()->cancel();
             return;
+        } else if (is_null($this->player->getCurrentWindow())) {
+            $this->close = 0;
         }
 
         if ($this->time > 0) {

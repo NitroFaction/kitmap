@@ -305,11 +305,15 @@ class PartnerItems
                     $helmet = $target->getArmorInventory()->getHelmet();
                     $target->getArmorInventory()->setHelmet(VanillaBlocks::PUMPKIN()->asItem());
 
-                    Main::getInstance()->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($target, $helmet) {
-                        if ($target->isOnline()) {
-                            $target->getArmorInventory()->setHelmet($helmet);
-                            $target->sendMessage(Util::PREFIX . "Vous venez de récuperer votre casque");
+                    $gambling = in_array($target->getName(), GamblingTask::$players);
+
+                    Main::getInstance()->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($target, $helmet, $gambling) {
+                        if (!$target->isOnline() || ($gambling && !in_array($target->getName(), GamblingTask::$players))) {
+                            return;
                         }
+
+                        $target->getArmorInventory()->setHelmet($helmet);
+                        $target->sendMessage(Util::PREFIX . "Vous venez de récuperer votre casque");
                     }), 5 * 20);
                 }
                 break;

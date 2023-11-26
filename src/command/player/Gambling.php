@@ -87,31 +87,6 @@ class Gambling extends BaseCommand
         }
     }
 
-    private function showKits(Player $player): void
-    {
-        $form = new SimpleForm(function (Player $player, mixed $data) {
-            if (is_int($data)) {
-                $menu = InvMenu::create(InvMenuTypeIds::TYPE_CHEST);
-
-                $menu->setName("Kit " . $data + 1);
-                $menu->setListener(InvMenu::readonly());
-
-                foreach (self::getKit($data) as $item) {
-                    $menu->getInventory()->addItem($item);
-                }
-
-                $menu->send($player);
-            }
-        });
-        $form->setTitle("Gambling");
-        $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
-        $form->addButton("Kit 1");
-        $form->addButton("Kit 2");
-        $form->addButton("Kit 3");
-        $form->addButton("Kit 4");
-        $player->sendForm($form);
-    }
-
     private function createForm(Player $player): void
     {
         $form = new CustomForm(function (Player $player, mixed $data) {
@@ -122,7 +97,7 @@ class Gambling extends BaseCommand
             $session = Session::get($player);
 
             if ($session->inCooldown("gambling")) {
-                $player->sendMessage(Util::PREFIX . "Vous devez encore attendre §6" . Util::formatDurationFromSeconds($session->getCooldownData("gambling")[0] - time()) . " §fsecondes avant de pouvoir re-créer un gambling");
+                $player->sendMessage(Util::PREFIX . "Vous devez encore attendre §6" . Util::formatDurationFromSeconds($session->getCooldownData("gambling")[0] - time()) . " §favant de pouvoir re-créer un gambling");
                 return;
             }
 
@@ -133,6 +108,9 @@ class Gambling extends BaseCommand
 
             if ($bet > $session->data["money"]) {
                 $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas miser plus que votre monnaie actuel");
+                return;
+            } else if ($bet < 0) {
+            	$player->sendMessage(Util::PREFIX . "Vous ne pouvez pas miser cette somme");
                 return;
             } else if (isset(self::$gamblings[$lowerName])) {
                 $player->sendMessage(Util::PREFIX . "Vous avez déjà un gambling en attente");
@@ -172,7 +150,7 @@ class Gambling extends BaseCommand
         $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
 
         foreach (self::$gamblings as $target => $value) {
-            $form->addButton($value["upper_name"] . "\nMise de §6" . Util::formatDurationFromSeconds($value["bet"], 1) . " §fpièces §8- Kit §6" . $value["kit"] + 1, -1, "", $target);
+            $form->addButton($value["upper_name"] . "\nMise de §6" . Util::formatNumberWithSuffix($value["bet"], 1) . " pièces §8- Kit §6" . $value["kit"] + 1, -1, "", $target);
         }
 
         $form->addButton("Rafraîchir", -1, "", "refresh");
@@ -216,10 +194,10 @@ class Gambling extends BaseCommand
                 $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas vous affronter vous même");
                 return;
             } else if (0 > $bet) {
-                $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas misez un nombre négatif");
+                $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas miser un nombre négatif");
                 return;
             } else if (FactionAPI::hasFaction($player) && ($session->data["faction"] === Session::get($p)->data["faction"])) {
-                $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas misez un nombre négatif");
+                $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas affronter des joueurs de votre faction en gambling");
                 return;
             } else if (GamblingTask::$currently) {
                 $player->sendMessage(Util::PREFIX . "Un gambling est déjà en cours, attendez sa fin pour affronter un joueur");
@@ -259,10 +237,19 @@ class Gambling extends BaseCommand
         $form = new SimpleForm(function (Player $player, mixed $data) {
             if (!is_string($data) || $data != "yes") {
                 return;
+            } else if (!isset(self::$gamblings[strtolower($player->getName())])) {
+                $player->sendMessage(Util::PREFIX . "Vous n'avez pas de gambling en attente");
+                return;
             }
 
+            $data = self::$gamblings[strtolower($player->getName())];
+
+            $session = Session::get($player);
+
+            $session->removeCooldown("gambling");
+            $session->addValue("money", $data["bet"]);
+
             unset(self::$gamblings[strtolower($player->getName())]);
-            Session::get($player)->removeCooldown($player);
 
             $player->sendMessage(Util::PREFIX . "Vous venez de retirer votre gambling en attente");
         });
@@ -270,6 +257,31 @@ class Gambling extends BaseCommand
         $form->setContent(Util::PREFIX . "Êtes vous sur de supprimer votre gambling ?");
         $form->addButton("Oui", -1, "", "yes");
         $form->addButton("Non", -1, "", "no");
+        $player->sendForm($form);
+    }
+
+    private function showKits(Player $player): void
+    {
+        $form = new SimpleForm(function (Player $player, mixed $data) {
+            if (is_int($data)) {
+                $menu = InvMenu::create(InvMenuTypeIds::TYPE_CHEST);
+
+                $menu->setName("Kit " . $data + 1);
+                $menu->setListener(InvMenu::readonly());
+
+                foreach (self::getKit($data) as $item) {
+                    $menu->getInventory()->addItem($item);
+                }
+
+                $menu->send($player);
+            }
+        });
+        $form->setTitle("Gambling");
+        $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
+        $form->addButton("Kit 1");
+        $form->addButton("Kit 2");
+        $form->addButton("Kit 3");
+        $form->addButton("Kit 4");
         $player->sendForm($form);
     }
 

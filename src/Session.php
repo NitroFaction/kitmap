@@ -98,7 +98,15 @@ class Session
                 }
             }
 
-            unset(Gambling::$gamblings[$username]);
+            if (isset(Gambling::$gamblings[$username])) {
+                $data = Gambling::$gamblings[$username];
+
+                $this->removeCooldown("gambling");
+                $this->addValue("money", $data["bet"]);
+
+                unset(Gambling::$gamblings[$username]);
+            }
+
             unset(self::$sessions[$player]);
         }
 

@@ -35,6 +35,10 @@ class Entities
             return new FloatingText(EntityDataHelper::parseLocation($nbt, $world), $nbt);
         }, ["FloatingText"]);
 
+        EntityFactory::getInstance()->register(LightningBolt::class, function (World $world, CompoundTag $nbt): LightningBolt {
+            return new LightningBolt(EntityDataHelper::parseLocation($nbt, $world), $nbt);
+        }, ["LightningBolt"]);
+
         EntityFactory::getInstance()->register(Forgeron::class, function (World $world, CompoundTag $nbt): Forgeron {
             return new Forgeron(EntityDataHelper::parseLocation($nbt, $world), $nbt);
         }, ["Forgeron"]);

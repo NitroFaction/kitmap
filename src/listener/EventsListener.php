@@ -6,7 +6,7 @@ use Kitmap\command\player\{Anvil, Enchant, rank\Enderchest};
 use Kitmap\command\staff\{Ban, LastInventory, Question, Vanish};
 use Kitmap\command\util\Bienvenue;
 use Kitmap\enchantment\EnchantmentIds;
-use Kitmap\entity\{AntiBackBallEntity, DeadEntity, LightningBolt, LogoutEntity, SwitcherEntity};
+use Kitmap\entity\{AntiBackBallEntity, LightningBolt, LogoutEntity, SwitcherEntity};
 use Kitmap\handler\{Cache, Faction, Pack, PartnerItems, Rank, Sanction};
 use Kitmap\Main;
 use Kitmap\Session;
@@ -416,7 +416,7 @@ class EventsListener implements Listener
 
                 if ($item->hasEnchantment($looter)) {
                     $enchantLevel = $item->getEnchantment($looter)?->getLevel();
-                    $moneyToLoot = round($session->data["money"] * (0.04 * $enchantLevel));
+                    $moneyToLoot = round($session->data["money"] * (0.02 * $enchantLevel));
 
                     $session->addValue("money", $moneyToLoot, true);
                     $player->sendMessage(Util::PREFIX . "§6" . $damager->getName() . " §fvous a volé §6" . $moneyToLoot . " pièce(s) §fà cause de l'enchantement §6Pilleur " . Util::formatToRomanNumber($enchantLevel) . " §fsur son épée !");
@@ -504,7 +504,7 @@ class EventsListener implements Listener
             } else {
                 $position = $player->getPosition();
 
-                if (Util::insideZone($player->getPosition(), "warzone") && $position->getY() <= 62) {
+                if (Util::insideZone($player->getPosition(), "warzone") && $position->getY() <= 59) {
                     $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas lancer de perle dans les backrooms");
                     $event->cancel();
                     return;
@@ -536,7 +536,7 @@ class EventsListener implements Listener
 
         $session = Session::get($player);
 
-        if ($item->equals(VanillaItems::RAW_FISH())) {
+        if ($item->getTypeId() === VanillaItems::RAW_FISH()->getTypeId()) {
             if ($session->inCooldown("cookie_combined")) {
                 $player->sendMessage(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("cookie_combined")[0] - time()) . " §fsecondes avant de remanger un cookie combiné");
                 $event->cancel();
@@ -548,7 +548,7 @@ class EventsListener implements Listener
 
                 $session->setCooldown("cookie_combined", 25);
             }
-        } else if ($item->equals(VanillaItems::COOKED_FISH())) {
+        } else if ($item->getTypeId() === VanillaItems::COOKED_FISH()->getTypeId()) {
             if ($session->inCooldown("cookie_regeneration")) {
                 $player->sendMessage(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("cookie_regeneration")[0] - time()) . " §fsecondes avant de remanger un cookie de regeneration");
                 $event->cancel();
@@ -556,7 +556,7 @@ class EventsListener implements Listener
                 $player->getEffects()->add(new EffectInstance(VanillaEffects::REGENERATION(), (10 * 20), 0, false));
                 $session->setCooldown("cookie_regeneration", 25);
             }
-        } else if ($item->equals(VanillaItems::RAW_SALMON())) {
+        } else if ($item->getTypeId() === VanillaItems::RAW_SALMON()->getTypeId()) {
             if ($session->inCooldown("cookie_speed")) {
                 $player->sendMessage(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("cookie_speed")[0] - time()) . " §fsecondes avant de remanger un cookie de vitesse");
                 $event->cancel();
@@ -564,7 +564,7 @@ class EventsListener implements Listener
                 $player->getEffects()->add(new EffectInstance(VanillaEffects::SPEED(), (240 * 20), 0, false));
                 $session->setCooldown("cookie_speed", 25);
             }
-        } else if ($item->equals(VanillaItems::COOKED_SALMON())) {
+        } else if ($item->getTypeId() === VanillaItems::COOKED_SALMON()->getTypeId()) {
             if ($session->inCooldown("cookie_strength")) {
                 $player->sendMessage(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("cookie_strength")[0] - time()) . " §fsecondes avant de remanger un cookie de force");
                 $event->cancel();
@@ -572,7 +572,7 @@ class EventsListener implements Listener
                 $player->getEffects()->add(new EffectInstance(VanillaEffects::STRENGTH(), (240 * 20), 0, false));
                 $session->setCooldown("cookie_strength", 25);
             }
-        } else if ($item->equals(VanillaItems::GOLDEN_APPLE()) || $item->equals(VanillaItems::GOLDEN_CARROT())) {
+        } else if ($item->getTypeId() === VanillaItems::GOLDEN_APPLE()->getTypeId() || $item->getTypeId() === VanillaItems::GOLDEN_CARROT()->getTypeId()) {
             $event->cancel();
         }
     }
@@ -754,7 +754,7 @@ class EventsListener implements Listener
                 } else if ($block->hasSameTypeId(VanillaBlocks::DEEPSLATE_EMERALD_ORE())) {
                     $emerald = VanillaItems::GOLD_NUGGET()->setCount(mt_rand(1, 4));
 
-                    if (mt_rand(0, 500) === 1) {
+                    if (mt_rand(0, 250) === 1) {
                         $event->setDrops([$emerald, VanillaItems::RABBIT_FOOT()]);
                     } else {
                         $event->setDrops([$emerald]);
@@ -1103,9 +1103,11 @@ class EventsListener implements Listener
 
             skip:
 
-            if (in_array($entity->getName(), GamblingTask::$players) && $event->getFinalDamage() >= $entity->getHealth()) {
+            if (!$event->isCancelled() && in_array($entity->getName(), GamblingTask::$players) && $event->getFinalDamage() >= $entity->getHealth()) {
                 $ev = new PlayerDeathEvent($entity, [], 0, "");
                 $ev->call();
+
+                $event->setBaseDamage(0);
             }
         }
     }

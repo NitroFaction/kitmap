@@ -104,7 +104,7 @@ class Util
 
         foreach ($inventory->getContents() as $_item) {
             if (is_null($_item->getNamedTag()->getTag("partneritem"))) {
-                if ($_item->equals($item)) {
+                if ($_item->equals($item, true, false)) {
                     $count += $_item->getCount();
                 }
             }
@@ -281,9 +281,11 @@ class Util
         return floor($player->getPosition()->getX() + $player->getPosition()->getY() + $player->getPosition()->getZ());
     }
 
-    public static function addItems(Player $player, bool $noDrop = false, Item...$items): void
+    public static function addItems(Player $player, bool $noDrop, array $lore, Item...$items): void
     {
         foreach ($items as $item) {
+            $item = $item->setLore($lore);
+           
             if ($item instanceof Armor) {
                 if ($player->getArmorInventory()->getItem($item->getArmorSlot())->equals(VanillaItems::AIR())) {
                     $player->getArmorInventory()->setItem($item->getArmorSlot(), $item);

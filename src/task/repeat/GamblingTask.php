@@ -15,11 +15,11 @@ use pocketmine\item\PotionType;
 use pocketmine\item\VanillaItems;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
+use pocketmine\world\sound\ClickSound;
+use pocketmine\world\sound\ExplodeSound;
 
 class GamblingTask
 {
-    // ./tp 33.5 72 8.5  (floating)
-
     public static array $players = [];
     public static array $settings = [];
     public static array $saves = [];
@@ -59,12 +59,15 @@ class GamblingTask
                 $p->getInventory()->clearAll();
                 $p->getOffHandInventory()->clearAll();
                 $p->getCursorInventory()->clearAll();
+                $p->getCraftingGrid()->clearAll();
 
                 Util::removeCurrentWindow($p);
 
                 $p->sendTitle("§eDébut dans " . 5 - (self::$since + 5));
                 $p->setNoClientPredictions();
                 $p->setGamemode(GameMode::SURVIVAL());
+
+                $p->broadcastSound(new ClickSound());
             }
 
             $player->teleport(self::getPosition(1));
@@ -75,8 +78,10 @@ class GamblingTask
                     $p->getEffects()->add(new EffectInstance(VanillaEffects::NIGHT_VISION(), 20 * 60 * 60 * 24, 255, false));
                 }
 
-                Util::addItems($p, true, ...Gambling::getKit(self::$settings["kit"]));
+                Util::addItems($p, true, ["§r§9Item provenant du gambling"], ...Gambling::getKit(self::$settings["kit"]));
+
                 $p->setNoClientPredictions(false);
+                $p->broadcastSound(new ExplodeSound());
             }
 
             $player->sendTitle("§4C'est parti !!!!!", "§7Vous affrontez " . $player->getName());
@@ -111,12 +116,10 @@ class GamblingTask
             return;
         }
 
-        $loserPot = "?";
         $winnerPot = "?";
+        $loserPot = "?";
 
-        foreach (self::$players as $name) {
-            $p = Main::getInstance()->getServer()->getPlayerExact($name);
-
+        foreach ([self::$player1, self::$player2] as $p) {
             if ($p instanceof Player) {
                 if ($winner === $p->getName()) {
                     $winnerPot = Util::getItemCount($p, VanillaItems::SPLASH_POTION()->setType(PotionType::STRONG_HEALING()));
@@ -124,13 +127,21 @@ class GamblingTask
                     $loserPot = Util::getItemCount($p, VanillaItems::SPLASH_POTION()->setType(PotionType::STRONG_HEALING()));
                 }
 
+                Session::get($p)->removeCooldown("combat");
+
+                $position = Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld()->getSpawnLocation();
+                $p->teleport($position);
+
+                Util::removeCurrentWindow($p);
+
                 $p->getArmorInventory()->clearAll();
                 $p->getInventory()->clearAll();
                 $p->getOffHandInventory()->clearAll();
                 $p->getCursorInventory()->clearAll();
+                $p->getCraftingGrid()->clearAll();
 
-                $position = Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld()->getSpawnLocation();
-                $p->teleport($position);
+                $p->setNoClientPredictions(false);
+                $p->broadcastSound(new ExplodeSound());
 
                 Util::restorePlayer($p, self::$saves[$p->getName()]);
             }

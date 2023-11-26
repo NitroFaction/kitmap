@@ -194,7 +194,7 @@ class Enchant extends BaseCommand
 
             foreach ($lore as $index => $line) {
                 if (str_contains($line, $enchantName)) {
-                    $line[$index] = $text;
+                    $lore[$index] = $text;
                     $writed = true;
                 }
             }

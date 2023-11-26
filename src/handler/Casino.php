@@ -88,10 +88,20 @@ class Casino
             $amount = intval($data["bet"]);
 
             if ($amount < 10000) {
-                $player->sendMessage(Util::PREFIX . "La mise minimale de ce jeu est 10k de pièces");
+                $player->sendMessage(Util::PREFIX . "La mise minimale de ce jeu est §610k §fpièces");
+                return;
+            } else if ($amount > 100000) {
+                $player->sendMessage(Util::PREFIX . "La mise maximal de ce jeu est §6100k §fpièces");
                 return;
             } else if ($session->data["money"] < $amount) {
                 $player->sendMessage(Util::PREFIX . "Votre monnaie est infèrieur à §6" . $amount);
+                return;
+            }
+
+            $playerName = strtolower($player->getName());
+
+            if (isset(self::$games[$playerName])) {
+                $player->sendMessage(Util::PREFIX . "Attendez la fin de vos paris avant d'en relancer un");
                 return;
             }
 
@@ -111,7 +121,6 @@ class Casino
             }
 
             $session->addValue("money", $amount, true);
-            $playerName = strtolower($player->getName());
 
             self::$games[$playerName] = [
                 "game" => $game,
@@ -353,7 +362,7 @@ class Casino
         $game = ucwords(implode(" ", explode("-", $game)));
 
         if ($bet > 99999) {
-            Server::getInstance()->broadcastMessage(Util::PREFIX . "§6" . $player->getName() . " §fa perdu §6" . Util::formatNumberWithSuffix($bet) . " pièces " . $suffix . " " . $game);
+            Server::getInstance()->broadcastMessage(Util::PREFIX . "§6" . $player->getName() . " §fa perdu §6" . Util::formatNumberWithSuffix($bet) . " §fpièces " . $suffix . " " . $game);
         }
 
         $player->sendMessage(Util::PREFIX . "Vous n'avez rien gagné en jouant " . $suffix . " " . $game);
