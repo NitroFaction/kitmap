@@ -3,10 +3,10 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\IntegerArgument;
-use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\args\RawStringArgument;
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\OptionArgument;
+use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Session;
@@ -56,7 +56,7 @@ class Addvalue extends BaseCommand
             return;
         }
 
-        $sender->sendMessage(Util::PREFIX . "Vous venez d'ajouter §6" . $amount . " §f" . $data . " au joueur §6" . $target);
+        $sender->sendMessage(Util::PREFIX . "Vous venez d'ajouter §q" . $amount . " §f" . $data . " au joueur §q" . $target);
         Addvalue::addValue($sender->getName(), $target, $data, $amount);
     }
 
@@ -68,9 +68,9 @@ class Addvalue extends BaseCommand
             Session::get($player)->addValue($column, $value);
 
             if ($value > 0) {
-                $player->sendMessage(Util::PREFIX . "Le staff §6" . $staff . " §fvient de vous ajouter §6" . $value . " §f" . $column);
+                $player->sendMessage(Util::PREFIX . "Le staff §q" . $staff . " §fvient de vous ajouter §q" . $value . " §f" . $column);
             } else {
-                $player->sendMessage(Util::PREFIX . "Le staff §6" . $staff . " §fvient de vous retirer §6" . $value . " §f" . $column);
+                $player->sendMessage(Util::PREFIX . "Le staff §q" . $staff . " §fvient de vous retirer §q" . $value . " §f" . $column);
             }
         } else {
             $file = Util::getFile("data/players/" . $key);

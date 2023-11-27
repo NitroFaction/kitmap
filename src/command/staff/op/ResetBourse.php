@@ -9,14 +9,14 @@ use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\plugin\PluginBase;
 
-class GenerateBourse extends BaseCommand
+class ResetBourse extends BaseCommand
 {
     public function __construct(PluginBase $plugin)
     {
         parent::__construct(
             $plugin,
-            "generatebourse",
-            "Génére une nouvelle bourse"
+            "resetbourse",
+            "Réinitialise la bourse"
         );
 
         $this->setPermissions([DefaultPermissions::ROOT_OPERATOR]);
@@ -24,8 +24,8 @@ class GenerateBourse extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
-        Util::generateBourse();
-        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La bourse vient d'être générée, les prix ont donc été changés ! Profitez en bien !");
+        Util::resetBourse();
+        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La bourse vient d'être réinitialisé ! Profitez bien !");
     }
 
     protected function prepare(): void

@@ -33,7 +33,7 @@ class Here extends BaseSubCommand
                 return;
             }
 
-            $sender->sendMessage(Util::PREFIX . "L'endroit ou vous êtes est claim par la faction §6" . $claim[1]);
+            $sender->sendMessage(Util::PREFIX . "L'endroit ou vous êtes est claim par la faction §q" . $claim[1]);
         }
     }
 

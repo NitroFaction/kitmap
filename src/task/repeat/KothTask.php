@@ -59,7 +59,7 @@ class KothTask
 
         if (0 >= self::$currentKoth) {
             $name = is_null(self::$currentPlayer) ? "aucun joueur" : self::$currentPlayer;
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "L'event §6KOTH §fvient de se terminer et a été gagné par §6" . $name);
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "L'event §qKOTH §fvient de se terminer et a été gagné par §q" . $name);
 
             foreach ($players as $player) {
                 BossBarAPI::getInstance()->hideBossBar($player, 1);
@@ -78,7 +78,7 @@ class KothTask
                         Faction::addPower($session->data["faction"], mt_rand(15, 25));
                     }
 
-                    $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §62 pack §fet §625k §fpièces car vous avez gagné l'event koth");
+                    $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §q2 pack §fet §q25k §fpièces car vous avez gagné l'event koth");
                 }
             }
 

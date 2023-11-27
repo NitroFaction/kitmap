@@ -3,8 +3,8 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\RawStringArgument;
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
@@ -38,18 +38,18 @@ class CheckProxy extends BaseCommand
         $bar = "§l§8-----------------------";
 
         $sender->sendMessage($bar);
-        $sender->sendMessage(Util::PREFIX . "Résultats du test proxy de §6" . $target);
+        $sender->sendMessage(Util::PREFIX . "Résultats du test proxy de §q" . $target);
 
         $isSuspect = false;
 
         foreach ($allCidDid as $column => $count) {
-            $sender->sendMessage("§l§6| §r§f" . strtoupper($column) . " §8- §f" . $count);
+            $sender->sendMessage("§l§q| §r§f" . strtoupper($column) . " §8- §f" . $count);
             if ($count >= 10) {
                 $isSuspect = true;
             }
         }
 
-        $sender->sendMessage("§l§6| §r§fVerdict §8- " . ($isSuspect ? "§aSUSPECTÉ" : "§cNON SUSPECTÉ"));
+        $sender->sendMessage("§l§q| §r§fVerdict §8- " . ($isSuspect ? "§aSUSPECTÉ" : "§cNON SUSPECTÉ"));
         $sender->sendMessage($bar);
     }
 

@@ -18,7 +18,7 @@ class Fly extends BaseCommand
         parent::__construct(
             $plugin,
             "fly",
-            "Permet de voler sur les boxs de faction"
+            "Permet de voler sur les iles de faction"
         );
 
         $this->setPermissions([DefaultPermissions::ROOT_USER]);
@@ -34,8 +34,8 @@ class Fly extends BaseCommand
 
             if (!$sender->getAllowFlight()) {
                 if ($sender->getGamemode() === GameMode::SURVIVAL()) {
-                    if (!str_starts_with($sender->getWorld()->getFolderName(), "box-")) {
-                        $sender->sendMessage(Util::PREFIX . "Vous ne pouvez voler que dans les boxs de faction");
+                    if (!str_starts_with($sender->getWorld()->getFolderName(), "island-")) {
+                        $sender->sendMessage(Util::PREFIX . "Vous ne pouvez voler que dans les iles de faction");
                         return;
                     }
 

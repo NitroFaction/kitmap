@@ -53,7 +53,7 @@ class Bienvenue extends BaseCommand
             $sender->sendMessage($message);
 
             $session->addValue("money", 500);
-            $sender->sendMessage(Util::PREFIX . "Vous avez reçu §6500 §fpièces car vous avez souhaité la bienvenue de §6" . Bienvenue::$lastJoin);
+            $sender->sendMessage(Util::PREFIX . "Vous avez reçu §q500 §fpièces car vous avez souhaité la bienvenue de §q" . Bienvenue::$lastJoin);
         }
     }
 

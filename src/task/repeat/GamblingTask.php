@@ -78,14 +78,14 @@ class GamblingTask
                     $p->getEffects()->add(new EffectInstance(VanillaEffects::NIGHT_VISION(), 20 * 60 * 60 * 24, 255, false));
                 }
 
-                Util::addItems($p, true, ["§r§9Item provenant du gambling"], ...Gambling::getKit(self::$settings["kit"]));
+                Util::addItems($p, Gambling::getKit(self::$settings["kit"]), true);
 
                 $p->setNoClientPredictions(false);
                 $p->broadcastSound(new ExplodeSound());
             }
 
-            $player->sendTitle("§4C'est parti !!!!!", "§7Vous affrontez " . $player->getName());
-            $target->sendTitle("§4C'est parti !!!!!", "§7Vous affrontez " . $player->getName());
+            $player->sendTitle("§4C'est parti !!!", "§7Vous affrontez " . $player->getName());
+            $target->sendTitle("§4C'est parti !!!", "§7Vous affrontez " . $player->getName());
         } else {
             if (!Util::insideZone($player->getPosition(), "gambling")) {
                 $player->teleport(self::getPosition(1));
@@ -152,14 +152,14 @@ class GamblingTask
         if (!is_null($winner)) {
             $loser = (self::$players[0] === $winner) ? self::$players[1] : self::$players[0];
 
-            $message = $bet > 1 ? " Le prix de la victoire était de §6" . Util::formatNumberWithSuffix($bet * 2) . " §fpièces !" : "";
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§6" . $winner . "[§7" . $winnerPot . "§6] §fvient de gagner un gambling ou il affrontait §6" . $loser . "[§7" . $loserPot . "§6] §f!" . $message);
+            $message = $bet > 1 ? " Le prix de la victoire était de §q" . Util::formatNumberWithSuffix($bet * 2) . " §fpièces !" : "";
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§q" . $winner . "[§7" . $winnerPot . "§q] §fvient de gagner un gambling ou il affrontait §q" . $loser . "[§7" . $loserPot . "§q] §f!" . $message);
 
             if (($p = Main::getInstance()->getServer()->getPlayerExact($winner)) instanceof Player) {
                 Session::get($p)->addValue("money", $bet * 2);
             }
         } else {
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le gambling affrontant §6" . self::$players[0] . " §fet §6" . self::$players[1] . " §fa été annulé");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le gambling affrontant §q" . self::$players[0] . " §fet §q" . self::$players[1] . " §fa été annulé");
 
             if ($bet > 1) {
                 Addvalue::addValue("CONSOLE", strtolower(self::$players[0]), "money", $bet);

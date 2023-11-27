@@ -3,10 +3,10 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\IntegerArgument;
-use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\args\RawStringArgument;
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\OptionArgument;
+use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Util;
@@ -50,7 +50,7 @@ class Removevalue extends BaseCommand
             return;
         }
 
-        $sender->sendMessage(Util::PREFIX . "Vous venez de retirer §6" . $amount . " §f" . $data . " au joueur §6" . $target);
+        $sender->sendMessage(Util::PREFIX . "Vous venez de retirer §q" . $amount . " §f" . $data . " au joueur §q" . $target);
         Addvalue::addValue($sender->getName(), $target, $data, -$amount);
     }
 

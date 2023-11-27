@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\player;
 
-use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\OptionArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Session;
 use Kitmap\Util;
@@ -47,7 +47,7 @@ class Sell extends BaseCommand
                 }
 
                 $session->addValue("money", $total);
-                $sender->sendMessage(Util::PREFIX . "Tous les items vendable de votre inventaire ont été vendu, cela vous a rapporté §6" . $total . " §fpièces");
+                $sender->sendMessage(Util::PREFIX . "Tous les items vendable de votre inventaire ont été vendu, cela vous a rapporté §q" . $total . " §fpièces");
                 return;
             }
 
@@ -64,7 +64,7 @@ class Sell extends BaseCommand
                 $total = ($item->getCount() * $sell[2]);
                 $session->addValue("money", $total);
 
-                $sender->sendMessage(Util::PREFIX . "Vous venez de vendre §6" . $item->getCount() . " " . $sell[1] . " §fpour §6" . $total . " §fpièces");
+                $sender->sendMessage(Util::PREFIX . "Vous venez de vendre §q" . $item->getCount() . " " . $sell[1] . " §fpour §q" . $total . " §fpièces");
             }
         }
     }
@@ -83,7 +83,7 @@ class Sell extends BaseCommand
                 continue;
             }
 
-            $items = ($value["type"] === "bourse") ? Cache::$data["bourse"] : $value["items"];
+            $items = ($value["type"] === "bourse") ? Util::getBourse() : $value["items"];
 
             foreach ($items as $_item) {
                 list($name, $_itemName, , $sell) = explode(":", $_item);
@@ -95,6 +95,10 @@ class Sell extends BaseCommand
                     break;
                 }
             }
+        }
+
+        if (isset(Cache::$data["bourse"][$itemName])) {
+            Cache::$data["bourse"][$itemName] += $item->getcount();
         }
 
         if ($sellPrice === 0) {

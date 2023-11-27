@@ -3,8 +3,8 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\IntegerArgument;
-use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\OptionArgument;
 use Kitmap\handler\Cache;
 use Kitmap\handler\PartnerItems;
 use Kitmap\Util;
@@ -36,7 +36,7 @@ class PartnerItem extends BaseCommand
             $item->setCount($amount);
 
             Util::addItem($sender, $item);
-            $sender->sendMessage(Util::PREFIX . "Vous venez de recevoir " . $amount . " §6" . $args["item"]);
+            $sender->sendMessage(Util::PREFIX . "Vous venez de recevoir " . $amount . " §q" . $args["item"]);
         }
     }
 

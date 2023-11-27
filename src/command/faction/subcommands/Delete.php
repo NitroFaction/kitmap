@@ -27,7 +27,7 @@ class Delete extends FactionCommand
 
     public function onNormalRun(Player $sender, Session $session, ?string $faction, array $args): void
     {
-        Faction::broadcastMessage($faction, "§6[§fF§r§6] §fLa faction dont vous êtiez n'existe désormais plus");
+        Faction::broadcastMessage($faction, "§q[§fF§r§q] §fLa faction dont vous êtiez n'existe désormais plus");
 
         foreach (Faction::getFactionMembers($faction, true) as $player) {
             $session->data["faction"] = null;
@@ -42,7 +42,7 @@ class Delete extends FactionCommand
         }
 
         unset(Cache::$factions[$faction]);
-        Faction::deleteBox($faction);
+        Faction::deleteIsland($faction);
     }
 
     protected function prepare(): void

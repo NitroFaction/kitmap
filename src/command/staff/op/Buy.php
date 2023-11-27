@@ -3,8 +3,8 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\RawStringArgument;
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Util;
@@ -32,10 +32,10 @@ class Buy extends BaseCommand
 
         if (is_numeric($value)) {
             Util::executeCommand("addvalue \"" . $player . "\" " . $value . " gem");
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §6" . $player . " §fvient d'acheter §6" . $value . " §fgemmes sur la boutique ! §6https://nitrofaction.tebex.io");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $player . " §fvient d'acheter §q" . $value . " §fgemmes sur la boutique ! §qhttps://nitrofaction.tebex.io");
         } else if (isset(Cache::$config["ranks"][$value])) {
             Util::executeCommand("setrank \"" . $player . "\" " . $value);
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §6" . $player . " §fvient d'acheter le grade §6" . $value . " §fsur la boutique ! §6https://nitrofaction.tebex.io");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $player . " §fvient d'acheter le grade §q" . $value . " §fsur la boutique ! §qhttps://nitrofaction.tebex.io");
         } else {
             if (str_contains($value, "unban")) {
                 if (!isset(Cache::$bans[$player])) {
@@ -50,7 +50,7 @@ class Buy extends BaseCommand
                 $seconds = $data[1] - time();
                 $days = $seconds / 86400;
 
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §6" . $player . " §fvient d'acheter un §6unban §fsur la boutique ! §6https://nitrofaction.tebex.io");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $player . " §fvient d'acheter un §qunban §fsur la boutique ! §qhttps://nitrofaction.tebex.io");
 
                 if ($maxDays > $days) {
                     Util::executeCommand("unban \"" . $player . "\"");

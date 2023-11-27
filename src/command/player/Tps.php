@@ -28,8 +28,8 @@ class Tps extends BaseCommand
         $bar = "§l§8-----------------------";
 
         $sender->sendMessage($bar);
-        $sender->sendMessage(Util::PREFIX . "Tps Actuel: §6" . $server->getTicksPerSecond() . " §f(§6" . $server->getTickUsage() . "%§f)");
-        $sender->sendMessage(Util::PREFIX . "Tps en Moyenne: §6" . $server->getTicksPerSecondAverage() . " §f(§6" . $server->getTickUsageAverage() . "%§f)");
+        $sender->sendMessage(Util::PREFIX . "Tps Actuel: §q" . $server->getTicksPerSecond() . " §f(§q" . $server->getTickUsage() . "%§f)");
+        $sender->sendMessage(Util::PREFIX . "Tps en Moyenne: §q" . $server->getTicksPerSecondAverage() . " §f(§q" . $server->getTickUsageAverage() . "%§f)");
         $sender->sendMessage($bar);
     }
 

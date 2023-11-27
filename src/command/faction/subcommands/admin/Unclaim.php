@@ -40,10 +40,10 @@ class Unclaim extends BaseSubCommand
             Cache::$factions[$faction]["claim"] = null;
             unset(Cache::$claims[$claim]);
 
-            Cache::$factions[$faction]["logs"][time()] = "§6" . $sender->getName() . " §funclaim l'ancien claim §c(ADMIN)";
-            Faction::broadcastMessage($faction, "§6[§fF§r§6] §fVotre faction vient de perdre son claim (Supprimé par un admin)");
+            Cache::$factions[$faction]["logs"][time()] = "§q" . $sender->getName() . " §funclaim l'ancien claim §c(ADMIN)";
+            Faction::broadcastMessage($faction, "§q[§fF§r§q] §fVotre faction vient de perdre son claim (Supprimé par un admin)");
 
-            $sender->sendMessage(Util::PREFIX . "Vous venez d'unclaim le claim de la faction §6" . $faction);
+            $sender->sendMessage(Util::PREFIX . "Vous venez d'unclaim le claim de la faction §q" . $faction);
         }
     }
 

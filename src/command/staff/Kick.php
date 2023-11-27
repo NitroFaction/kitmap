@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\staff;
 
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\TargetArgument;
 use Kitmap\handler\Rank;
 use Kitmap\handler\Sanction;
 use pocketmine\command\CommandSender;

@@ -43,7 +43,7 @@ class OutpostTask
                         self::$currentFaction = $session->data["faction"];
 
                         if ((time() - self::$spam) > 5) {
-                            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La faction §6" . Faction::getFactionUpperName(self::$currentFaction) . " §fest entrain de capturer l'outpost de la §6" . Faction::getFactionUpperName(Cache::$data["outpost"]) . " §f!");
+                            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La faction §q" . Faction::getFactionUpperName(self::$currentFaction) . " §fest entrain de capturer l'outpost de la §q" . Faction::getFactionUpperName(Cache::$data["outpost"]) . " §f!");
                             self::$spam = time();
                         }
                         return;
@@ -61,7 +61,7 @@ class OutpostTask
             self::$currentOutpost--;
 
             if (0 >= self::$currentOutpost) {
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La faction §6" . Faction::getFactionUpperName(Cache::$data["outpost"]) . " §fne possède plus l'outpost !");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La faction §q" . Faction::getFactionUpperName(Cache::$data["outpost"]) . " §fne possède plus l'outpost !");
 
                 Cache::$data["outpost"] = null;
                 self::$currentOutpost = 180;
@@ -78,11 +78,11 @@ class OutpostTask
                     $price = Rank::getRankValue($rank, "outpost");
 
                     $session->addValue("money", $price);
-                    $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §6" . $price . " §fgrace à l'outpost");
+                    $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §q" . $price . " §fgrace à l'outpost");
                 }
 
                 Faction::addPower(Cache::$data["outpost"], 8);
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La faction §6" . Faction::getFactionUpperName(Cache::$data["outpost"]) . " §fvient de récuperer leurs récompenses grace à l'outpost");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La faction §q" . Faction::getFactionUpperName(Cache::$data["outpost"]) . " §fvient de récuperer leurs récompenses grace à l'outpost");
             }
             return;
         }
@@ -95,7 +95,7 @@ class OutpostTask
                     self::$currentFaction = $session->data["faction"];
 
                     if ((time() - self::$spam) > 5) {
-                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La faction §6" . Faction::getFactionUpperName(self::$currentFaction) . " §fest entrain de capturer l'outpost §f!");
+                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La faction §q" . Faction::getFactionUpperName(self::$currentFaction) . " §fest entrain de capturer l'outpost §f!");
                         self::$spam = time();
                     }
                     return;
@@ -113,7 +113,7 @@ class OutpostTask
         self::$currentOutpost--;
 
         if (0 >= self::$currentOutpost) {
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La faction §6" . Faction::getFactionUpperName(self::$currentFaction) . " §fvient de capturer l'outpost");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "La faction §q" . Faction::getFactionUpperName(self::$currentFaction) . " §fvient de capturer l'outpost");
             Cache::$data["outpost"] = self::$currentFaction;
 
             self::$currentFaction = null;

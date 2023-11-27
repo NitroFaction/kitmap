@@ -3,8 +3,8 @@
 namespace Kitmap\command\util\money;
 
 use CortexPE\Commando\args\IntegerArgument;
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\TargetArgument;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
@@ -47,7 +47,7 @@ class Pay extends BaseCommand
                 $sender->sendMessage(Util::PREFIX . "Le montant que vous avez inscrit est invalide");
                 return;
             } else if (floor($amount) > $senderSession->data["money"]) {
-                $sender->sendMessage(Util::PREFIX . "Votre monnaie est infèrieur à §6" . floor($amount));
+                $sender->sendMessage(Util::PREFIX . "Votre monnaie est infèrieur à §q" . floor($amount));
                 return;
             }
             $targetSession = Session::get($target);
@@ -56,8 +56,8 @@ class Pay extends BaseCommand
             $targetSession->addValue("money", $money);
             $senderSession->addValue("money", $money, true);
 
-            $sender->sendMessage(Util::PREFIX . "Vous avez envoyé un montant égal à §6" . $money . " §fà §6" . $target->getName());
-            $target->sendMessage(Util::PREFIX . "Vous avez recu un montant d'argent égal à §6" . $money . " §fde la part de §6" . $sender->getName());
+            $sender->sendMessage(Util::PREFIX . "Vous avez envoyé un montant égal à §q" . $money . " §fà §q" . $target->getName());
+            $target->sendMessage(Util::PREFIX . "Vous avez recu un montant d'argent égal à §q" . $money . " §fde la part de §q" . $sender->getName());
         }
     }
 

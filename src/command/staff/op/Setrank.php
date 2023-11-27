@@ -2,10 +2,10 @@
 
 namespace Kitmap\command\staff\op;
 
-use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\args\RawStringArgument;
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\OptionArgument;
+use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Rank;
 use Kitmap\Main;
@@ -50,7 +50,7 @@ class Setrank extends BaseCommand
         }
 
         Rank::setRank($target, $args["grade"]);
-        $sender->sendMessage(Util::PREFIX . "Vous venez d'ajouter le rang §6" . $args["grade"] . " §fà un joueur (§6" . $target . "§f)");
+        $sender->sendMessage(Util::PREFIX . "Vous venez d'ajouter le rang §q" . $args["grade"] . " §fà un joueur (§q" . $target . "§f)");
     }
 
     protected function prepare(): void

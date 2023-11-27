@@ -4,6 +4,7 @@ namespace Kitmap\command\util;
 
 use CortexPE\Commando\BaseCommand;
 use Kitmap\handler\Cache;
+use Kitmap\Util;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\plugin\PluginBase;
@@ -23,7 +24,7 @@ class Bourse extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
-        $items = Cache::$data["bourse"];
+        $items = Util::getBourse();
         $bar = "§l§8-----------------------";
 
         $sender->sendMessage($bar);
@@ -31,7 +32,7 @@ class Bourse extends BaseCommand
         foreach ($items as $item) {
             list($name, , , $sell) = explode(":", $item);
 
-            $sender->sendMessage("§a" . $name . "§f - Prix de vente: §6" . $sell . " §fpièces§6/u");
+            $sender->sendMessage("§q" . $name . "§f - Prix de vente: §q" . $sell . " §fpièces§q/u §f- Nombre vendu: §q" . Util::formatNumberWithSuffix(Cache::$data["bourse"][$name]));
         }
 
         $sender->sendMessage($bar);

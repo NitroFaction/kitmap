@@ -2,9 +2,9 @@
 
 namespace Kitmap\command\staff\op;
 
-use CortexPE\Commando\args\OptionArgument;
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\OptionArgument;
+use Element\util\args\TargetArgument;
 use Kitmap\command\player\Kit;
 use Kitmap\Main;
 use Kitmap\Util;
@@ -42,10 +42,10 @@ class GiveKit extends BaseCommand
             return;
         }
 
-        Util::addItems($target, false, [], ...$items);
+        Util::addItems($target, $items);
 
-        $sender->sendMessage(Util::PREFIX . "Vous venez de donner un kit §6" . $args["kit"] . " §fau joueur §6" . $target->getName());
-        $target->sendMessage(Util::PREFIX . "Vous venez de recevoir le kit §6" . $args["kit"] . " §fde la part de §6" . $sender->getName());
+        $sender->sendMessage(Util::PREFIX . "Vous venez de donner un kit §q" . $args["kit"] . " §fau joueur §q" . $target->getName());
+        $target->sendMessage(Util::PREFIX . "Vous venez de recevoir le kit §q" . $args["kit"] . " §fde la part de §q" . $sender->getName());
     }
 
     protected function prepare(): void

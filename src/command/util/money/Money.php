@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\util\money;
 
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\TargetArgument;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
@@ -29,7 +29,7 @@ class Money extends BaseCommand
     {
         if (!isset($args["joueur"])) {
             if ($sender instanceof Player) {
-                $sender->sendMessage(Util::PREFIX . "Vous possèdez §6" . Session::get($sender)->data["money"] . " §fpièces");
+                $sender->sendMessage(Util::PREFIX . "Vous possèdez §q" . Session::get($sender)->data["money"] . " §fpièces");
             }
         } else {
             /** @noinspection PhpDeprecationInspection */
@@ -37,11 +37,11 @@ class Money extends BaseCommand
 
             if (!$target instanceof Player) {
                 if ($sender instanceof Player) {
-                    $sender->sendMessage(Util::PREFIX . "Vous possèdez §6" . Session::get($sender)->data["money"] . " §fpièces");
+                    $sender->sendMessage(Util::PREFIX . "Vous possèdez §q" . Session::get($sender)->data["money"] . " §fpièces");
                 }
                 return;
             }
-            $sender->sendMessage(Util::PREFIX . "Le joueur §6" . $target->getName() . "§f possède §6" . Session::get($target)->data["money"] . " §fpièces");
+            $sender->sendMessage(Util::PREFIX . "Le joueur §q" . $target->getName() . "§f possède §q" . Session::get($target)->data["money"] . " §fpièces");
         }
     }
 

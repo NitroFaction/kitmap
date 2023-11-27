@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\staff;
 
-use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\OptionArgument;
 use Kitmap\Main;
 use Kitmap\task\repeat\KothTask;
 use Kitmap\Util;
@@ -30,12 +30,12 @@ class Koth extends BaseCommand
         switch ($args["opt"]) {
             case "start":
                 if (is_numeric(KothTask::$currentKoth)) {
-                    $sender->sendMessage(Util::PREFIX . "Un event §6KOTH §fest déjà en cours... Vous pouvez l'arrêter avec la commande §6/koth end");
+                    $sender->sendMessage(Util::PREFIX . "Un event §qKOTH §fest déjà en cours... Vous pouvez l'arrêter avec la commande §q/koth end");
                     return;
                 }
 
                 KothTask::$currentKoth = 180;
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Un event §6KOTH §fvient de commencer ! Vous pouvez vous y téléporter grace à la commande §6/event koth");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Un event §qKOTH §fvient de commencer ! Vous pouvez vous y téléporter grace à la commande §q/event koth");
                 break;
             case "end":
                 KothTask::$currentKoth = null;
@@ -45,7 +45,7 @@ class Koth extends BaseCommand
                     BossBarAPI::getInstance()->hideBossBar($player, 1);
                 }
 
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "L'event §6KOTH §fa été arrêté, pas de stuff :/");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "L'event §qKOTH §fa été arrêté, pas de stuff :/");
                 break;
         }
     }

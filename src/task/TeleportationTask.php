@@ -20,7 +20,7 @@ class TeleportationTask extends Task
         $session = Session::get($player);
         $time = Util::getTpTime($player);
 
-        $player->sendMessage(Util::PREFIX . "Vous allez être téléporté dans §6" . max($time, 0) . " §fseconde(s), veuillez ne pas bouger");
+        $player->sendMessage(Util::PREFIX . "Vous allez être téléporté dans §q" . max($time, 0) . " §fseconde(s), veuillez ne pas bouger");
         $player->getEffects()->add(new EffectInstance(VanillaEffects::BLINDNESS(), 20 * ($time + 1), 1, false));
 
         $session->setCooldown("teleportation", $time, [Util::getPlace($player)]);
@@ -58,7 +58,7 @@ class TeleportationTask extends Task
             return;
         }
 
-        $player->sendTip(Util::PREFIX . "Teleportation dans: §6" . ($data[0] - time()));
+        $player->sendTip(Util::PREFIX . "Teleportation dans: §q" . ($data[0] - time()));
         $player->broadcastSound(new ClickSound());
     }
 

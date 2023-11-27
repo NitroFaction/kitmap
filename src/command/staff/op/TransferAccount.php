@@ -3,8 +3,8 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\RawStringArgument;
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Session;
@@ -68,7 +68,7 @@ class TransferAccount extends BaseCommand
         $file->set($newData["xuid"], $file->get($oldData["xuid"]));*/
 
         $file->save();
-        $sender->sendMessage(Util::PREFIX . "Vous venez de transférer les données de §6" . $old . " §fvers §6" . $new);
+        $sender->sendMessage(Util::PREFIX . "Vous venez de transférer les données de §q" . $old . " §fvers §q" . $new);
     }
 
     public function getData(string $username): array|bool

@@ -73,13 +73,13 @@ class Shop extends BaseCommand
         $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
 
         $category = Cache::$config["shop"][$category];
-        $items = ($category["type"] === "bourse") ? Cache::$data["bourse"] : $category["items"];
+        $items = ($category["type"] === "bourse") ? Util::getBourse() : $category["items"];
 
         foreach ($items as $item) {
             list($name, $itemName, $buy) = explode(":", $item);
 
             $form->addButton(
-                $name . "\nPrix: §6" . $buy . " §8pièces§6/u",
+                $name . "\nPrix: §q" . $buy . " §8pièces§q/u",
                 0,
                 "textures/render/" . $itemName,
                 $item
@@ -126,7 +126,7 @@ class Shop extends BaseCommand
                 $session->addValue("money", $buy * $count, true);
                 Util::addItem($player, $item);
 
-                $player->sendMessage(Util::PREFIX . "Vous venez d'acheter §6" . $count . " §f" . $name . " pour §6" . ($buy * $count) . " §fpièces");
+                $player->sendMessage(Util::PREFIX . "Vous venez d'acheter §q" . $count . " §f" . $name . " pour §q" . ($buy * $count) . " §fpièces");
             } else {
                 if ($count > Util::getItemCount($player, $testItem)) {
                     $player->sendMessage(Util::PREFIX . "Vous n'avez pas assez d'item dans votre inventaire");
@@ -136,11 +136,15 @@ class Shop extends BaseCommand
                 $session->addValue("money", $sell * $count);
                 $player->getInventory()->removeItem($testItem->setCount($count));
 
-                $player->sendMessage(Util::PREFIX . "Vous venez de vendre §6" . $count . " §f" . $name . " pour §6" . ($sell * $count) . " §fpièces");
+                if (isset(Cache::$data["bourse"][$name])) {
+                    Cache::$data["bourse"][$name] += $count;
+                }
+
+                $player->sendMessage(Util::PREFIX . "Vous venez de vendre §q" . $count . " §f" . $name . " pour §q" . ($sell * $count) . " §fpièces");
             }
         });
         $form->setTitle("Boutique");
-        $form->addLabel("Nombre de §6" . $name . " §rdans votre inventaire: §6" . $items . "\n\n§fPrix achat unité: §6" . $buy . "\n§fPrix vente unité: §6" . $sell);
+        $form->addLabel("Nombre de §q" . $name . " §rdans votre inventaire: §q" . $items . "\n\n§fPrix achat unité: §q" . $buy . "\n§fPrix vente unité: §q" . $sell);
         $form->addDropdown("Voulez vous achetez ou vendre", (intval($sell) == 0) ? ["Acheter"] : ["Acheter", "Vendre"]);
         $form->addSlider("Combien voulez vous en acheter/vendre?", 1, $limit);
         $player->sendForm($form);

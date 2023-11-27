@@ -42,7 +42,7 @@ class RandomTp extends BaseCommand
             }
 
             $sender->teleport($target->getPosition());
-            $sender->sendMessage(Util::PREFIX . "Vous avez été téléporté sur le joueur §6" . $target->getName());
+            $sender->sendMessage(Util::PREFIX . "Vous avez été téléporté sur le joueur §q" . $target->getName());
         }
     }
 

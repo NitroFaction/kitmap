@@ -59,7 +59,7 @@ class Create extends FactionCommand
                 "permissions" => "leader",
 
                 "set-spawn" => "officier",
-                "delete-box" => "officier",
+                "delete-island" => "officier",
                 "lock" => "officier",
                 "invite" => "officier",
                 "kick" => "officier",
@@ -80,11 +80,11 @@ class Create extends FactionCommand
                 "trapdoor" => "recruit",
                 "door" => "recruit",
                 "home" => "recruit",
-                "box" => "recruit"
+                "island" => "recruit"
             ],
             "activity" => [],
             "power" => 0,
-            "box" => [
+            "island" => [
                 "lock" => false,
                 "zone" => [
                     "min" => 260,
@@ -95,7 +95,7 @@ class Create extends FactionCommand
 
         $session->data["faction"] = $name;
 
-        $sender->sendMessage(Util::PREFIX . "Vous venez de créer votre faction §6" . $args["nom"] . " §f!");
+        $sender->sendMessage(Util::PREFIX . "Vous venez de créer votre faction §q" . $args["nom"] . " §f!");
         Rank::updateNameTag($sender);
     }
 

@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\util;
 
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\TargetArgument;
 use Kitmap\Main;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
@@ -28,7 +28,7 @@ class Ping extends BaseCommand
     {
         if (!isset($args["joueur"])) {
             if ($sender instanceof Player) {
-                $sender->sendMessage(Util::PREFIX . "Vous possèdez §6" . $sender->getNetworkSession()->getPing() . " §fde ping");
+                $sender->sendMessage(Util::PREFIX . "Vous possèdez §q" . $sender->getNetworkSession()->getPing() . " §fde ping");
             }
         } else {
             /** @noinspection PhpDeprecationInspection */
@@ -36,11 +36,11 @@ class Ping extends BaseCommand
 
             if (!$target instanceof Player) {
                 if ($sender instanceof Player) {
-                    $sender->sendMessage(Util::PREFIX . "Vous possèdez §6" . $sender->getNetworkSession()->getPing() . " §fde ping");
+                    $sender->sendMessage(Util::PREFIX . "Vous possèdez §q" . $sender->getNetworkSession()->getPing() . " §fde ping");
                 }
                 return;
             }
-            $sender->sendMessage(Util::PREFIX . "Le joueur §6" . $target->getName() . "§f possède §6" . $target->getNetworkSession()->getPing() . "§f de ping");
+            $sender->sendMessage(Util::PREFIX . "Le joueur §q" . $target->getName() . "§f possède §q" . $target->getNetworkSession()->getPing() . "§f de ping");
         }
     }
 

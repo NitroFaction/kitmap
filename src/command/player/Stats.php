@@ -3,8 +3,8 @@
 namespace Kitmap\command\player;
 
 use CortexPE\Commando\args\RawStringArgument;
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Faction;
 use Kitmap\Main;
@@ -63,14 +63,14 @@ class Stats extends BaseCommand
             $faction = (is_null($faction)) ? "Aucune Faction" : Faction::getFactionUpperName($faction);
 
             $sender->sendMessage($bar);
-            $sender->sendMessage("§6[§f" . $faction . "§6] [§f" . ucfirst(strtolower($data["rank"])) . "§6] §f- §6" . $data["upper_name"]);
-            $sender->sendMessage("§6Pièces: §f" . $data["money"]);
-            $sender->sendMessage("§6Gemmes: §f" . $data["gem"]);
-            $sender->sendMessage("§6Kills: §f" . $data["kill"]);
-            $sender->sendMessage("§6Morts: §f" . $data["death"]);
-            $sender->sendMessage("§6Killstreak: §f" . $data["killstreak"]);
-            $sender->sendMessage("§6Prime: §f" . $data["bounty"]);
-            $sender->sendMessage("§6Temps de jeu: §f" . $playtime);
+            $sender->sendMessage("§q[§f" . $faction . "§q] [§f" . ucfirst(strtolower($data["rank"])) . "§q] §f- §q" . $data["upper_name"]);
+            $sender->sendMessage("§qPièces: §f" . $data["money"]);
+            $sender->sendMessage("§qGemmes: §f" . $data["gem"]);
+            $sender->sendMessage("§qKills: §f" . $data["kill"]);
+            $sender->sendMessage("§qMorts: §f" . $data["death"]);
+            $sender->sendMessage("§qKillstreak: §f" . $data["killstreak"]);
+            $sender->sendMessage("§qPrime: §f" . $data["bounty"]);
+            $sender->sendMessage("§qTemps de jeu: §f" . $playtime);
             $sender->sendMessage($bar);
         }
     }

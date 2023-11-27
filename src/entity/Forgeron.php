@@ -97,7 +97,7 @@ class Forgeron extends Villager
                     ];
 
                     $sentences = array_filter($sentences, fn($val) => $val !== "");
-                    $sentence = implode(", §6", $sentences);
+                    $sentence = implode(", §q", $sentences);
 
                     $player->getInventory()->addItem(...$items);
 
@@ -105,7 +105,7 @@ class Forgeron extends Villager
                         $sentence = substr_replace($sentence, " et", $lastCommaPosition, 1);
                     }
 
-                    $player->sendMessage(Util::PREFIX . "Le forgeron a travaillé dur sur vos items, au final il en a " . (strlen($sentence) > 1 ? "ressorti: §6" . $sentence . " !" : "rien ressorti, désolé"));
+                    $player->sendMessage(Util::PREFIX . "Le forgeron a travaillé dur sur vos items, au final il en a " . (strlen($sentence) > 1 ? "ressorti: §q" . $sentence . " !" : "rien ressorti, désolé"));
                 });
 
                 $menu->send($damager);

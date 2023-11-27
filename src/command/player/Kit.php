@@ -3,11 +3,11 @@
 namespace Kitmap\command\player;
 
 use CortexPE\Commando\BaseCommand;
+use Element\item\ExtraVanillaItems;
 use jojoe77777\FormAPI\SimpleForm;
 use Kitmap\handler\Rank;
 use Kitmap\Session;
 use Kitmap\Util;
-use MaXoooZ\Util\item\ExtraVanillaItems;
 use pocketmine\command\CommandSender;
 use pocketmine\item\Armor;
 use pocketmine\item\enchantment\EnchantmentInstance;
@@ -53,7 +53,7 @@ class Kit extends BaseCommand
                     return;
                 } else if ($session->inCooldown("kit_" . $data) && !$player->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
                     $format = Util::formatDurationFromSeconds($session->getCooldownData("kit_" . $data)[0] - time(), 1);
-                    $player->sendMessage(Util::PREFIX . "Vous ne pourrez re-prendre le kit §6" . $data . " §fque dans: §6" . $format);
+                    $player->sendMessage(Util::PREFIX . "Vous ne pourrez re-prendre le kit §q" . $data . " §fque dans: §q" . $format);
                     return;
                 }
 
@@ -67,12 +67,12 @@ class Kit extends BaseCommand
                         }
                     }
 
-                    if ($item->equals(ExtraVanillaItems::POTION_LAUNCHER()) && $player->getNetworkSession()->getPlayerInfo()->getExtraData()["CurrentInputMode"] !== 2) {
+                    if ($item->equals(VanillaItems::NAUTILUS_SHELL()) && $player->getNetworkSession()->getPlayerInfo()->getExtraData()["CurrentInputMode"] !== 2) {
                         $item->setCount(0);
                     }
 
-                    if ($item->equals(ExtraVanillaItems::ENDER_PEARL())) {
-                        $item->setCount(max(32 - Util::getItemCount($player, ExtraVanillaItems::ENDER_PEARL()), 0));
+                    if ($item->equals(VanillaItems::ENDER_PEARL())) {
+                        $item->setCount(max(32 - Util::getItemCount($player, VanillaItems::ENDER_PEARL()), 0));
                     }
 
                     $player->getInventory()->addItem($item);
@@ -109,8 +109,8 @@ class Kit extends BaseCommand
         return [
             "refill" => [
                 "items" => [
-                    ExtraVanillaItems::POTION_LAUNCHER(),
-                    ExtraVanillaItems::ENDER_PEARL()->setCount(32),
+                    VanillaItems::NAUTILUS_SHELL(),
+                    VanillaItems::ENDER_PEARL()->setCount(32),
                     VanillaItems::SPLASH_POTION()->setType(PotionType::STRONG_HEALING())->setCount(40)
                 ],
                 "cooldown" => 5,

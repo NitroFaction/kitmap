@@ -42,7 +42,7 @@ use Symfony\Component\Filesystem\Path;
 
 class Util
 {
-    const PREFIX = "§6§l» §r§f";
+    const PREFIX = "§c§l» §r§f";
 
     public static function arrayToPage(array $array, ?int $page, int $separator): array
     {
@@ -120,6 +120,8 @@ class Util
             $player->getEffects()->add(new EffectInstance(VanillaEffects::NIGHT_VISION(), 20 * 60 * 60 * 24, 255, false));
         }
 
+        $player->setViewDistance(8);
+
         foreach (Cache::$config["atouts"] as $name => $atout) {
             $enabled = $data["atouts"][$name][0] ?? false;
 
@@ -157,7 +159,7 @@ class Util
         $sup = "";
 
         if (($bounty = Session::get($player)->data["bounty"]) > 0) {
-            $sup .= " §7| §6" . Util::formatNumberWithSuffix($bounty) . " \u{E102}";
+            $sup .= " §7| §q" . Util::formatNumberWithSuffix($bounty) . " \u{E102}";
         }
 
         $player->setScoreTag("§7" . round($player->getHealth(), 2) . " §c❤" . $sup);
@@ -196,7 +198,14 @@ class Util
     public static function formatToRomanNumber(int $integer): string
     {
         $romanNumber = "";
-        $units = ["X" => 10, "IX" => 9, "V" => 5, "IV" => 4, "I" => 1];
+
+        $units = [
+            "X" => 10,
+            "IX" => 9,
+            "V" => 5,
+            "IV" => 4,
+            "I" => 1
+        ];
 
         foreach ($units as $unit => $value) {
             while ($integer >= $value) {
@@ -281,11 +290,9 @@ class Util
         return floor($player->getPosition()->getX() + $player->getPosition()->getY() + $player->getPosition()->getZ());
     }
 
-    public static function addItems(Player $player, bool $noDrop, array $lore, Item...$items): void
+    public static function addItems(Player $player, array $items, bool $noDrop = false): void
     {
         foreach ($items as $item) {
-            $item = $item->setLore($lore);
-           
             if ($item instanceof Armor) {
                 if ($player->getArmorInventory()->getItem($item->getArmorSlot())->equals(VanillaItems::AIR())) {
                     $player->getArmorInventory()->setItem($item->getArmorSlot(), $item);
@@ -343,25 +350,6 @@ class Util
         return strtolower(str_replace([" ", "minecraft:"], ["_", ""], trim($input)));
     }
 
-    public static function generateBourse(): void
-    {
-        $bourse = [];
-
-        foreach (Cache::$config["bourse"] as $value) {
-            $value = explode(":", $value);
-
-            $sellPrice = mt_rand(intval($value[2]), intval($value[3]));
-            $buyPrice = $sellPrice * 2;
-
-            $value[2] = $buyPrice;
-            $value[3] = $sellPrice;
-
-            $bourse[] = implode(":", $value);
-        }
-
-        Cache::$data["bourse"] = $bourse;
-    }
-
     public static function removeCurrentWindow(Player $player): void
     {
         if (!is_null($player->getCurrentWindow())) {
@@ -379,6 +367,41 @@ class Util
             }
         }
         return false;
+    }
+
+    public static function getBourse(): array
+    {
+        $data = Cache::$data["bourse"];
+
+        $bourse = [];
+        $count = 0;
+
+        if (count($data) == 0) {
+            $data = self::resetBourse();
+        }
+
+        arsort($data);
+
+        foreach ($data as $name => $selled) {
+            $count = $count + 1;
+
+            $sellPrice = $count * 4;
+            $buyPrice = $sellPrice * 2;
+
+            $bourse[] = $name . ":" . Cache::$config["bourse"][$name] . ":" . $buyPrice . ":" . $sellPrice;
+        }
+
+        return $bourse;
+    }
+
+    public static function resetBourse(): array
+    {
+        foreach (Cache::$config["bourse"] as $value) {
+            $name = explode($value, ":")[0];
+            Cache::$data["bourse"][$name] = 0;
+        }
+
+        return Cache::$data["bourse"];
     }
 
     public static function restorePlayer(Player $player, string $nbt): void

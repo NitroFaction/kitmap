@@ -57,7 +57,7 @@ class AddClaims extends BaseCommand
             }
         }
 
-        $sender->sendMessage(Util::PREFIX . "§6" . $claims . " §fclaims ajoutés");
+        $sender->sendMessage(Util::PREFIX . "§q" . $claims . " §fclaims ajoutés");
     }
 
     protected function prepare(): void

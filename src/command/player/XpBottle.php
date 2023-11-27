@@ -40,19 +40,19 @@ class XpBottle extends BaseCommand
                 $sender->sendMessage(Util::PREFIX . "Vous n'avez pas assez de niveaux");
                 return;
             } else if ($session->inCooldown("xp_bottle")) {
-                $sender->sendMessage(Util::PREFIX . "Vous devez encore attendre §6" . Util::formatDurationFromSeconds($session->getCooldownData("xp_bottle")[0] - time()) . " §favant de pouvoir re-créer un coinflip");
+                $sender->sendMessage(Util::PREFIX . "Vous devez encore attendre §q" . Util::formatDurationFromSeconds($session->getCooldownData("xp_bottle")[0] - time()) . " §favant de pouvoir re-créer un coinflip");
                 return;
             }
 
             $item = VanillaItems::EXPERIENCE_BOTTLE();
             $item->getNamedTag()->setInt("xp_bottle", $amount);
-            $item->setCustomName("§r§fBouteille d'expérience §6(" . $amount . ")");
+            $item->setCustomName("§r§fBouteille d'expérience §q(" . $amount . ")");
 
             Util::addItem($sender, $item);
             $session->setCooldown("xp_bottle", 5 * 60);
 
             $sender->getXpManager()->setXpLevel($sender->getXpManager()->getXpLevel() - $amount);
-            $sender->sendMessage(Util::PREFIX . "Vous avez crée une bouteille d'expérience avec §6" . $amount . " niveaux §fà l'intérieur");
+            $sender->sendMessage(Util::PREFIX . "Vous avez crée une bouteille d'expérience avec §q" . $amount . " niveaux §fà l'intérieur");
         }
     }
 

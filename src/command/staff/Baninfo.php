@@ -33,7 +33,7 @@ class Baninfo extends BaseCommand
         }
 
         $data = Cache::$bans[$player];
-        $sender->sendMessage(Util::PREFIX . "Le joueur §6" . $player . " §fa été banni par §6" . $data[0] . "§f, raison: §6" . $data[2] . "§f, temps restant: §6" . Util::formatDurationFromSeconds($data[1] - time()));
+        $sender->sendMessage(Util::PREFIX . "Le joueur §q" . $player . " §fa été banni par §q" . $data[0] . "§f, raison: §q" . $data[2] . "§f, temps restant: §q" . Util::formatDurationFromSeconds($data[1] - time()));
     }
 
     protected function prepare(): void

@@ -111,8 +111,8 @@ class Enchant extends BaseCommand
         while ($x <= $maxLevel) {
             $price = (($x * 10) * $multiplier);
             $content = $onlyLevels
-                ? $enchantName . " " . $x . "\n§6" . $price . " levels"
-                : $enchantName . " " . $x . "\n§6" . $price . " levels §8ou §6" . $price . " émeraudes";
+                ? $enchantName . " " . $x . "\n§q" . $price . " levels"
+                : $enchantName . " " . $x . "\n§q" . $price . " levels §8ou §q" . $price . " émeraudes";
             $form->addButton($content);
             $x++;
         }
@@ -187,7 +187,7 @@ class Enchant extends BaseCommand
             $writed = false;
 
             if (1 > count($lore)) {
-                $lore[] = "§r§6 ";
+                $lore[] = "§r§q ";
             }
 
             $text = "§r§7" . $enchantName . " " . Util::formatToRomanNumber($enchantInstance->getLevel());

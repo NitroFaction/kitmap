@@ -25,7 +25,7 @@ class ListClaims extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
-        $sender->sendMessage(Util::PREFIX . "Voici la liste des claims: §6" . implode("§f, §6", Cache::$data["claims"]));
+        $sender->sendMessage(Util::PREFIX . "Voici la liste des claims: §q" . implode("§f, §q", Cache::$data["claims"]));
     }
 
     protected function prepare(): void

@@ -3,8 +3,8 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\RawStringArgument;
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\TargetArgument;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
@@ -47,10 +47,10 @@ class Clearcooldown extends BaseCommand
         $targetSession = Session::get($target);
 
         if ($target->getName() === $sender->getName()) {
-            $sender->sendMessage(Util::PREFIX . "Vous venez de clear votre cooldown §6" . $cooldown);
+            $sender->sendMessage(Util::PREFIX . "Vous venez de clear votre cooldown §q" . $cooldown);
         } else {
-            $sender->sendMessage(Util::PREFIX . "Vous venez de clear le cooldown §6" . $cooldown . " §fdu joueur §6" . $target->getName());
-            $target->sendMessage(Util::PREFIX . "Un staff a clear votre cooldown §6" . $cooldown . " §f!");
+            $sender->sendMessage(Util::PREFIX . "Vous venez de clear le cooldown §q" . $cooldown . " §fdu joueur §q" . $target->getName());
+            $target->sendMessage(Util::PREFIX . "Un staff a clear votre cooldown §q" . $cooldown . " §f!");
         }
 
         if ($targetSession->inCooldown($cooldown)) {

@@ -5,7 +5,6 @@ namespace Kitmap\command\faction;
 use CortexPE\Commando\BaseCommand;
 use Kitmap\command\faction\subcommands\Accept;
 use Kitmap\command\faction\subcommands\Admin;
-use Kitmap\command\faction\subcommands\Box;
 use Kitmap\command\faction\subcommands\Chat;
 use Kitmap\command\faction\subcommands\Claim;
 use Kitmap\command\faction\subcommands\Create;
@@ -15,6 +14,7 @@ use Kitmap\command\faction\subcommands\Demote;
 use Kitmap\command\faction\subcommands\Home;
 use Kitmap\command\faction\subcommands\Info;
 use Kitmap\command\faction\subcommands\Invite;
+use Kitmap\command\faction\subcommands\Island;
 use Kitmap\command\faction\subcommands\Kick;
 use Kitmap\command\faction\subcommands\Leader;
 use Kitmap\command\faction\subcommands\Leave;
@@ -45,7 +45,7 @@ class Faction extends BaseCommand
     {
         $this->registerSubCommand(new Chat());
         $this->registerSubCommand(new Claim());
-        $this->registerSubCommand(new Box());
+        $this->registerSubCommand(new Island());
         $this->registerSubCommand(new Accept());
         $this->registerSubCommand(new Create());
         $this->registerSubCommand(new Delete());

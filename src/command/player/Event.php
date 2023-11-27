@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\player;
 
-use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\OptionArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Session;
@@ -69,7 +69,7 @@ class Event extends BaseCommand
 
             foreach ($eventsData as $name => $data) {
                 $item = Util::getItemByName($data["item"]);
-                $item->setCustomName("§r§6§l" . strtoupper($name) . "\n\n" . $data["description"] . "\n\n§o§6Cliquez sur l'item pour y être téléporté");
+                $item->setCustomName("§r§q§l" . strtoupper($name) . "\n\n" . $data["description"] . "\n\n§o§qCliquez sur l'item pour y être téléporté");
 
                 $inventory->setItem($data["slot"], $item);
             }

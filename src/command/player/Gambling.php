@@ -2,8 +2,9 @@
 
 namespace Kitmap\command\player;
 
-use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\item\ExtraVanillaItems;
+use Element\util\args\OptionArgument;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
 use Kitmap\handler\Faction as FactionAPI;
@@ -12,12 +13,12 @@ use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\task\repeat\GamblingTask;
 use Kitmap\Util;
-use MaXoooZ\Util\item\ExtraVanillaItems;
 use muqsit\invmenu\InvMenu;
 use muqsit\invmenu\type\InvMenuTypeIds;
 use pocketmine\command\CommandSender;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\item\Item;
 use pocketmine\item\PotionType;
 use pocketmine\item\VanillaItems;
 use pocketmine\permission\DefaultPermissions;
@@ -81,7 +82,7 @@ class Gambling extends BaseCommand
             $form->setTitle("Gambling");
             $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
             $form->addButton("Créer");
-            $form->addButton("Rejoindre §6(" . count(self::$gamblings) . ")");
+            $form->addButton("Rejoindre §q(" . count(self::$gamblings) . ")");
             $form->addButton("Visualiser les kits");
             $sender->sendForm($form);
         }
@@ -97,7 +98,7 @@ class Gambling extends BaseCommand
             $session = Session::get($player);
 
             if ($session->inCooldown("gambling")) {
-                $player->sendMessage(Util::PREFIX . "Vous devez encore attendre §6" . Util::formatDurationFromSeconds($session->getCooldownData("gambling")[0] - time()) . " §favant de pouvoir re-créer un gambling");
+                $player->sendMessage(Util::PREFIX . "Vous devez encore attendre §q" . Util::formatDurationFromSeconds($session->getCooldownData("gambling")[0] - time()) . " §favant de pouvoir re-créer un gambling");
                 return;
             }
 
@@ -110,7 +111,7 @@ class Gambling extends BaseCommand
                 $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas miser plus que votre monnaie actuel");
                 return;
             } else if ($bet < 0) {
-            	$player->sendMessage(Util::PREFIX . "Vous ne pouvez pas miser cette somme");
+                $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas miser cette somme");
                 return;
             } else if (isset(self::$gamblings[$lowerName])) {
                 $player->sendMessage(Util::PREFIX . "Vous avez déjà un gambling en attente");
@@ -126,7 +127,7 @@ class Gambling extends BaseCommand
             $session->setCooldown("gambling", 60 * 5);
             $session->addValue("money", $bet, true);
 
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §6" . $player->getName() . " §fvient de créer un gambling ! Affrontez le via la commande §6/gambling §f!");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $player->getName() . " §fvient de créer un gambling ! Affrontez le via la commande §q/gambling §f!");
         });
         $form->setTitle("Gambling");
         $form->addInput(Util::PREFIX . "Combien misez vous sur votre victoire?", default: 0, label: "bet");
@@ -150,7 +151,7 @@ class Gambling extends BaseCommand
         $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
 
         foreach (self::$gamblings as $target => $value) {
-            $form->addButton($value["upper_name"] . "\nMise de §6" . Util::formatNumberWithSuffix($value["bet"], 1) . " pièces §8- Kit §6" . $value["kit"] + 1, -1, "", $target);
+            $form->addButton($value["upper_name"] . "\nMise de §q" . Util::formatNumberWithSuffix($value["bet"]) . " pièces §8- Kit §q" . $value["kit"] + 1, -1, "", $target);
         }
 
         $form->addButton("Rafraîchir", -1, "", "refresh");
@@ -337,7 +338,18 @@ class Gambling extends BaseCommand
             ]
         ];
 
-        return $kits[$number];
+        $items = [];
+
+        foreach ($kits[$number] as $item) {
+            if ($item instanceof Item) {
+                $item = $item->setLore(["§r§9Item provenant du gambling"]);
+                $item->getNamedTag()->setInt("menu_item", 0);
+
+                $items[] = $item;
+            }
+        }
+
+        return $items;
     }
 
     protected function prepare(): void

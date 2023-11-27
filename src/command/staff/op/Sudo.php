@@ -2,9 +2,9 @@
 
 namespace Kitmap\command\staff\op;
 
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\args\TextArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\TargetArgument;
 use Kitmap\Main;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;

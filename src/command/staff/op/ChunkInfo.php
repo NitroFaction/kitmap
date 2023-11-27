@@ -29,7 +29,7 @@ class ChunkInfo extends BaseCommand
             $chunkX = $sender->getPosition()->getFloorX() >> Chunk::COORD_BIT_SIZE;
             $chunkZ = $sender->getPosition()->getFloorZ() >> Chunk::COORD_BIT_SIZE;
 
-            $sender->sendMessage(Util::PREFIX . $chunkX . "§6:§f" . $chunkZ);
+            $sender->sendMessage(Util::PREFIX . $chunkX . "§q:§f" . $chunkZ);
         }
     }
 

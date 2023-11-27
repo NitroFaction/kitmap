@@ -8,7 +8,6 @@ use Kitmap\handler\Rank;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
-use MaXoooZ\Util\item\ExtraVanillaItems;
 use muqsit\invmenu\InvMenu;
 use muqsit\invmenu\transaction\DeterministicInvMenuTransaction;
 use muqsit\invmenu\type\InvMenuTypeIds;
@@ -76,13 +75,13 @@ class Market extends BaseCommand
                 if (is_null($item->getNamedTag()->getTag("id"))) {
                     $page = $menu->getInventory()->getItem(45)->getCount();
 
-                    if ($item->getCustomName() === "§r§6Page Suivante") {
+                    if ($item->getCustomName() === "§r§qPage Suivante") {
                         $this->addAuctionHouseItems($menu, ($page + 1));
-                    } else if ($item->getCustomName() === "§r§6Page Précédente" && $page > 1) {
+                    } else if ($item->getCustomName() === "§r§qPage Précédente" && $page > 1) {
                         $this->addAuctionHouseItems($menu, ($page - 1));
-                    } else if ($item->getCustomName() === "§r§6Réactualiser") {
+                    } else if ($item->getCustomName() === "§r§qRéactualiser") {
                         $this->addAuctionHouseItems($menu, $page);
-                    } else if ($item->getCustomName() === "§r§6Mes Ventes En Cours") {
+                    } else if ($item->getCustomName() === "§r§qMes Ventes En Cours") {
                         $this->myItems($player);
                     }
                     return;
@@ -108,19 +107,19 @@ class Market extends BaseCommand
             $menu->getInventory()->addItem($item);
         }
 
-        $item = VanillaItems::DIAMOND()->setCount($page)->setCustomName("§r§6Page Actuel");
+        $item = VanillaItems::DIAMOND()->setCount($page)->setCustomName("§r§qPage Actuel");
         $menu->getInventory()->setItem(45, $item);
 
-        $item = VanillaItems::PAPER()->setCustomName("§r§6Page Précédente");
+        $item = VanillaItems::PAPER()->setCustomName("§r§qPage Précédente");
         $menu->getInventory()->setItem(48, $item);
 
-        $item = ExtraVanillaItems::ENDER_PEARL()->setCustomName("§r§6Réactualiser");
+        $item = VanillaItems::ENDER_PEARL()->setCustomName("§r§qRéactualiser");
         $menu->getInventory()->setItem(49, $item);
 
-        $item = VanillaItems::PAPER()->setCustomName("§r§6Page Suivante");
+        $item = VanillaItems::PAPER()->setCustomName("§r§qPage Suivante");
         $menu->getInventory()->setItem(50, $item);
 
-        $item = VanillaBlocks::CHEST()->asItem()->setCustomName("§r§6Mes Ventes En Cours");
+        $item = VanillaBlocks::CHEST()->asItem()->setCustomName("§r§qMes Ventes En Cours");
         $menu->getInventory()->setItem(53, $item);
     }
 
@@ -267,7 +266,7 @@ class Market extends BaseCommand
         unset(Cache::$market[$id]);
 
         if ($type === 0) {
-            $player->sendMessage(Util::PREFIX . "Vous venez d'acheter un item à l'hotel des ventes pour §6" . $price . " §fpièces");
+            $player->sendMessage(Util::PREFIX . "Vous venez d'acheter un item à l'hotel des ventes pour §q" . $price . " §fpièces");
         } else if ($type === 1) {
             $player->sendMessage(Util::PREFIX . "Vous venez de supprimer un de vos items dans l'hotel des ventes");
         }

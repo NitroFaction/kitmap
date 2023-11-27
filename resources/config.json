@@ -277,19 +277,19 @@
     "paradis"
   ],
   "partneritems": {
-    "ninjastar": "nether_star:\n§r§7Faites un clic droit sur cet item pour\npour vous téléporter au dernier joueur que vous avez frappé ou\nqui vous a frappé durant les 15 dernières secondes\n\n§r§7Obtenable dans les §6packs:§r§dNinjaStar:1",
-    "repairstick": "stick:\n§r§7Faites un clic droit sur cet item pour\nque 1 pièce au hasard de votre inventaire\nse répare\n\n§r§7Obtenable dans les §6packs:§r§aRepairStick:1",
-    "rocket": "red_dye:\n§r§7Faites un clic droit sur cet item pour\nvous expulser dans les airs\n\n§r§7Obtenable dans les §6packs:§r§cRocket:1",
-    "focusmode": "golden_nugget:\n§r§7Faites un clic droit sur cet item pour\nque le dernier joueur que vous avez frappé prenne\n15% de dégats de plus lorsque vous le frappez\nles 10 prochaine secondes\n\n§r§7Obtenable dans les §6packs:§r§2FocusMode:1",
-    "resistance": "iron_ingot:\n§r§7Faites un clic droit sur cet item pour\nobtenir resistance III pendant 5 à 10 secondes\n\n§r§7Obtenable dans les §6packs:§r§6Resistance III:1",
-    "strength": "blaze_powder:\n§r§7Faites un clic droit sur cet item pour\nobtenir force II pendant 5 à 10 secondes\n\n§r§7Obtenable dans les §6packs:§r§cForce II:1",
-    "timewarp": "feather:\n§r§7Faites un clic droit sur cet item pour\nactiver un timer de 3 secondes qui vous teleportera à lemplacement de\nvotre dernière perle des 15 dernières secondes\n\n§r§7Obtenable dans les §6packs:§r§bTime-Warp:1",
-    "switchball": "snowball:\n§r§7Lancer sur un autre joueur\npour inverser sa position et la votre\n\n§r§7Obtenable dans les §6packs:§r§cSwitchBall:1",
-    "antibackball": "egg:\n§r§7Lancer sur un autre joueur\npour le freeze pendant 2 secondes\net le mettre en combat\n\n§r§7Obtenable dans les §6packs:§r§6AntiBackBall:1",
-    "antibuild": "blaze_rod:\n§r§7Frappez un joueur pour quil ne puisse\nplus placer de blocs pendant 15 secondes\n\n§r§7Obtenable dans les §6packs:§r§4AntiBuild:2",
-    "partneritemblocker": "redstone:\n§r§7Frappez un joueur et il ne pourra\nplus utiliser de partener items pendant 30 secondes\n\n§r§7Obtenable dans les §6packs:§r§cPartnerItem Blocker:2",
-    "antipearl": "ender_pearl:\n§r§7Frappez un joueur et il ne pourra plus\nutiliser de pearl pendant 30 secondes\n\n§r§7Obtenable dans les §6packs:§r§bAntiPearl:2",
-    "pumpkinaxe": "golden_axe:\n§r§7Frappez un joueur et son casque sera\nchanger par une citrouille pendant 5 secondes\n\n§r§7Obtenable dans les §6packs:§r§6Pumpkin Axe:2"
+    "ninjastar": "nether_star:\n§r§7Faites un clic droit sur cet item pour\npour vous téléporter au dernier joueur que vous avez frappé ou\nqui vous a frappé durant les 15 dernières secondes\n\n§r§7Obtenable dans les §qpacks:§r§dNinjaStar:1",
+    "repairstick": "stick:\n§r§7Faites un clic droit sur cet item pour\nque 1 pièce au hasard de votre inventaire\nse répare\n\n§r§7Obtenable dans les §qpacks:§r§aRepairStick:1",
+    "rocket": "red_dye:\n§r§7Faites un clic droit sur cet item pour\nvous expulser dans les airs\n\n§r§7Obtenable dans les §qpacks:§r§cRocket:1",
+    "focusmode": "golden_nugget:\n§r§7Faites un clic droit sur cet item pour\nque le dernier joueur que vous avez frappé prenne\n15% de dégats de plus lorsque vous le frappez\nles 10 prochaine secondes\n\n§r§7Obtenable dans les §qpacks:§r§2FocusMode:1",
+    "resistance": "iron_ingot:\n§r§7Faites un clic droit sur cet item pour\nobtenir resistance III pendant 5 à 10 secondes\n\n§r§7Obtenable dans les §qpacks:§r§qResistance III:1",
+    "strength": "blaze_powder:\n§r§7Faites un clic droit sur cet item pour\nobtenir force II pendant 5 à 10 secondes\n\n§r§7Obtenable dans les §qpacks:§r§cForce II:1",
+    "timewarp": "feather:\n§r§7Faites un clic droit sur cet item pour\nactiver un timer de 3 secondes qui vous teleportera à lemplacement de\nvotre dernière perle des 15 dernières secondes\n\n§r§7Obtenable dans les §qpacks:§r§bTime-Warp:1",
+    "switchball": "snowball:\n§r§7Lancer sur un autre joueur\npour inverser sa position et la votre\n\n§r§7Obtenable dans les §qpacks:§r§cSwitchBall:1",
+    "antibackball": "egg:\n§r§7Lancer sur un autre joueur\npour le freeze pendant 2 secondes\net le mettre en combat\n\n§r§7Obtenable dans les §qpacks:§r§qAntiBackBall:1",
+    "antibuild": "blaze_rod:\n§r§7Frappez un joueur pour quil ne puisse\nplus placer de blocs pendant 15 secondes\n\n§r§7Obtenable dans les §qpacks:§r§4AntiBuild:2",
+    "partneritemblocker": "redstone:\n§r§7Frappez un joueur et il ne pourra\nplus utiliser de partener items pendant 30 secondes\n\n§r§7Obtenable dans les §qpacks:§r§cPartnerItem Blocker:2",
+    "antipearl": "ender_pearl:\n§r§7Frappez un joueur et il ne pourra plus\nutiliser de pearl pendant 30 secondes\n\n§r§7Obtenable dans les §qpacks:§r§bAntiPearl:2",
+    "pumpkinaxe": "golden_axe:\n§r§7Frappez un joueur et son casque sera\nchanger par une citrouille pendant 5 secondes\n\n§r§7Obtenable dans les §qpacks:§r§qPumpkin Axe:2"
   },
   "elevator": {
     "cookie": "49.5:124:78.5",
@@ -366,7 +366,7 @@
   },
   "events": {
     "nexus": {
-      "description": "§r§fInformations:\n\nTuez lentité qui apparaît dans la place au centre,\nlorsque cette entité naura plus de vie elle donnera\n§630 §fitems aléatoire provenant des lots de §6pack §f!\n\nHoraires:\n\nCet event se lance toutes les 2h à partir de 13h jusquà 23h",
+      "description": "§r§fInformations:\n\nTuez lentité qui apparaît dans la place au centre,\nlorsque cette entité naura plus de vie elle donnera\n§q30 §fitems aléatoire provenant des lots de §qpack §f!\n\nHoraires:\n\nCet event se lance toutes les 2h à partir de 13h jusquà 23h",
       "item": "diamond_sword",
       "positions": [
         "76.5:65:82.5:360:0",
@@ -377,7 +377,7 @@
       "slot": 0
     },
     "koth": {
-      "description": "§r§fInformations:\n\nRestez le plus longtemps possible sur la platforme de §65x5 §fau\nbout de 3minutes dessus vous remportez §625k §fpièces,\nentre §615 §fet §625 §fde power pour votre faction et §62 §fpacks !\n\nHoraires:\n\nCet event se lance toutes les heures à partir de 12h30 jusquà 23h30",
+      "description": "§r§fInformations:\n\nRestez le plus longtemps possible sur la platforme de §q5x5 §fau\nbout de 3minutes dessus vous remportez §q25k §fpièces,\nentre §q15 §fet §q25 §fde power pour votre faction et §q2 §fpacks !\n\nHoraires:\n\nCet event se lance toutes les heures à partir de 12h30 jusquà 23h30",
       "item": "netherite_sword",
       "positions": [
         "-114.5:65:102.5:135:0",
@@ -387,7 +387,7 @@
       "slot": 1
     },
     "domination": {
-      "description": "§r§fInformations:\n\nCet event dure 15 minutes, vous devez capturé les §63 §fzones\navec votre faction et obtenir le plus de point, les §63 §ffactions\nobtiendrons du power à la fin de levent.\n\nHoraires:\n\nCet event se lance tous les jours à 18h et à 21h sauf si il ny a pas plus de §630 §fjoueurs",
+      "description": "§r§fInformations:\n\nCet event dure 15 minutes, vous devez capturé les §q3 §fzones\navec votre faction et obtenir le plus de point, les §q3 §ffactions\nobtiendrons du power à la fin de levent.\n\nHoraires:\n\nCet event se lance tous les jours à 18h et à 21h sauf si il ny a pas plus de §q30 §fjoueurs",
       "item": "iron_sword",
       "positions": [
         "110.5:65:47.5:180:0",
@@ -400,7 +400,7 @@
       "slot": 3
     },
     "outpost": {
-      "description": "§r§fInformations:\n\nCapturez avec laide de votre faction la platforme !\nLorsque loutpost est capturé par une faction, celle-ci\ngagne §68 §fpowers tous les 5 minutes et les joueurs\nconnectés de la faction gagnent entre §65k §fet §67.5k §fpièces !\n\nHoraires:\n\nCet event est 24h sur 24 lancé",
+      "description": "§r§fInformations:\n\nCapturez avec laide de votre faction la platforme !\nLorsque loutpost est capturé par une faction, celle-ci\ngagne §q8 §fpowers tous les 5 minutes et les joueurs\nconnectés de la faction gagnent entre §q5k §fet §q7.5k §fpièces !\n\nHoraires:\n\nCet event est 24h sur 24 lancé",
       "item": "golden_sword",
       "positions": [
         "-60.5:65:150.5:180:0",
@@ -458,10 +458,10 @@
     }
   },
   "messages": [
-    "Tu souhaite nous rejoindre sur §6Discord §f? Rejoins nous via ce lien: §6https://discord.gg/nitrofaction",
-    "Tu souhaites avoir des §6packs §fsupplémentaire gratuitement ? Vote via ce lien: §6https://nitrofaction.fr/vote",
-    "Tu souhaites avoir un grade sur le serveur pour une meilleur expérience ? Achete le via ma boutique: §6https://nitrofaction.tebex.io",
-    "Tu souhaites avoir une information à propos du serveur ? Un salon §6#wiki §fest disponible sur notre discord: §6https://discord.gg/nitrofaction"
+    "Tu souhaite nous rejoindre sur §qDiscord §f? Rejoins nous via ce lien: §qhttps://discord.gg/nitrofaction",
+    "Tu souhaites avoir des §qpacks §fsupplémentaire gratuitement ? Vote via ce lien: §qhttps://nitrofaction.fr/vote",
+    "Tu souhaites avoir un grade sur le serveur pour une meilleur expérience ? Achete le via ma boutique: §qhttps://nitrofaction.tebex.io",
+    "Tu souhaites avoir une information à propos du serveur ? Un salon §q#wiki §fest disponible sur notre discord: §qhttps://discord.gg/nitrofaction"
   ],
   "pack": "0:69:59",
   "nexus": "76.5:69:117.5",
@@ -486,11 +486,11 @@
     "door": "Ouvrir les portes",
     "demote": "Rétrograder des membres",
     "promote": "Promouvoir des membres",
-    "box": "Permet de se téléporter à la box",
-    "set-spawn": "Changer le point de spawn de la box",
-    "delete-box": "Supprimer la box",
-    "lock": "Gérer les visiteurs de la box",
-    "time": "Gérer la météo de la box"
+    "island": "Permet de se téléporter à l'ile",
+    "set-spawn": "Changer le point de spawn de l'ile",
+    "delete-island": "Supprimer l'ile",
+    "lock": "Gérer les visiteurs de l'ile",
+    "time": "Gérer la météo de l'ile"
   },
   "faction-ranks": {
     "leader": "Chef",
@@ -702,7 +702,7 @@
     }
   },
   "shop": {
-    "Agriculture": {
+    "Bourse Agriculture": {
       "type": "bourse"
     },
     "Minerais": {
@@ -745,30 +745,28 @@
       ]
     }
   },
-  "bourse": [
-    "Cactus:cactus:6:12",
-    "Betterave:beetroot:6:14",
-    "Pomme de Terre:potato:6:14",
-    "Pastèque:melon_slice:6:14",
-    "Carotte:carrot:6:14",
-    "Bambou:bamboo:6:14",
-    "Baies sucrées:sweet_berries:4:16",
-    "Blé:wheat:6:14",
-    "Cannes à Sucres:sugar_cane:6:14"
-  ],
+  "bourse": {
+    "Cactus": "cactus",
+    "Betterave": "beetroot",
+    "Pomme de Terre": "potato",
+    "Pastèque": "melon_slice",
+    "Carotte": "carrot",
+    "Bambou": "bamboo",
+    "Baies sucrées": "sweet_berries",
+    "Blé": "wheat",
+    "Cannes à Sucres": "sugar_cane"
+  },
   "interval": {
-    "60": "unloadboxs",
+    "60": "unloadislands",
     "300": "question",
     "500": "save"
   },
   "planning": {
-    "11:00": "generatebourse",
     "12:00": "changeforgeron",
     "18:00": "domination start",
-    "21:00": "domination start",
-    "07:59": "stop 60"
+    "21:00": "domination start"
   },
-  "box": {
+  "island": {
     "default-max": 267,
     "cherry": {
       "spawn": "264.5:122:264.5"

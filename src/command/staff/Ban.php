@@ -3,8 +3,8 @@
 namespace Kitmap\command\staff;
 
 use CortexPE\Commando\args\RawStringArgument;
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Rank;
 use Kitmap\handler\Sanction;
@@ -64,7 +64,7 @@ class Ban extends BaseCommand
             $reason = $data[2];
 
             Main::getInstance()->getServer()->getNetwork()->blockAddress($player->getNetworkSession()->getIp(), 600);
-            $player->kick("§fVous êtes banni de nitrofaction.\n\n§fTemps restant: §6" . $time . "\n§fRaison: §6" . $reason . "\n§fStaff: §6" . $staff);
+            $player->kick("§fVous êtes banni de nitrofaction.\n\n§fTemps restant: §q" . $time . "\n§fRaison: §q" . $reason . "\n§fStaff: §q" . $staff);
 
             return true;
         } else {

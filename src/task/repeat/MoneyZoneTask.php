@@ -2,11 +2,11 @@
 
 namespace Kitmap\task\repeat;
 
+use Element\entity\MessageEntity;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
-use MaXoooZ\Util\entity\MessageEntity;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\math\Vector3;
@@ -40,7 +40,7 @@ class MoneyZoneTask
             $session = Session::get($player);
 
             $entity = new MessageEntity($player->getLocation());
-            $entity->initEntityB("§6+ 50$");
+            $entity->initEntityB("§q+ 50$");
             $entity->spawnToAll();
             $entity->setMotion(new Vector3(0, 0.15, 0));
 

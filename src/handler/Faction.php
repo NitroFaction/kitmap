@@ -40,9 +40,9 @@ class Faction
         return $ranks[self::getRankPosition($rank) + 1] ?? $rank;
     }
 
-    public static function deleteBox(string $key): void
+    public static function deleteIsland(string $key): void
     {
-        $name = "box-" . $key;
+        $name = "island-" . $key;
         $newName = $name . "-deleted-" . time();
 
         $path = Path::join(Main::getInstance()->getServer()->getDataPath(), "worlds", $name);
@@ -93,9 +93,9 @@ class Faction
         }
     }
 
-    public static function isBoxLocked(string $key): bool
+    public static function isIslandLocked(string $key): bool
     {
-        return self::exists($key) ? Cache::$factions[$key]["box"]["lock"] : false;
+        return self::exists($key) ? Cache::$factions[$key]["island"]["lock"] : false;
     }
 
     public static function exists(?string $key): bool
@@ -182,18 +182,18 @@ class Faction
         $position = $block instanceof Position ? $block : $block->getPosition();
 
         if ($type === "break" && $session->inCooldown("_antibuild")) {
-            $player->sendTip(Util::PREFIX . "Veuillez attendre §6" . ($session->getCooldownData("_antibuild")[0] - time()) . " §fseconde(s) avant de construire");
+            $player->sendTip(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData("_antibuild")[0] - time()) . " §fseconde(s) avant de construire");
             return false;
         } else if ($player->getGamemode() === GameMode::CREATIVE() && $player->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
             return true;
-        } else if ($player->getWorld()->getFolderName() === "box-" . $faction) {
+        } else if ($player->getWorld()->getFolderName() === "island-" . $faction) {
             $position = $block instanceof Position ? $block : $block->getPosition();
 
             $x = $position->getX();
             $z = $position->getZ();
 
-            $min = Cache::$factions[$faction]["box"]["zone"]["min"];
-            $max = Cache::$factions[$faction]["box"]["zone"]["max"];
+            $min = Cache::$factions[$faction]["island"]["zone"]["min"];
+            $max = Cache::$factions[$faction]["island"]["zone"]["max"];
 
             if ($x >= $min && $x <= $max && $z >= $min && $z <= $max) {
                 return true;

@@ -3,8 +3,8 @@
 namespace Kitmap\command\util\money;
 
 use CortexPE\Commando\args\IntegerArgument;
-use CortexPE\Commando\args\TargetArgument;
 use CortexPE\Commando\BaseCommand;
+use Element\util\args\TargetArgument;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
@@ -42,7 +42,7 @@ class PayGem extends BaseCommand
                 $sender->sendMessage(Util::PREFIX . "Le montant que vous avez inscrit est invalide");
                 return;
             } else if (floor($amount) > $senderSession->data["gem"]) {
-                $sender->sendMessage(Util::PREFIX . "Vos gemmes sont infèrieur à §6" . floor($amount));
+                $sender->sendMessage(Util::PREFIX . "Vos gemmes sont infèrieur à §q" . floor($amount));
                 return;
             }
 
@@ -52,8 +52,8 @@ class PayGem extends BaseCommand
             $targetSession->addValue("gem", $gem);
             $senderSession->addValue("gem", $gem, true);
 
-            $sender->sendMessage(Util::PREFIX . "Vous avez envoyé un montant de gemmes égal à §6" . $gem . " §fà §6" . $target->getName());
-            $target->sendMessage(Util::PREFIX . "Vous avez recu un montant de gemmes égal à §6" . $gem . " §fde la part de §6" . $sender->getName());
+            $sender->sendMessage(Util::PREFIX . "Vous avez envoyé un montant de gemmes égal à §q" . $gem . " §fà §q" . $target->getName());
+            $target->sendMessage(Util::PREFIX . "Vous avez recu un montant de gemmes égal à §q" . $gem . " §fde la part de §q" . $sender->getName());
         }
     }
 

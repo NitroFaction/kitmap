@@ -3,10 +3,10 @@
 namespace Kitmap\command\player\rank;
 
 use CortexPE\Commando\BaseCommand;
+use Element\util\inventory\CraftingTableInvMenu;
 use Kitmap\handler\Rank;
 use Kitmap\Session;
 use Kitmap\Util;
-use MaXoooZ\Util\util\inventory\CraftingTableInvMenu;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
