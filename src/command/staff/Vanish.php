@@ -40,8 +40,8 @@ class Vanish extends BaseCommand
                 unset(Vanish::$vanish[array_search($sender->getName(), Vanish::$vanish)]);
                 $sender->sendMessage(Util::PREFIX . "Vous êtes désormais visible aux yeux des autres joueurs");
 
-                if ($item->getCustomName() === "§r" . Util::PREFIX . "Vanish §c§l«") {
-                    $sender->getInventory()->setItemInHand(VanillaItems::DYE()->setColor(DyeColor::LIGHT_GRAY())->setCustomName("§r" . Util::PREFIX . "Vanish §c§l«"));
+                if ($item->getCustomName() === "§r" . Util::PREFIX . "Vanish §q§l«") {
+                    $sender->getInventory()->setItemInHand(VanillaItems::DYE()->setColor(DyeColor::LIGHT_GRAY())->setCustomName("§r" . Util::PREFIX . "Vanish §q§l«"));
                 }
             } else {
                 foreach (Main::getInstance()->getServer()->getOnlinePlayers() as $player) {
@@ -55,8 +55,8 @@ class Vanish extends BaseCommand
                 Vanish::$vanish[] = $sender->getName();
                 $sender->sendMessage(Util::PREFIX . "Vous êtes désormais invisible aux yeux des autres joueurs");
 
-                if ($item->getCustomName() === "§r" . Util::PREFIX . "Vanish §c§l«") {
-                    $sender->getInventory()->setItemInHand(VanillaItems::DYE()->setColor(DyeColor::GREEN())->setCustomName("§r" . Util::PREFIX . "Vanish §c§l«"));
+                if ($item->getCustomName() === "§r" . Util::PREFIX . "Vanish §q§l«") {
+                    $sender->getInventory()->setItemInHand(VanillaItems::DYE()->setColor(DyeColor::GREEN())->setCustomName("§r" . Util::PREFIX . "Vanish §q§l«"));
                 }
             }
         }

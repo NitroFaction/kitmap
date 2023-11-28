@@ -34,12 +34,13 @@ use pocketmine\block\{Barrel,
     utils\DyeColor,
     VanillaBlocks,
     Wheat};
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\HurtAnimation;
 use pocketmine\entity\effect\{EffectInstance, VanillaEffects};
 use pocketmine\entity\object\ItemEntity;
-use pocketmine\event\block\{BlockBreakEvent, BlockGrowEvent, BlockPlaceEvent, BlockSpreadEvent, BlockUpdateEvent};
+use pocketmine\event\block\{BlockBreakEvent, BlockPlaceEvent, BlockSpreadEvent};
 use pocketmine\event\entity\{EntityDamageByEntityEvent,
     EntityDamageEvent,
     EntityItemPickupEvent,
@@ -48,7 +49,7 @@ use pocketmine\event\entity\{EntityDamageByEntityEvent,
     EntityTrampleFarmlandEvent,
     ItemSpawnEvent,
     ProjectileHitEntityEvent};
-use pocketmine\event\inventory\{CraftItemEvent, InventoryOpenEvent, InventoryTransactionEvent};
+use pocketmine\event\inventory\{InventoryOpenEvent, InventoryTransactionEvent};
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerBucketEvent,
     PlayerChatEvent,
@@ -56,7 +57,6 @@ use pocketmine\event\player\{PlayerBucketEvent,
     PlayerDeathEvent,
     PlayerDropItemEvent,
     PlayerInteractEvent,
-    PlayerItemConsumeEvent,
     PlayerItemUseEvent,
     PlayerJoinEvent,
     PlayerMissSwingEvent,
@@ -69,24 +69,13 @@ use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
-use pocketmine\item\{Axe,
-    Bucket,
-    Durable,
-    EnderPearl,
-    Hoe,
-    Item,
-    PaintingItem,
-    PotionType,
-    Shovel,
-    Stick,
-    VanillaItems};
+use pocketmine\item\{Axe, Bucket, Durable, Hoe, Item, PaintingItem, PotionType, Shovel, Stick, VanillaItems};
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\protocol\types\LevelEvent;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\{GameMode, Player};
@@ -281,9 +270,9 @@ class EventsListener implements Listener
         }, null));
 
         $player->getNetworkSession()->sendDataPacket(LevelEventPacket::create(
-            LevelEvent::START_RAIN,
-            100000,
-            null
+            eventId: 3001,
+            eventData: 10000,
+            position: null
         ));
 
         Util::givePlayerPreferences($player);
@@ -476,15 +465,19 @@ class EventsListener implements Listener
 
         if ($session->data["staff_mod"][0]) {
             $command = match ($item->getCustomName()) {
-                "§r" . Util::PREFIX . "Vanish §c§l«" => "/vanish",
-                "§r" . Util::PREFIX . "Random Tp §c§l«" => "/randomtp",
-                "§r" . Util::PREFIX . "Spectateur §c§l«" => "/spec",
+                "§r" . Util::PREFIX . "Vanish §q§l«" => "/vanish",
+                "§r" . Util::PREFIX . "Random Tp §q§l«" => "/randomtp",
+                "§r" . Util::PREFIX . "Spectateur §q§l«" => "/spec",
                 default => null
             };
 
             if ($command !== null) {
                 $player->chat($command);
             }
+        }
+
+        if ($event->isCancelled()) {
+            return;
         }
 
         $executePp = PartnerItems::executeInteractPartnerItem($player, $event);
@@ -505,83 +498,6 @@ class EventsListener implements Listener
 
             $player->sendMessage(Util::PREFIX . "§fVous venez de récupérer §q" . $xp . " §fniveaux d'expérience");
 
-            $event->cancel();
-        } else if ($item instanceof EnderPearl) {
-            if ($session->inCooldown("enderpearl")) {
-                $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData("enderpearl")[0] - time()) . " §fsecondes avant de relancer une nouvelle perle");
-                $event->cancel();
-            } else {
-                $position = $player->getPosition();
-
-                if (Util::insideZone($player->getPosition(), "warzone") && $position->getY() <= 59) {
-                    $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas lancer de perle dans les backrooms");
-                    $event->cancel();
-                    return;
-                }
-
-                if ($session->inCooldown("_antipearl")) {
-                    $player->sendTip(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData("_antipearl")[0] - time()) . " §fsecondes avant de relancer une nouvelle perle");
-                    $event->cancel();
-                    return;
-                } else if (!is_null($item->getNamedTag()->getTag("partneritem"))) {
-                    $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser cette perle");
-                    $event->cancel();
-                    return;
-                } else if (Util::isPlayerAimOnAntiBack($player)) {
-                    $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas perle en visant un bloc antiback");
-                    $event->cancel();
-                    return;
-                }
-
-                $session->setCooldown("enderpearl", 15, [$player->getPosition()]);
-            }
-        }
-    }
-
-    public function onConsume(PlayerItemConsumeEvent $event): void
-    {
-        $player = $event->getPlayer();
-        $item = $event->getItem();
-
-        $session = Session::get($player);
-
-        if ($item->getTypeId() === VanillaItems::RAW_FISH()->getTypeId()) {
-            if ($session->inCooldown("cookie_combined")) {
-                $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData("cookie_combined")[0] - time()) . " §fsecondes avant de remanger un cookie combiné");
-                $event->cancel();
-            } else {
-                $player->getEffects()->add(new EffectInstance(VanillaEffects::ABSORPTION(), (10 * 20), 0, false));
-                $player->getEffects()->add(new EffectInstance(VanillaEffects::REGENERATION(), (10 * 20), 0, false));
-                $player->getEffects()->add(new EffectInstance(VanillaEffects::SPEED(), (240 * 20), 0, false));
-                $player->getEffects()->add(new EffectInstance(VanillaEffects::STRENGTH(), (240 * 20), 0, false));
-
-                $session->setCooldown("cookie_combined", 25);
-            }
-        } else if ($item->getTypeId() === VanillaItems::COOKED_FISH()->getTypeId()) {
-            if ($session->inCooldown("cookie_regeneration")) {
-                $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData("cookie_regeneration")[0] - time()) . " §fsecondes avant de remanger un cookie de regeneration");
-                $event->cancel();
-            } else {
-                $player->getEffects()->add(new EffectInstance(VanillaEffects::REGENERATION(), (10 * 20), 0, false));
-                $session->setCooldown("cookie_regeneration", 25);
-            }
-        } else if ($item->getTypeId() === VanillaItems::RAW_SALMON()->getTypeId()) {
-            if ($session->inCooldown("cookie_speed")) {
-                $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData("cookie_speed")[0] - time()) . " §fsecondes avant de remanger un cookie de vitesse");
-                $event->cancel();
-            } else {
-                $player->getEffects()->add(new EffectInstance(VanillaEffects::SPEED(), (240 * 20), 0, false));
-                $session->setCooldown("cookie_speed", 25);
-            }
-        } else if ($item->getTypeId() === VanillaItems::COOKED_SALMON()->getTypeId()) {
-            if ($session->inCooldown("cookie_strength")) {
-                $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData("cookie_strength")[0] - time()) . " §fsecondes avant de remanger un cookie de force");
-                $event->cancel();
-            } else {
-                $player->getEffects()->add(new EffectInstance(VanillaEffects::STRENGTH(), (240 * 20), 0, false));
-                $session->setCooldown("cookie_strength", 25);
-            }
-        } else if ($item->getTypeId() === VanillaItems::GOLDEN_APPLE()->getTypeId() || $item->getTypeId() === VanillaItems::GOLDEN_CARROT()->getTypeId()) {
             $event->cancel();
         }
     }
@@ -718,8 +634,15 @@ class EventsListener implements Listener
             $event->cancel();
             $drop = false;
 
-            $event->setDrops([$block->asItem()->setCount(1)]);
-            $event->setXpDropAmount(0);
+            if ($session->data["money"] >= 15) {
+                $session->addValue("money", 15, true);
+                $player->sendTip("§q- 15 pièces");
+
+                $event->setDrops([$block->asItem()->setCount(1)]);
+                $event->setXpDropAmount(0);
+            } else {
+                $player->sendTip("§qVous n'avez pas assez d'argent pour acheter les blocs (15 pièces/u)");
+            }
         } else if ($player->getPosition()->getWorld()->getFolderName() !== "mine" && !Faction::canBuild($player, $block, "break")) {
             if ($block->isFullCube()) {
                 Util::antiBlockGlitch($player);
@@ -747,12 +670,7 @@ class EventsListener implements Listener
                     $block = $block->setAge(CocoaBlock::MAX_AGE);
                 }
 
-                $cookies = [
-                    VanillaItems::COOKED_FISH(),
-                    VanillaItems::COOKED_SALMON(),
-                    VanillaItems::RAW_SALMON()
-                ];
-
+                $cookies = [VanillaItems::COOKED_FISH(), VanillaItems::COOKED_SALMON(), VanillaItems::RAW_SALMON()];
                 $event->setDrops([$cookies[array_rand($cookies)]]);
             } else if ($block->hasSameTypeId(VanillaBlocks::DEEPSLATE_EMERALD_ORE()) || $block->hasSameTypeId(VanillaBlocks::ANCIENT_DEBRIS())) {
                 $respawn = 15;
@@ -965,20 +883,6 @@ class EventsListener implements Listener
         }
     }
 
-    public function onGrow(BlockGrowEvent $event): void
-    {
-        if ($event->getBlock()->getPosition()->getWorld()->getFolderName() === "mine") {
-            $event->cancel();
-        }
-    }
-
-    public function onUpdate(BlockUpdateEvent $event): void
-    {
-        if ($event->getBlock()->getPosition()->getWorld()->getFolderName() === "mine") {
-            $event->cancel();
-        }
-    }
-
     public function onDamage(EntityDamageEvent $event): void
     {
         $entity = $event->getEntity();
@@ -1018,11 +922,11 @@ class EventsListener implements Listener
 
                     if ($damagerSession->data["staff_mod"][0]) {
                         $message = match ($damager->getInventory()->getItemInHand()->getCustomName()) {
-                            "§r" . Util::PREFIX . "Sanction §c§l«" => "custom",
-                            "§r" . Util::PREFIX . "Alias §c§l«" => "/alias \"" . $entity->getName() . "\"",
-                            "§r" . Util::PREFIX . "Freeze §c§l«" => "/freeze \"" . $entity->getName() . "\"",
-                            "§r" . Util::PREFIX . "Invsee §c§l«" => "/invsee \"" . $entity->getName() . "\"",
-                            "§r" . Util::PREFIX . "Ecsee §c§l«" => "/ecsee \"" . $entity->getName() . "\"",
+                            "§r" . Util::PREFIX . "Sanction §q§l«" => "custom",
+                            "§r" . Util::PREFIX . "Alias §q§l«" => "/alias \"" . $entity->getName() . "\"",
+                            "§r" . Util::PREFIX . "Freeze §q§l«" => "/freeze \"" . $entity->getName() . "\"",
+                            "§r" . Util::PREFIX . "Invsee §q§l«" => "/invsee \"" . $entity->getName() . "\"",
+                            "§r" . Util::PREFIX . "Ecsee §q§l«" => "/ecsee \"" . $entity->getName() . "\"",
                             default => null
                         };
 
@@ -1123,26 +1027,6 @@ class EventsListener implements Listener
             if ($entity->getItem()->getTypeId() === VanillaBlocks::CACTUS()->asItem()->getTypeId()) {
                 $entity->setMotion(new Vector3(0.3, 0.3, 0.3));
                 $event->cancel();
-            }
-        }
-    }
-
-    public function onCraft(CraftItemEvent $event): void
-    {
-        $input = $event->getInputs();
-        $player = $event->getPlayer();
-
-        foreach ($input as $item) {
-            if (!is_null($item->getNamedTag()->getTag("partneritem"))) {
-                $event->cancel();
-                Util::removeCurrentWindow($player);
-
-                $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser des partneritems pour craft des items ou autre");
-                break;
-            } else if (!is_null($item->getNamedTag()->getTag("menu_item"))) {
-                $event->cancel();
-                Util::removeCurrentWindow($player);
-                break;
             }
         }
     }

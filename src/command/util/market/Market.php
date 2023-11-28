@@ -249,7 +249,13 @@ class Market extends BaseCommand
                 $file->save();
             }
 
+            if (!isset(Cache::$data["average"][$item->getVanillaName()])) {
+                Cache::$data["average"][$item->getVanillaName()] = [];
+            }
+
+            Cache::$data["average"][$item->getVanillaName()][] = $price;
             Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter l'item de " . $seller . ". Prix: " . $price . "; Item: " . $item->getVanillaName());
+
             $session->addValue("money", $price, true);
         }
 
@@ -293,6 +299,7 @@ class Market extends BaseCommand
 
     protected function prepare(): void
     {
+        $this->registerSubCommand(new MarketAverageSub());
         $this->registerSubCommand(new MarketSellSub());
     }
 }

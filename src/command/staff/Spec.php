@@ -33,10 +33,10 @@ class Spec extends BaseCommand
             if (Session::get($sender)->data["staff_mod"][0]) {
                 $item = $sender->getInventory()->getItemInHand();
 
-                if ($item->getCustomName() === "§r" . Util::PREFIX . "Spectateur §c§l«" && $item === VanillaItems::BANNER()->setColor(DyeColor::LIGHT_GRAY())) {
-                    $sender->getInventory()->setItemInHand(VanillaItems::BANNER()->setColor(DyeColor::GREEN())->setCustomName("§r" . Util::PREFIX . "Spectateur §c§l«"));
-                } else if ($item->getCustomName() === "§r" . Util::PREFIX . "Spectateur §c§l«" && VanillaItems::BANNER()->setColor(DyeColor::GREEN())) {
-                    $sender->getInventory()->setItemInHand(VanillaItems::BANNER()->setColor(DyeColor::LIGHT_GRAY())->setCustomName("§r" . Util::PREFIX . "Spectateur §c§l«"));
+                if ($item->getCustomName() === "§r" . Util::PREFIX . "Spectateur §q§l«" && $item === VanillaItems::BANNER()->setColor(DyeColor::LIGHT_GRAY())) {
+                    $sender->getInventory()->setItemInHand(VanillaItems::BANNER()->setColor(DyeColor::GREEN())->setCustomName("§r" . Util::PREFIX . "Spectateur §q§l«"));
+                } else if ($item->getCustomName() === "§r" . Util::PREFIX . "Spectateur §q§l«" && VanillaItems::BANNER()->setColor(DyeColor::GREEN())) {
+                    $sender->getInventory()->setItemInHand(VanillaItems::BANNER()->setColor(DyeColor::LIGHT_GRAY())->setCustomName("§r" . Util::PREFIX . "Spectateur §q§l«"));
                 }
             }
 

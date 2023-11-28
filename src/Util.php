@@ -42,7 +42,7 @@ use Symfony\Component\Filesystem\Path;
 
 class Util
 {
-    const PREFIX = "§c§l» §r§f";
+    const PREFIX = "§q§l» §r§f";
 
     public static function arrayToPage(array $array, ?int $page, int $separator): array
     {
@@ -371,7 +371,7 @@ class Util
 
     public static function getBourse(): array
     {
-        $data = Cache::$data["bourse"];
+        $data = Cache::$data["bourse"] ?? [];
 
         $bourse = [];
         $count = 0;
@@ -396,8 +396,9 @@ class Util
 
     public static function resetBourse(): array
     {
-        foreach (Cache::$config["bourse"] as $value) {
-            $name = explode($value, ":")[0];
+        Cache::$data["bourse"] = [];
+
+        foreach (Cache::$config["bourse"] as $name => $value) {
             Cache::$data["bourse"][$name] = 0;
         }
 

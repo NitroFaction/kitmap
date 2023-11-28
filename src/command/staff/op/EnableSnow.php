@@ -9,6 +9,8 @@ use pocketmine\command\CommandSender;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\plugin\PluginBase;
+use pocketmine\world\format\Chunk;
+use pocketmine\world\World;
 
 class EnableSnow extends BaseCommand
 {
@@ -26,20 +28,22 @@ class EnableSnow extends BaseCommand
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
         $world = Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld();
-        [$x1, $y1, $z1, $x2, $y2, $z2] = explode(":", Cache::$config["zones"]["spawn"]);
+        [$x1, , $z1, $x2, , $z2] = explode(":", Cache::$config["zones"]["spawn"]);
 
         $minX = min($x1, $x2);
-        $minY = min($y1, $y2);
         $minZ = min($z1, $z2);
 
         $maxX = max($x1, $x2);
-        $maxY = max($y1, $y2);
         $maxZ = max($z1, $z2);
 
         for ($x = 0; $minX < $maxX; ++$x) {
-            for ($y = 0; $minY < $maxY; ++$y) {
+            for ($y = 0; World::Y_MIN < World::Y_MAX; ++$y) {
                 for ($z = 0; $minZ < $maxZ; ++$z) {
-                    $world->setBiomeId($x, $y, $z, BiomeIds::ICE_PLAINS);
+                    $chunk = $world->loadChunk($x, $z);
+
+                    if ($chunk instanceof Chunk) {
+                        $chunk->setBiomeId($x, $y, $z, BiomeIds::ICE_PLAINS);
+                    }
                 }
             }
         }
