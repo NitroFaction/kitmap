@@ -170,13 +170,13 @@ class Util
         $value = intval($value);
         $value = (0 + str_replace(",", "", $value));
 
-        if ($value > 1000000000000) {
+        if ($value >= 1000000000000) {
             return round($value / 1000000000000, 2) . "MD";
-        } else if ($value > 1000000000) {
+        } else if ($value >= 1000000000) {
             return round($value / 1000000000, 2) . "B";
-        } else if ($value > 1000000) {
+        } else if ($value >= 1000000) {
             return round($value / 1000000, 2) . "M";
-        } else if ($value > 1000) {
+        } else if ($value >= 1000) {
             return round($value / 1000, 2) . "k";
         }
         return number_format($value);
