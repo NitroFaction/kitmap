@@ -316,6 +316,7 @@
     "cobblestone": true,
     "coordinates": false,
     "border": false,
+    "meteo": true,
     "fly": false,
     "cooldown": [],
     "ip": [],
