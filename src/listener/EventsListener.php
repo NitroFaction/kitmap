@@ -28,6 +28,7 @@ use pocketmine\block\{Barrel,
     GlowLichen,
     Hopper,
     inventory\EnderChestInventory,
+    ItemFrame,
     Lava,
     Liquid,
     NetherWartPlant,
@@ -77,6 +78,7 @@ use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\{GameMode, Player};
@@ -270,11 +272,9 @@ class EventsListener implements Listener
             }
         }, null));
 
-        $player->getNetworkSession()->sendDataPacket(LevelEventPacket::create(
-            eventId: 3001,
-            eventData: 10000,
-            position: null
-        ));
+        if ($session->data["meteo"]) {
+            $player->getNetworkSession()->sendDataPacket(LevelEventPacket::create(LevelEvent::START_RAIN, 10000, null));
+        }
 
         Util::givePlayerPreferences($player);
 
