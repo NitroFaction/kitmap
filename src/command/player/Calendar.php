@@ -85,8 +85,7 @@ class Calendar extends BaseCommand
     private static function showCalendar(Player $player): void
     {
         /* @noinspection PhpUnhandledExceptionInspection */
-        // $day = (new DateTime('now', new DateTimeZone('Europe/Paris')))->format('j');
-        $day = 13;
+        $day = (new DateTime('now', new DateTimeZone('Europe/Paris')))->format('j');
 
         if ($day >= 1 && $day <= 24) {
             $menu = InvMenu::create(InvMenuTypeIds::TYPE_DOUBLE_CHEST);
