@@ -34,8 +34,11 @@ class Session
             $ownings = Util::getFile("ownings");
             $rank = $ownings->get(strtolower($player->getName()), "joueur");
 
+            $calendar = array_fill(1, 24, false);
+
             $data = array_merge(Cache::$config["default-data"], [
                 "rank" => $rank,
+                "calendar" => $calendar
             ]);
         }
 

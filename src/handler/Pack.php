@@ -307,6 +307,12 @@ class Pack
                 Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'utiliser un papier de " . $data . " pack");
                 $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §q" . $data . " §fpack(s)");
                 break;
+            case 3:
+                $session->addValue("gem", $data);
+
+                Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'utiliser un billet de " . $data . " gemmes");
+                $player->sendMessage(Util::PREFIX . "Vous venez d'utiliser un billet et recevoir §q" . $data . " §fgemmes");
+                break;
         }
 
         $item->pop();
