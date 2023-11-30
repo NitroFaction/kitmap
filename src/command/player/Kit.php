@@ -4,6 +4,7 @@ namespace Kitmap\command\player;
 
 use CortexPE\Commando\BaseCommand;
 use Element\item\ExtraVanillaItems;
+use Element\util\data\ItemTypeNames;
 use jojoe77777\FormAPI\SimpleForm;
 use Kitmap\handler\Rank;
 use Kitmap\Session;
@@ -121,40 +122,52 @@ class Kit extends BaseCommand
                     VanillaItems::DIAMOND_PICKAXE()->addEnchantment($unbreaking)->addEnchantment($efficiency),
                     VanillaItems::DIAMOND_AXE()->addEnchantment($unbreaking)->addEnchantment($efficiency),
                     VanillaItems::DIAMOND_SHOVEL()->addEnchantment($unbreaking)->addEnchantment($efficiency),
-                    VanillaItems::DIAMOND_HOE()->addEnchantment($unbreaking)
+                    VanillaItems::DIAMOND_HOE()->addEnchantment($unbreaking),
+                    Util::getItemByName(ItemTypeNames::STRENGTH_COOKIE)->setCount(2),
+                    Util::getItemByName(ItemTypeNames::REGENERATION_COOKIE)->setCount(2),
+                    Util::getItemByName(ItemTypeNames::SPEED_COOKIE)->setCount(2)
                 ],
                 "cooldown" => 60,
                 "rank" => "joueur"
             ],
             "joueur" => [
                 "items" => [
-                    VanillaItems::NETHERITE_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    VanillaItems::DIAMOND_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
                     VanillaItems::DIAMOND_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
                     VanillaItems::DIAMOND_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::NETHERITE_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::DIAMOND_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking)
+                    VanillaItems::DIAMOND_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    VanillaItems::DIAMOND_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
+                    Util::getItemByName(ItemTypeNames::STRENGTH_COOKIE)->setCount(4),
+                    Util::getItemByName(ItemTypeNames::REGENERATION_COOKIE)->setCount(4),
+                    Util::getItemByName(ItemTypeNames::SPEED_COOKIE)->setCount(4)
                 ],
                 "cooldown" => 60,
                 "rank" => "joueur"
             ],
             "champion" => [
                 "items" => [
-                    VanillaItems::NETHERITE_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    ExtraVanillaItems::EMERALD_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
                     VanillaItems::DIAMOND_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::NETHERITE_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::NETHERITE_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::NETHERITE_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking)
+                    VanillaItems::DIAMOND_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    VanillaItems::DIAMOND_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    VanillaItems::DIAMOND_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
+                    Util::getItemByName(ItemTypeNames::STRENGTH_COOKIE)->setCount(8),
+                    Util::getItemByName(ItemTypeNames::REGENERATION_COOKIE)->setCount(8),
+                    Util::getItemByName(ItemTypeNames::SPEED_COOKIE)->setCount(8)
                 ],
                 "cooldown" => 60 * 60,
                 "rank" => "champion"
             ],
             "prince" => [
                 "items" => [
-                    VanillaItems::NETHERITE_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::NETHERITE_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::NETHERITE_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::NETHERITE_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::NETHERITE_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking)
+                    ExtraVanillaItems::EMERALD_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    VanillaItems::DIAMOND_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    VanillaItems::DIAMOND_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    ExtraVanillaItems::EMERALD_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    VanillaItems::DIAMOND_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
+                    Util::getItemByName(ItemTypeNames::STRENGTH_COOKIE)->setCount(16),
+                    Util::getItemByName(ItemTypeNames::REGENERATION_COOKIE)->setCount(16),
+                    Util::getItemByName(ItemTypeNames::SPEED_COOKIE)->setCount(16)
                 ],
                 "cooldown" => 60 * 60 * 2,
                 "rank" => "prince"
@@ -162,10 +175,11 @@ class Kit extends BaseCommand
             "elite" => [
                 "items" => [
                     ExtraVanillaItems::EMERALD_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::NETHERITE_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::NETHERITE_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::NETHERITE_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    ExtraVanillaItems::EMERALD_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking)
+                    ExtraVanillaItems::EMERALD_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    ExtraVanillaItems::EMERALD_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    ExtraVanillaItems::EMERALD_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    VanillaItems::DIAMOND_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
+                    Util::getItemByName(ItemTypeNames::COMBINED_COOKIE)->setCount(16)
                 ],
                 "cooldown" => 60 * 60 * 3,
                 "rank" => "elite"
@@ -173,10 +187,11 @@ class Kit extends BaseCommand
             "roi" => [
                 "items" => [
                     ExtraVanillaItems::EMERALD_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::NETHERITE_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::NETHERITE_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    ExtraVanillaItems::EMERALD_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
+                    ExtraVanillaItems::EMERALD_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
                     ExtraVanillaItems::EMERALD_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    ExtraVanillaItems::EMERALD_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking)
+                    VanillaItems::DIAMOND_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
+                    Util::getItemByName(ItemTypeNames::COMBINED_COOKIE)->setCount(16)
                 ],
                 "cooldown" => 60 * 60 * 4,
                 "rank" => "roi"

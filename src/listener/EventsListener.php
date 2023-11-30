@@ -3,6 +3,7 @@
 namespace Kitmap\listener;
 
 use Element\item\ExtraVanillaItems;
+use Element\util\data\ItemTypeNames;
 use Kitmap\command\player\{Anvil, Enchant, rank\Enderchest};
 use Kitmap\command\staff\{Ban, LastInventory, Question, Vanish};
 use Kitmap\command\util\Bienvenue;
@@ -29,12 +30,12 @@ use pocketmine\block\{Barrel,
     inventory\EnderChestInventory,
     Lava,
     Liquid,
+    NetherWartPlant,
     SweetBerryBush,
     Trapdoor,
     utils\DyeColor,
     VanillaBlocks,
     Wheat};
-use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\HurtAnimation;
@@ -672,20 +673,13 @@ class EventsListener implements Listener
 
                 $cookies = [VanillaItems::COOKED_FISH(), VanillaItems::COOKED_SALMON(), VanillaItems::RAW_SALMON()];
                 $event->setDrops([$cookies[array_rand($cookies)]]);
-            } else if ($block->hasSameTypeId(VanillaBlocks::DEEPSLATE_EMERALD_ORE()) || $block->hasSameTypeId(VanillaBlocks::ANCIENT_DEBRIS())) {
+            } else if ($block->hasSameTypeId(VanillaBlocks::DEEPSLATE_EMERALD_ORE())) {
                 $respawn = 15;
                 $bedrock = true;
 
-                if ($block->hasSameTypeId(VanillaBlocks::ANCIENT_DEBRIS())) {
-                    $event->setDrops([VanillaItems::NETHERITE_INGOT()]);
-                } else if ($block->hasSameTypeId(VanillaBlocks::DEEPSLATE_EMERALD_ORE())) {
-                    $emerald = VanillaItems::GOLD_NUGGET()->setCount(mt_rand(1, 4));
-
-                    if (mt_rand(0, 250) === 1) {
-                        $event->setDrops([$emerald, VanillaItems::RABBIT_FOOT()]);
-                    } else {
-                        $event->setDrops([$emerald]);
-                    }
+                if ($block->hasSameTypeId(VanillaBlocks::DEEPSLATE_EMERALD_ORE())) {
+                    $emerald = Util::getItemByName(ItemTypeNames::EMERALD_NUGGET)->setCount(mt_rand(1, 5));
+                    $event->setDrops([$emerald]);
                 }
             } else if ($block->hasSameTypeId(VanillaBlocks::NETHER_GOLD_ORE())) {
                 $respawn = 40;
@@ -703,7 +697,6 @@ class EventsListener implements Listener
                     VanillaItems::EXPERIENCE_BOTTLE()->setCount(3),
                     VanillaBlocks::LAPIS_LAZULI()->asItem(),
                     VanillaItems::NAUTILUS_SHELL(),
-                    VanillaItems::NETHERITE_INGOT(),
                     VanillaBlocks::STAINED_GLASS()->setColor(DyeColor::BROWN())->asItem(),
                     VanillaItems::CARROT(),
                     VanillaItems::POTATO(),
@@ -761,7 +754,19 @@ class EventsListener implements Listener
 
         if (!$player->isCreative() && $target->hasSameTypeId(VanillaBlocks::TRAPPED_CHEST())) {
             $event->setDrops([
-                VanillaBlocks::EMERALD()->asItem()->setCount(mt_rand(3, 5))
+                VanillaBlocks::EMERALD()->asItem()->setCount(mt_rand(3, 6))
+            ]);
+        }
+
+        if (!$player->isCreative() && $target->hasSameTypeId(VanillaBlocks::COBBLESTONE()) && mt_rand(0, 20) == 0) {
+            $event->setDrops([
+                Util::getItemByName(ItemTypeNames::IRIS_DUST)->setCount(1)
+            ]);
+        }
+
+        if (!$player->isCreative() && $target instanceof NetherWartPlant && $target->getAge() === NetherWartPlant::MAX_AGE && mt_rand(0, 30) == 0) {
+            $event->setDrops([
+                Util::getItemByName(ItemTypeNames::IRIS_DUST)->setCount(1)
             ]);
         }
 
