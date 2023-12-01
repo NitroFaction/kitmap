@@ -32,7 +32,8 @@ class KothTask
                 $player,
                 "Koth | Controlé par " . $playerName,
                 1,
-                $percentage
+                $percentage,
+                BossBarAPI::COLOR_RED
             );
         }
 
@@ -72,13 +73,13 @@ class KothTask
                     $session = Session::get($player);
 
                     $session->addValue("money", 25000);
-                    $session->addValue("pack", 2);
+                    $session->data["pack"]["Classique"]++;
 
                     if (Faction::hasFaction($player)) {
                         Faction::addPower($session->data["faction"], mt_rand(15, 25));
                     }
 
-                    $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §q2 pack §fet §q25k §fpièces car vous avez gagné l'event koth");
+                    $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §q2 pack classique §fet §q25k §fpièces car vous avez gagné l'event koth");
                 }
             }
 

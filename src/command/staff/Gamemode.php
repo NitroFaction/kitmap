@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnused */
 
 namespace Kitmap\command\staff;
 
@@ -33,20 +33,10 @@ class Gamemode extends BaseCommand
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
         if ($sender instanceof Player) {
-            $session = Session::get($sender);
-
-            if ($session->inCooldown("combat")) {
-                $sender->sendMessage(Util::PREFIX . "Cette commande est interdite en combat");
-                return;
-            } else if ($session->inCooldown("teleportation")) {
-                $sender->sendMessage(Util::PREFIX . "Vous ne pouvez pas executer cette commande en teleportation");
-                return;
-            }
-
             if (isset($args["mode"])) {
                 $gameMode = match (strtolower($args["mode"])) {
                     "0", "survie" => PmGameMode::SURVIVAL(),
-                    "1", "créatif" => PmGameMode::CREATIVE(),
+                    "1", "creatif" => PmGameMode::CREATIVE(),
                     "2", "aventure" => PmGameMode::ADVENTURE(),
                     "3", "spectateur" => PmGameMode::SPECTATOR(),
                     default => null
@@ -70,9 +60,7 @@ class Gamemode extends BaseCommand
                 if (!$target instanceof Player) {
                     $sender->sendMessage(Util::PREFIX . "Le joueur indiqué n'est pas connecté sur le serveur");
                     return;
-                }
-
-                if (!$sender->hasPermission(DefaultPermissionNames::COMMAND_GAMEMODE_OTHER)) {
+                } else if (!$sender->hasPermission(DefaultPermissionNames::COMMAND_GAMEMODE_OTHER)) {
                     $sender->sendMessage(Util::PREFIX . "Vous n'avez pas la permission de modifier le mode de jeu d'un autre joueur que vous-même");
                     return;
                 }
@@ -88,7 +76,7 @@ class Gamemode extends BaseCommand
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new OptionArgument("mode", ["0", "1", "2", "3", "survie", "créatif", "aventure", "spectateur"]));
+        $this->registerArgument(0, new OptionArgument("mode", ["0", "1", "2", "3", "survie", "creatif", "aventure", "spectateur"]));
         $this->registerArgument(1, new TargetArgument("joueur", true));
     }
 }

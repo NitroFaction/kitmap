@@ -385,10 +385,10 @@ class Util
         foreach ($data as $name => $selled) {
             $count = $count + 1;
 
-            $sellPrice = $count * 4;
-            $buyPrice = $sellPrice * 2;
+            $sellPrice = $count * 2;
+            $buyPrice = $sellPrice * 1.3;
 
-            $bourse[] = $name . ":" . Cache::$config["bourse"][$name] . ":" . $buyPrice . ":" . $sellPrice;
+            $bourse[] = $name . ":" . Cache::$config["bourse"][$name] . ":" . $buyPrice . ":" . floor($sellPrice);
         }
 
         return $bourse;

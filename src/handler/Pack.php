@@ -2,7 +2,6 @@
 
 namespace Kitmap\handler;
 
-use Element\item\ExtraVanillaItems;
 use Element\util\inventory\CustomSizedInvMenu;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
@@ -10,9 +9,8 @@ use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
 use muqsit\invmenu\InvMenu;
+use muqsit\invmenu\type\InvMenuTypeIds;
 use OutOfBoundsException;
-use pocketmine\block\utils\DyeColor;
-use pocketmine\block\VanillaBlocks;
 use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\VanillaEnchantments;
@@ -24,39 +22,56 @@ class Pack
 {
     public static function openPackUI(Player $player): void
     {
+        $form = new SimpleForm(function (Player $player, mixed $data) {
+            if (!is_string($data)) {
+                return;
+            }
+
+            self::openPackCategoryUI($player, $data);
+        });
+        $form->setTitle("Pack");
+        $form->setContent(Util::PREFIX . "Quel genre de pack voulez vous ouvrir");
+        foreach (Cache::$config["pack"] as $key => $value) {
+            $form->addButton("Pack " . $key, label: $key);
+        }
+        $player->sendForm($form);
+    }
+
+    public static function openPackCategoryUI(Player $player, string $category): void
+    {
         $session = Session::get($player);
 
-        $form = new SimpleForm(function (Player $player, mixed $data) use ($session) {
+        $form = new SimpleForm(function (Player $player, mixed $data) use ($session, $category) {
             if (!is_int($data)) {
                 return;
             }
 
             switch ($data) {
                 case 0:
-                    if (0 >= $session->data["pack"]) {
+                    if (0 >= $session->data["pack"][$category]) {
                         $player->sendMessage(Util::PREFIX . "Vous ne possedez pas de pack actuellement");
                         return;
                     }
 
-                    self::openPack($player);
+                    self::openPack($player, $category);
                     break;
                 case 1:
-                    self::buyPack($player);
+                    self::buyPack($player, $category);
                     break;
                 case 2:
-                    self::previsualizePack($player);
+                    self::previsualizePack($player, $category);
                     break;
             }
         });
-        $form->setTitle("Pack");
-        $form->setContent(Util::PREFIX . "Vous possedez actuellement §q" . $session->data["pack"] . " §fpack(s)");
-        $form->addButton("Ouvrir un pack");
-        $form->addButton("Acheter un pack");
+        $form->setTitle("Pack " . $category);
+        $form->setContent(Util::PREFIX . "Vous possedez actuellement §q" . $session->data["pack"][$category] . " §fpack(s) §q" . $category);
+        $form->addButton("Ouvrir un pack " . $category);
+        $form->addButton("Acheter un pack " . $category);
         $form->addButton("Visualiser les lots");
         $player->sendForm($form);
     }
 
-    public static function openPack(Player $player): void
+    public static function openPack(Player $player, string $category): void
     {
         $session = Session::get($player);
 
@@ -65,7 +80,7 @@ class Pack
             return;
         }
 
-        $items = self::getRandomItems(3);
+        $items = self::getRandomItems(Cache::$config["pack"][$category]["items-count"], $category);
         $prize = "";
 
         foreach ($items as $item) {
@@ -75,16 +90,16 @@ class Pack
             }
         }
 
-        Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'ouvrir un pack (ses lots: " . $prize . ")");
-        Main::getInstance()->getServer()->broadcastTip(Util::PREFIX . "Le joueur §q" . $player->getName() . " §fvient d'ouvrir un pack !");
+        Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'ouvrir un pack " . $category . " (ses lots: " . $prize . ")");
+        Main::getInstance()->getServer()->broadcastTip(Util::PREFIX . "Le joueur §q" . $player->getName() . " §fvient d'ouvrir un pack §q" . $category . " §f!");
 
-        $player->sendMessage(Util::PREFIX . "Vous venez d'ouvrir un pack ! Vos lots ont été mis dans votre inventaire");
-        $session->addValue("pack", -1);
+        $player->sendMessage(Util::PREFIX . "Vous venez d'ouvrir un pack §q" . $category . " §f! Vos lots ont été mis dans votre inventaire");
+        $session->data["pack"][$category]--;
     }
 
-    public static function getRandomItems(int $count): array
+    public static function getRandomItems(int $count, $category): array
     {
-        $pack = self::getItems();
+        $pack = self::getItems($category);
         $items = [];
 
         foreach (self::arrayRandom($pack, $count) as $item) {
@@ -115,67 +130,34 @@ class Pack
         return $items;
     }
 
-    public static function getItems(): array
+    public static function getItems(string $category): array
     {
         $items = [];
 
-        foreach (array_keys(Cache::$config["partneritems"]) as $pp) {
-            if ($pp === "pumpkinaxe") {
-                $items[] = PartnerItems::createItem($pp)->setCount(2);
-                continue;
+        $config = Cache::$config["pack"][$category]["items"];
+
+        if ($config[0] === "partneritems") {
+            foreach (array_keys(Cache::$config["partneritems"]) as $pp) {
+                if ($pp === "pumpkinaxe") {
+                    $items[] = PartnerItems::createItem($pp)->setCount(2);
+                    continue;
+                }
+
+                $items[] = PartnerItems::createItem($pp)->setCount(4);
             }
 
-            $items[] = PartnerItems::createItem($pp)->setCount(4);
+            array_shift($config);
         }
 
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§bKit Champion", 1, 1]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§bKit Prince", 1, 2]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§bKit Elite", 1, 3]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§bKit Elite", 1, 3]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§bKit Roi", 1, 4]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§bKit Roi", 1, 4]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§qBillet de 1k", 0, 1000]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§qBillet de 5k", 0, 5000]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§qBillet de 10k", 0, 10000]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§qBillet de 25k", 0, 25000]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§qBillet de 30k", 0, 30000]);
-        $items[] = self::initializeItem(VanillaItems::PAPER(), ["§r§q1 Pack", 2, 1]);
-        $items[] = VanillaItems::RABBIT_HIDE()->setCount(1);
-        $items[] = VanillaItems::RABBIT_FOOT()->setCount(1);
-        $items[] = VanillaItems::RABBIT_FOOT()->setCount(2);
-        $items[] = VanillaItems::RABBIT_FOOT()->setCount(2);
-        $items[] = ExtraVanillaItems::MINER_HELMET();
-        $items[] = ExtraVanillaItems::MINER_HELMET();
-        $items[] = VanillaItems::EMERALD()->setCount(8);
-        $items[] = VanillaItems::EMERALD()->setCount(16);
-        $items[] = VanillaItems::EMERALD()->setCount(16);
-        $items[] = VanillaItems::NETHERITE_INGOT()->setCount(32);
-        $items[] = VanillaItems::NETHERITE_INGOT()->setCount(32);
-        $items[] = VanillaItems::NETHERITE_INGOT()->setCount(64);
-        $items[] = VanillaBlocks::EMERALD()->asItem()->setCount(4);
-        $items[] = VanillaBlocks::EMERALD()->asItem()->setCount(4);
-        $items[] = VanillaBlocks::NETHERITE()->asItem()->setCount(16);
-        $items[] = VanillaBlocks::NETHERITE()->asItem()->setCount(16);
-        $items[] = VanillaItems::EXPERIENCE_BOTTLE()->setCount(16);
-        $items[] = VanillaItems::EXPERIENCE_BOTTLE()->setCount(32);
-        $items[] = VanillaItems::EXPERIENCE_BOTTLE()->setCount(64);
-        $items[] = VanillaItems::NETHERITE_SWORD();
-        $items[] = ExtraVanillaItems::EMERALD_SWORD();
-        $items[] = ExtraVanillaItems::IRIS_SWORD();
-        $items[] = VanillaBlocks::REDSTONE()->asItem()->setCount(32);
-        $items[] = VanillaBlocks::REDSTONE()->asItem()->setCount(64);
-        $items[] = VanillaBlocks::STAINED_GLASS()->setColor(DyeColor::BROWN())->asItem()->setCount(32);
-        $items[] = VanillaItems::NAUTILUS_SHELL();
-        $items[] = VanillaItems::NAUTILUS_SHELL();
-        $items[] = VanillaBlocks::TRAPPED_CHEST()->asItem();
-        $items[] = VanillaBlocks::TRAPPED_CHEST()->asItem();
-        $items[] = VanillaBlocks::TRAPPED_CHEST()->asItem();
-        $items[] = VanillaBlocks::CHISELED_NETHER_BRICKS()->asItem();
-        $items[] = VanillaBlocks::CHISELED_NETHER_BRICKS()->asItem();
-        $items[] = VanillaBlocks::CHISELED_NETHER_BRICKS()->asItem();
-        $items[] = VanillaBlocks::LAPIS_LAZULI()->asItem();
-        $items[] = VanillaBlocks::LAPIS_LAZULI()->asItem();
-        $items[] = VanillaBlocks::LAPIS_LAZULI()->asItem();
+        foreach ($config as $item) {
+            $item = explode(":", $item);
+
+            if ($item[0] === "paper") {
+                $items[] = self::initializeItem(VanillaItems::PAPER(), [$item[1], $item[2], $item[3]]);
+            } else if ($item[0] === "item") {
+                $items[] = Util::getItemByName($item[1])->setCount(intval($item[2]));
+            }
+        }
 
         foreach ($items as $item) {
             $item->getNamedTag()->setInt("menu_item", 0);
@@ -209,60 +191,67 @@ class Pack
         return ($n !== 1) ? array_values(array_intersect_key($array, array_flip(array_rand($array, $n)))) : [$array[array_rand($array)]];
     }
 
-    private static function buyPack(Player $player): void
+    private static function buyPack(Player $player, string $category): void
     {
         $session = Session::get($player);
+        $prices = Cache::$config["pack"][$category]["prices"];
 
-        $form = new CustomForm(function (Player $player, mixed $data) use ($session) {
+        $form = new CustomForm(function (Player $player, mixed $data) use ($session, $category, $prices) {
             if (!is_array($data) || !isset($data[1]) || !isset($data[2]) || !is_bool($data[2]) || !$data[2]) {
                 return;
             }
 
             switch ($data[1]) {
                 case 0:
-                    if (75 > $session->data["gem"]) {
-                        $player->sendMessage(Util::PREFIX . "Vous ne possedez pas assez de gemmes pour acheter un pack");
+                    if ($prices["gem"] > $session->data["gem"]) {
+                        $player->sendMessage(Util::PREFIX . "Vous ne possedez pas assez de gemmes pour acheter un pack §q" . $category);
                         return;
                     }
 
                     $session->addValue("gem", 75, true);
-                    $player->sendMessage(Util::PREFIX . "Vous venez d'acheter un pack avec §q75 §fgemmes");
+                    $player->sendMessage(Util::PREFIX . "Vous venez d'acheter un pack §q" . $category . "avec §q" . Util::formatNumberWithSuffix($prices["gem"]) . " §fgemmes");
 
-                    Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter un pack avec des gemmes");
+                    Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter un pack " . $category . " avec des gemmes");
                     break;
                 case 1:
-                    if (100000 > $session->data["money"]) {
-                        $player->sendMessage(Util::PREFIX . "Vous ne possedez pas assez de pièces pour acheter un pack");
+                    if ($prices["money"] > $session->data["money"]) {
+                        $player->sendMessage(Util::PREFIX . "Vous ne possedez pas assez de pièces pour acheter un pack §q" . $category);
                         return;
                     }
 
                     $session->addValue("money", 100000, true);
-                    $player->sendMessage(Util::PREFIX . "Vous venez d'acheter un pack avec §q100k §fpièces");
+                    $player->sendMessage(Util::PREFIX . "Vous venez d'acheter un pack §q" . $category . " §favec §q" . Util::formatNumberWithSuffix($prices["money"]) . " §fpièces");
 
-                    Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter un pack avec des pièces");
+                    Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter un pack " . $category . " avec des pièces");
                     break;
                 default:
                     return;
             }
 
-            $session->addValue("pack", 1);
-            self::openPackUI($player);
+            $session->data["pack"][$category]++;
+            self::openPackCategoryUI($player, $category);
         });
-
-        $form->setTitle("Pack");
-        $form->addLabel(Util::PREFIX . "Êtes vous sur d'acheter un pack?\nPrix d'un pack: §q100k §fpièces ou §a75 §fgemmes\n\nVous possedez §q" . $session->data["gem"] . " §fgemme(s)\nVous possedez §q" . $session->data["money"] . " §fpièces(s)\n");
+        $form->setTitle("Pack " . $category);
+        $form->addLabel(Util::PREFIX . "Êtes vous sur d'acheter un pack " . $category . "?\nPrix d'un pack: §q" . Util::formatNumberWithSuffix($prices["money"]) . " §fpièces ou §a" . Util::formatNumberWithSuffix($prices["gem"]) . " §fgemmes\n\nVous possedez §q" . $session->data["gem"] . " §fgemme(s)\nVous possedez §q" . $session->data["money"] . " §fpièces(s)\n");
         $form->addDropdown("Méthode de payement", ["gemmes", "pièces"]);
         $form->addToggle("Acheter un pack?", true);
         $player->sendForm($form);
     }
 
-    private static function previsualizePack(Player $player): void
+    private static function previsualizePack(Player $player, string $category): void
     {
-        $menu = CustomSizedInvMenu::create(72);
-        $menu->setName("Prévisualisation des packs");
+        $length = count(Cache::$config["pack"][$category]["items"]);
+
+        if ($length > 27) {
+            $menu = InvMenu::create(InvMenuTypeIds::TYPE_DOUBLE_CHEST);
+        } else {
+            $menu = InvMenu::create(InvMenuTypeIds::TYPE_CHEST);
+        }
+
+        $menu->setName("Lots possible du pack " . $category);
         $menu->setListener(InvMenu::readonly());
 
-        foreach (self::getItems() as $key => $item) {
+        foreach (self::getItems($category) as $key => $item) {
             if ($item instanceof Item) {
                 $menu->getInventory()->setItem($key, $item);
             }
@@ -300,12 +289,6 @@ class Pack
                 };
 
                 Util::executeCommand("givekit \"" . $player->getName() . "\" " . $name);
-                break;
-            case 2:
-                $session->addValue("pack", $data);
-
-                Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'utiliser un papier de " . $data . " pack");
-                $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §q" . $data . " §fpack(s)");
                 break;
             case 3:
                 $session->addValue("gem", $data);

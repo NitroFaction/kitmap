@@ -47,6 +47,10 @@ class Elevator extends BaseCommand
                 return;
             }
 
+            if ($data === "emeraude") {
+                $data = "emeraude" . mt_rand(1, 3);
+            }
+
             Elevator::teleportTo($player, $data);
         });
         $form->setTitle("Ascenseur");
@@ -54,9 +58,7 @@ class Elevator extends BaseCommand
         $form->addButton("Etage des cookies", -1, "", "cookie");
         $form->addButton("Etage des luckyblock", -1, "", "luckyblock");
         $form->addButton("Etage des pieces", -1, "", "money");
-        $form->addButton("Etage de la netherite", -1, "", "netherite");
-        $form->addButton("Etage de l'emeraude & netherite", -1, "", "minerais");
-        $form->addButton("Etage de l'emeraude", -1, "", "emeraude");
+        $form->addButton("Etage de l'émeraude", -1, "", "emeraude");
         $player->sendForm($form);
     }
 

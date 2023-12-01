@@ -13,12 +13,11 @@ use pocketmine\player\Player;
 
 class ElevatorPhantom extends Living
 {
-    protected bool $gravityEnabled = false;
-    protected float $gravity = 0.0;
+    protected bool $gravityEnabled = true;
 
     public static function getNetworkTypeId(): string
     {
-        return EntityIds::PHANTOM;
+        return "nitro:nutcracker";
     }
 
     public function attack(EntityDamageEvent $source): void
@@ -45,11 +44,10 @@ class ElevatorPhantom extends Living
 
         $this->setNameTagAlwaysVisible();
         $this->setNameTag("Elevateur");
-        $this->setNoClientPredictions();
     }
 
     protected function getInitialSizeInfo(): EntitySizeInfo
     {
-        return new EntitySizeInfo(0.3, 0.9);
+        return new EntitySizeInfo(1, 0.9);
     }
 }

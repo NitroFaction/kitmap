@@ -38,11 +38,11 @@ class Boost extends BaseCommand
                 return;
             }
 
-            $session->addValue("pack", 2);
+            $session->data["pack"]["Classique"] += 2;
             $session->data["boost"][1] = true;
 
             Util::executeCommand("givekit \"" . $sender->getName() . "\" prince");
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $sender->getName() . " §fvient de recevoir §q2 §fpack(s) et un §qkit prince §fcar il a boosté le serveur discord !");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $sender->getName() . " §fvient de recevoir §q2 §fpack(s) classique et un §qkit prince §fcar il a boosté le serveur discord !");
         }
     }
 

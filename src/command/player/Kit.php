@@ -190,7 +190,7 @@ class Kit extends BaseCommand
                     ExtraVanillaItems::EMERALD_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
                     ExtraVanillaItems::EMERALD_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
                     ExtraVanillaItems::EMERALD_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                    VanillaItems::DIAMOND_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
+                    ExtraVanillaItems::EMERALD_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
                     Util::getItemByName(ItemTypeNames::COMBINED_COOKIE)->setCount(16)
                 ],
                 "cooldown" => 60 * 60 * 4,

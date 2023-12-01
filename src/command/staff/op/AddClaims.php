@@ -45,19 +45,27 @@ class AddClaims extends BaseCommand
 
         for ($x = $minX; $x <= $maxX; $x++) {
             for ($z = $minZ; $z <= $maxZ; $z++) {
-                $chunkX = $x >> Chunk::COORD_BIT_SIZE;
-                $chunkZ = $z >> Chunk::COORD_BIT_SIZE;
-
-                $chunk = $chunkX . ":" . $chunkZ;
-
-                if (!in_array($chunk, Cache::$data["claims"])) {
+                if (self::addClaim($x, $z)) {
                     $claims++;
-                    Cache::$data["claims"][] = $chunk;
                 }
             }
         }
 
         $sender->sendMessage(Util::PREFIX . "§q" . $claims . " §fclaims ajoutés");
+    }
+
+    public static function addClaim(float|int $x, float|int $z): bool
+    {
+        $chunkX = $x >> Chunk::COORD_BIT_SIZE;
+        $chunkZ = $z >> Chunk::COORD_BIT_SIZE;
+
+        $chunk = $chunkX . ":" . $chunkZ;
+
+        if (!in_array($chunk, Cache::$data["claims"])) {
+            Cache::$data["claims"][] = $chunk;
+            return true;
+        }
+        return false;
     }
 
     protected function prepare(): void

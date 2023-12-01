@@ -30,9 +30,8 @@ class Forgeron extends Villager
 
                 $menu->setListener(function (InvMenuTransaction $transaction): InvMenuTransactionResult {
                     $item = $transaction->getIn();
-                    $lore = $item->getLore()[0] ?? "";
 
-                    if (str_contains($lore, "gambling")) {
+                    if (!is_null($item->getNamedTag()->getTag("menu_item"))) {
                         return $transaction->discard();
                     }
 
