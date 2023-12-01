@@ -36,6 +36,9 @@ class PlayerTask extends Task
         KothTask::run();
         GamblingTask::run();
         OutpostTask::run();
+        FarmingWarsTask::run();
+
+        LotteryTask::run(); // j'sais pas où le mettre tu le changeras de fichier stv
 
         if ($this->tick % 3 == 0) {
             MoneyZoneTask::run();
