@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnused */
 
 namespace Kitmap\command\player;
 
@@ -30,7 +30,6 @@ use pocketmine\world\sound\XpLevelUpSound;
 
 class Calendar extends BaseCommand
 {
-
     private static array $rewards = [];
 
     public function __construct(PluginBase $plugin)
@@ -82,10 +81,9 @@ class Calendar extends BaseCommand
         }
     }
 
-    private static function showCalendar(Player $player): void
+    public static function showCalendar(Player $player): void
     {
-        /* @noinspection PhpUnhandledExceptionInspection */
-        $day = (new DateTime('now', new DateTimeZone('Europe/Paris')))->format('j');
+        $day = intval((new DateTime("now", new DateTimeZone("Europe/Paris")))->format("j"));
 
         if ($day >= 1 && $day <= 24) {
             $menu = InvMenu::create(InvMenuTypeIds::TYPE_DOUBLE_CHEST);
@@ -102,7 +100,7 @@ class Calendar extends BaseCommand
                 if (!is_null($item->getNamedTag()->getTag("Day"))) {
                     if (
                         $item->hasEnchantment(EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::GLOW)) &&
-                        $item->equals(VanillaBlocks::CONCRETE()->setColor(DyeColor::BLACK)->asItem(), false, false)
+                        $item->equals(VanillaBlocks::CONCRETE()->setColor(DyeColor::BLACK())->asItem(), false, false)
                     ) {
                         Util::removeCurrentWindow($player);
 
@@ -111,7 +109,7 @@ class Calendar extends BaseCommand
 
                         $session->data["calendar"][$day] = true;
 
-                        $rewardsName = array_map(fn (Item $item) => TextFormat::clean($item->getName()), $rewards);
+                        $rewardsName = array_map(fn(Item $item) => TextFormat::clean($item->getName()), $rewards);
                         $formattedRewards = implode(", ", $rewardsName);
 
                         $player->sendMessage(Util::PREFIX . "§fEn ce §q" . $day . " Décembre§f, voici la liste des lots que vous avez récupéré : §q" . $formattedRewards . " §f!");
@@ -134,12 +132,12 @@ class Calendar extends BaseCommand
     private static function buildCalendar(Player $player, int $actualDay, InvMenu $menu): void
     {
         $patern = [
-            '1:1' => 49,
-            '2:4' => 39,
-            '5:11' => 28,
-            '12:20' => 18,
-            '21:23' => 12,
-            '24:24' => 4
+            "1:1" => 49,
+            "2:4" => 39,
+            "5:11" => 28,
+            "12:20" => 18,
+            "21:23" => 12,
+            "24:24" => 4
         ];
 
         $calendarData = Session::get($player)->data["calendar"];
@@ -155,9 +153,9 @@ class Calendar extends BaseCommand
             }
 
             if ($claimed) {
-                $item = VanillaBlocks::CONCRETE()->setColor(DyeColor::LIME)->asItem();
+                $item = VanillaBlocks::CONCRETE()->setColor(DyeColor::LIME())->asItem();
             } else {
-                $color = $day >= $actualDay ? DyeColor::BLACK : DyeColor::RED;
+                $color = $day >= $actualDay ? DyeColor::BLACK() : DyeColor::RED();
                 $item = VanillaBlocks::CONCRETE()->setColor($color)->asItem();
             }
 

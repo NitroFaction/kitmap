@@ -296,9 +296,9 @@
     "cookie": "49.5:124:78.5",
     "luckyblock": "49.5:88:78.5",
     "money": "49.5:73:78.5",
-    "netherite": "49.5:53:78.5",
-    "minerais": "51.5:38:76.5",
-    "emeraude": "51.5:18:76.5"
+    "emeraude1": "49.5:53:78.5",
+    "emeraude2": "51.5:38:76.5",
+    "emeraude3": "51.5:18:76.5"
   },
   "default-data": {
     "faction": null,
@@ -309,21 +309,26 @@
     "killstreak": 0,
     "bounty": 0,
     "played_time": 0,
-    "pack": 0,
     "faction_chat": false,
     "scoreboard": true,
     "night_vision": false,
     "cobblestone": true,
     "coordinates": false,
     "border": false,
-    "meteo": true,
     "fly": false,
+    "snow": true,
     "cooldown": [],
     "ip": [],
     "uuid": [],
     "did": [],
     "ssi": [],
     "cid": [],
+    "pack": {
+      "Vote": 0,
+      "Partner Items": 0,
+      "Classique": 0,
+      "MEGA": 0
+    },
     "staff_mod": [
       false,
       null,
@@ -342,6 +347,113 @@
     "ssi",
     "cid"
   ],
+  "calendar": {
+    "1": [
+      "item:diamond:64",
+      "item:emerald:64"
+    ],
+    "2": [
+      "pack:1",
+      "money:10000",
+      "gem:50"
+    ],
+    "3": [
+      "item:golden_helmet:1",
+      "item:netherite_sword:1"
+    ],
+    "4": [
+      "pack:1",
+      "money:10000",
+      "gem:50"
+    ],
+    "5": [
+      "pack:1",
+      "money:10000",
+      "gem:50"
+    ],
+    "6": [
+      "pack:1",
+      "money:10000",
+      "gem:50"
+    ],
+    "7": [
+      "pack:1",
+      "money:10000",
+      "gem:50"
+    ],
+    "8": [
+      "pack:1",
+      "money:10000",
+      "gem:50"
+    ],
+    "9": [
+      "pack:1",
+      "money:10000",
+      "gem:50"
+    ],
+    "10": [
+      "pack:1",
+      "money:10000",
+      "gem:50"
+    ],
+    "11": [
+      "pack:1",
+      "money:10000",
+      "gem:50"
+    ],
+    "12": [
+      "item:golden_helmet:1",
+      "item:netherite_sword:1"
+    ],
+    "13": [
+      "item:golden_helmet:1",
+      "item:netherite_sword:1"
+    ],
+    "14": [
+      "item:golden_helmet:1",
+      "item:netherite_sword:1"
+    ],
+    "15": [
+      "item:golden_helmet:1",
+      "item:netherite_sword:1"
+    ],
+    "16": [
+      "item:golden_helmet:1",
+      "item:netherite_sword:1"
+    ],
+    "17": [
+      "item:golden_helmet:1",
+      "item:netherite_sword:1"
+    ],
+    "18": [
+      "item:golden_helmet:1",
+      "item:netherite_sword:1"
+    ],
+    "19": [
+      "item:diamond:64",
+      "item:emerald:64"
+    ],
+    "20": [
+      "item:diamond:64",
+      "item:emerald:64"
+    ],
+    "21": [
+      "item:diamond:64",
+      "item:emerald:64"
+    ],
+    "22": [
+      "item:diamond:64",
+      "item:emerald:64"
+    ],
+    "23": [
+      "item:diamond:64",
+      "item:emerald:64"
+    ],
+    "24": [
+      "item:diamond:64",
+      "item:emerald:64"
+    ]
+  },
   "atouts": {
     "Vitesse": {
       "id": 1,
@@ -418,20 +530,20 @@
   "zones": {
     "spawn": "-74:-999:-74:74:999:74:map",
     "warzone": "-176:-999:-176:175:999:175:map",
-    "koth": "-131:68:58:-135:73:54:map",
-    "outpost": "-58:64:123:-62:68:127:map",
+    "koth": "-139:65:19:-144:70:24:map",
+    "outpost": "-96:65:133:-92:70:129:map",
     "mine-tp": "-12:71:49:-12:75:47:map",
     "blocks-tp": "11:70:49:13:70:47:map",
     "money-zone": "1:65:83:-1:69:85:map",
     "gambling": "8:67:43:-8:60:15:map"
   },
   "floatings": {
-    "-59.5:66:125.5:map": "outpost",
-    "-132.5:70:56.5:map": "koth",
-    "0.5:71:59.5:map": "pack",
-    "111.5:65:0.5:map": "domination",
-    "112.5:74:-31.5:map": "domination",
-    "108.5:72:18.5:map": "domination",
+    "-93.5:68:131.5:map": "outpost",
+    "-141:68.5:22:map": "koth",
+    "0.5:71:62.5:map": "packs",
+    "137.5:65:1.5:map": "domination",
+    "138.5:74:-30.5:map": "domination",
+    "134.5:72:19.5:map": "domination",
     "-9.5:72:48.5:map": "mine",
     "12.5:72:48.5:map": "blocs",
     "50013.5:12.5:89:mine": "blocks",
@@ -440,24 +552,24 @@
   },
   "domination": {
     "Alpha": {
-      "minX": 110,
-      "maxX": 114,
-      "minZ": -34,
-      "maxZ": -30,
+      "minX": 136,
+      "maxX": 140,
+      "minZ": -33,
+      "maxZ": -29,
       "y": 72
     },
     "Bravo": {
-      "minX": 109,
-      "maxX": 113,
-      "minZ": -2,
-      "maxZ": 2,
+      "minX": 135,
+      "maxX": 139,
+      "minZ": -1,
+      "maxZ": 3,
       "y": 63
     },
     "Charlie": {
-      "minX": 106,
-      "maxX": 110,
-      "minZ": 16,
-      "maxZ": 20,
+      "minX": 132,
+      "maxX": 136,
+      "minZ": 17,
+      "maxZ": 21,
       "y": 70
     }
   },
@@ -467,8 +579,7 @@
     "Tu souhaites avoir un grade sur le serveur pour une meilleur expérience ? Achete le via ma boutique: §qhttps://nitrofaction.tebex.io",
     "Tu souhaites avoir une information à propos du serveur ? Un salon §q#wiki §fest disponible sur notre discord: §qhttps://discord.gg/nitrofaction"
   ],
-  "pack": "0:69:59",
-  "nexus": "76.5:69:117.5",
+  "nexus": "18.5:70:135.5",
   "permissions": {
     "delete": "Supprimer la faction §c(Risqué)",
     "leader": "Promouvoir chef un membre §c(Risqué)",
@@ -502,6 +613,140 @@
     "member": "Membre",
     "recruit": "Recrue"
   },
+  "pack": {
+    "Vote": {
+      "items": [
+        "partneritems",
+        "custom:§r§bKit Roi:1:4",
+        "custom:§r§bKit Roi:1:4",
+        "custom:§r§bKit Roi:1:4",
+        "custom:§r§bKit Roi:1:4",
+        "custom:§r§qBillet de 1k:0:1000",
+        "custom:§r§qBillet de 20k:0:20000",
+        "custom:§r§qBillet de 50k:0:50000",
+        "custom:§r§qBillet de 75k:0:75000",
+        "custom:§r§qBillet de 100k:0:10000",
+        "item:rabbit_hide:1",
+        "item:rabbit_hide:1",
+        "item:rabbit_hide:2",
+        "item:miner_helmet:1",
+        "item:miner_helmet:1",
+        "item:iris_sword:1",
+        "item:emerald_sword:1",
+        "item:emerald_block:9",
+        "item:emerald_block:18",
+        "item:emerald_block:32",
+        "item:experience_bottle:32",
+        "item:experience_bottle:64",
+        "item:redstone_block:32",
+        "item:redstone_block:64",
+        "item:brown_stained_glass:32",
+        "item:brown_stained_glass:64",
+        "item:trapped_chest:1",
+        "item:trapped_chest:1",
+        "item:trapped_chest:1",
+        "item:lapis_block:1",
+        "item:lapis_block:1",
+        "item:lapis_block:1",
+        "item:dragon_breath:1"
+      ],
+      "prices": {
+        "gem": 100,
+        "money": 100000
+      },
+      "items-count": 3,
+      "enderchest": "12:69:59"
+    },
+    "Partner Items": {
+      "items": [
+        "partneritems"
+      ],
+      "prices": {
+        "gem": 50,
+        "money": 50000
+      },
+      "items-count": 4,
+      "enderchest": "12:69:65"
+    },
+    "Classique": {
+      "items": [
+        "partneritems",
+        "custom:§r§bKit Roi:1:4",
+        "custom:§r§bKit Roi:1:4",
+        "custom:§r§bKit Roi:1:4",
+        "custom:§r§bKit Roi:1:4",
+        "custom:§r§qBillet de 25k:0:25000",
+        "custom:§r§qBillet de 50k:0:50000",
+        "custom:§r§qBillet de 75k:0:75000",
+        "custom:§r§qBillet de 100k:0:10000",
+        "item:rabbit_hide:1",
+        "item:rabbit_hide:1",
+        "item:rabbit_hide:2",
+        "item:rabbit_hide:2",
+        "item:miner_helmet:1",
+        "item:iris_sword:1",
+        "item:emerald_sword:1",
+        "item:emerald_block:32",
+        "item:emerald_block:64",
+        "item:experience_bottle:64",
+        "item:experience_bottle:64",
+        "item:redstone_block:64",
+        "item:redstone_block:64",
+        "item:brown_stained_glass:64",
+        "item:brown_stained_glass:64",
+        "item:trapped_chest:1",
+        "item:trapped_chest:1",
+        "item:trapped_chest:1",
+        "item:lapis_block:1",
+        "item:lapis_block:1",
+        "item:lapis_block:1",
+        "item:dragon_breath:1"
+      ],
+      "prices": {
+        "gem": 100,
+        "money": 100000
+      },
+      "items-count": 3,
+      "enderchest": "-12:69:59"
+    },
+    "MEGA": {
+      "items": [
+        "custom:§r§bKit Roi:1:4",
+        "custom:§r§bKit Roi:1:4",
+        "custom:§r§bKit Roi:1:4",
+        "custom:§r§bKit Roi:1:4",
+        "custom:§r§bKit Roi:1:4",
+        "custom:§r§qBillet de 25k:0:25000",
+        "custom:§r§qBillet de 50k:0:50000",
+        "custom:§r§qBillet de 75k:0:75000",
+        "custom:§r§qBillet de 100k:0:10000",
+        "item:rabbit_hide:2",
+        "item:rabbit_hide:2",
+        "item:rabbit_hide:2",
+        "item:rabbit_hide:2",
+        "item:rabbit_hide:2",
+        "item:rabbit_hide:2",
+        "item:iris_sword:1",
+        "item:iris_sword:1",
+        "item:emerald_sword:1",
+        "item:emerald_block:64",
+        "item:emerald_block:64",
+        "item:experience_bottle:128",
+        "item:redstone_block:128",
+        "item:redstone_block:128",
+        "item:brown_stained_glass:128",
+        "item:brown_stained_glass:128",
+        "item:trapped_chest:3",
+        "item:dragon_breath:1"
+      ],
+      "prices": {
+        "gem": 200,
+        "money": 200000
+      },
+      "items-count": 6,
+      "enderchest": "-12:69:65"
+    }
+  },
   "elevators": [
     "48.5:19.3:71.5:320",
     "49.5:40.5:69.5:343",
@@ -519,57 +764,49 @@
     "16.5:70:73.5:90"
   ],
   "forgeron": {
-    "iron_helmet": {
+    "golden_helmet": {
       "type": "emerald",
       "number": 405
     },
-    "iron_chestplate": {
+    "golden_chestplate": {
       "type": "emerald",
       "number": 648
     },
-    "iron_leggings": {
+    "golden_leggings": {
       "type": "emerald",
       "number": 567
     },
-    "iron_boots": {
+    "golden_boots": {
       "type": "emerald",
       "number": 324
     },
-    "chainmail_helmet": {
+    "iris_helmet": {
       "type": "emerald",
       "number": 45
     },
-    "chainmail_chestplate": {
+    "iris_chestplate": {
       "type": "emerald",
       "number": 72
     },
-    "chainmail_leggings": {
+    "iris_leggings": {
       "type": "emerald",
       "number": 63
     },
-    "chainmail_boots": {
+    "iris_boots": {
       "type": "iris",
       "number": 36
     },
-    "iron_sword": {
+    "golden_sword": {
       "type": "emerald",
       "number": 162
     },
-    "golden_sword": {
+    "netherite_sword": {
       "type": "iris",
       "number": 18
     },
     "turtle_helmet": {
       "type": "emerald",
       "number": 36
-    },
-    "iron_axe": {
-      "type": "emerald",
-      "number": 171
-    },
-    "stone_axe": {
-      "type": "iris",
-      "number": 18
     }
   },
   "bounties": [
@@ -759,32 +996,6 @@
     "Baies sucrées": "sweet_berries",
     "Blé": "wheat",
     "Cannes à Sucres": "sugar_cane"
-  },
-  "calendar": {
-    "1": ["item:diamond:64", "item:emerald:64"],
-    "2": ["pack:1", "money:10000", "gem:50"],
-    "3": ["item:golden_helmet:1", "item:netherite_sword:1"],
-    "4": ["pack:1", "money:10000", "gem:50"],
-    "5": ["pack:1", "money:10000", "gem:50"],
-    "6": ["pack:1", "money:10000", "gem:50"],
-    "7": ["pack:1", "money:10000", "gem:50"],
-    "8": ["pack:1", "money:10000", "gem:50"],
-    "9": ["pack:1", "money:10000", "gem:50"],
-    "10": ["pack:1", "money:10000", "gem:50"],
-    "11": ["pack:1", "money:10000", "gem:50"],
-    "12": ["item:golden_helmet:1", "item:netherite_sword:1"],
-    "13": ["item:golden_helmet:1", "item:netherite_sword:1"],
-    "14": ["item:golden_helmet:1", "item:netherite_sword:1"],
-    "15": ["item:golden_helmet:1", "item:netherite_sword:1"],
-    "16": ["item:golden_helmet:1", "item:netherite_sword:1"],
-    "17": ["item:golden_helmet:1", "item:netherite_sword:1"],
-    "18": ["item:golden_helmet:1", "item:netherite_sword:1"],
-    "19": ["item:diamond:64", "item:emerald:64"],
-    "20": ["item:diamond:64", "item:emerald:64"],
-    "21": ["item:diamond:64", "item:emerald:64"],
-    "22": ["item:diamond:64", "item:emerald:64"],
-    "23": ["item:diamond:64", "item:emerald:64"],
-    "24": ["item:diamond:64", "item:emerald:64"]
   },
   "interval": {
     "60": "unloadislands",

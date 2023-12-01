@@ -89,7 +89,7 @@ class NexusEntity extends Living
 
                 $centerVector = new Vector3($position->getX(), $position->getY(), $position->getZ());
 
-                foreach (Pack::getRandomItems(30) as $item) {
+                foreach (Pack::getRandomItems(30, "Vote") as $item) {
                     if ($item instanceof Item) {
                         $world->dropItem($centerVector, $item, (new Vector3(mt_rand(-5, 5), 10, mt_rand(-5, 5)))->normalize());
                     }
@@ -108,7 +108,8 @@ class NexusEntity extends Living
                 $player,
                 "Nexus | Vie restante " . round($this->getHealth()),
                 2,
-                $percentage
+                $percentage,
+                BossBarAPI::COLOR_GREEN
             );
         }
     }
@@ -120,8 +121,10 @@ class NexusEntity extends Living
 
     protected function initEntity(CompoundTag $nbt): void
     {
-        $this->updateBossBar();
         parent::initEntity($nbt);
+
+        $this->setHealth($this->getMaxHealth());
+        $this->updateBossBar();
     }
 
     protected function getInitialSizeInfo(): EntitySizeInfo

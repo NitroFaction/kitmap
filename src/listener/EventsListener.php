@@ -5,7 +5,7 @@ namespace Kitmap\listener;
 use Element\item\ExtraVanillaItems;
 use Element\util\data\ItemTypeNames;
 use Kitmap\command\player\{Anvil, Enchant, rank\Enderchest};
-use Kitmap\command\staff\{Ban, LastInventory, Question, Vanish};
+use Kitmap\command\staff\{Ban, LastInventory, op\AddClaims, Question, Vanish};
 use Kitmap\command\util\Bienvenue;
 use Kitmap\enchantment\EnchantmentIds;
 use Kitmap\entity\{AntiBackBallEntity, LightningBolt, LogoutEntity, SwitcherEntity};
@@ -28,7 +28,6 @@ use pocketmine\block\{Barrel,
     GlowLichen,
     Hopper,
     inventory\EnderChestInventory,
-    ItemFrame,
     Lava,
     Liquid,
     NetherWartPlant,
@@ -42,7 +41,7 @@ use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\HurtAnimation;
 use pocketmine\entity\effect\{EffectInstance, VanillaEffects};
 use pocketmine\entity\object\ItemEntity;
-use pocketmine\event\block\{BlockBreakEvent, BlockPlaceEvent, BlockSpreadEvent};
+use pocketmine\event\block\{BlockBreakEvent, BlockMeltEvent, BlockPlaceEvent, BlockSpreadEvent, LeavesDecayEvent};
 use pocketmine\event\entity\{EntityDamageByEntityEvent,
     EntityDamageEvent,
     EntityItemPickupEvent,
@@ -96,11 +95,12 @@ class EventsListener implements Listener
     public function onInteract(PlayerInteractEvent $event): void
     {
         $player = $event->getPlayer();
-
         $block = $event->getBlock();
         $item = $event->getItem();
 
-        if ($item->equals(VanillaItems::FLINT_AND_STEEL())) {
+        $position = $block->getPosition();
+
+        if ($item->equals(VanillaItems::FLINT_AND_STEEL(), false, false)) {
             $event->cancel();
             return;
         }
@@ -127,13 +127,16 @@ class EventsListener implements Listener
             Enchant::openEnchantTable($player, false);
         }
 
-        [$x, $y, $z] = explode(":", Cache::$config["pack"]);
+        if (PlayerInteractEvent::RIGHT_CLICK_BLOCK && $position->getWorld() === Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld()) {
+            $format = $position->x . ":" . $position->y . ":" . $position->z;
+            $pack = Cache::$config["enderchest"][$format] ?? null;
 
-        if ($block->getPosition()->getX() === intval($x) && $block->getPosition()->getY() === intval($y) && $block->getPosition()->getZ() === intval($z)) {
-            $event->cancel();
+            if (!is_null($pack)) {
+                $event->cancel();
 
-            Util::removeCurrentWindow($player);
-            Pack::openPackUI($player);
+                Util::removeCurrentWindow($player);
+                Pack::openPackCategoryUI($player, $pack);
+            }
         }
     }
 
@@ -272,7 +275,7 @@ class EventsListener implements Listener
             }
         }, null));
 
-        if ($session->data["meteo"]) {
+        if ($session->data["snow"]) {
             $player->getNetworkSession()->sendDataPacket(LevelEventPacket::create(LevelEvent::START_RAIN, 10000, null));
         }
 
@@ -304,6 +307,13 @@ class EventsListener implements Listener
         }
     }
 
+    public function onMeltEvent(BlockMeltEvent $event): void
+    {
+        if ($event->getBlock()->getPosition()->getWorld() === Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld()) {
+            $event->cancel();
+        }
+    }
+
     public function onRespawn(PlayerRespawnEvent $event): void
     {
         Util::givePlayerPreferences($event->getPlayer());
@@ -312,6 +322,7 @@ class EventsListener implements Listener
     public function onQuit(PlayerQuitEvent $event): void
     {
         $player = $event->getPlayer();
+        Util::removeCurrentWindow($player);
 
         Main::getInstance()->getServer()->broadcastTip("§c- " . $player->getName() . " -");
         $event->setQuitMessage("");
@@ -631,6 +642,14 @@ class EventsListener implements Listener
 
         $session = Session::get($player);
 
+        /*if ($player->getInventory()->getItemInHand()->getTypeId() === VanillaItems::STONE_AXE()->getTypeId()) {
+            if (AddClaims::addClaim($block->getPosition()->getX(), $block->getPosition()->getZ())) {
+                $player->sendMessage(Util::PREFIX . "Chunk ajouté");
+            }
+
+            $event->cancel();
+        }*/
+
         if (!$player->isCreative() && $player->getPosition()->getWorld()->getFolderName() === "mine" && $player->getPosition()->getFloorX() > 4500) {
             $event->cancel();
             $drop = false;
@@ -780,6 +799,13 @@ class EventsListener implements Listener
 
         $event->setDrops([]);
         $event->setXpDropAmount(0);
+    }
+
+    public function onLeavesDecay(LeavesDecayEvent $event): void
+    {
+        if ($event->getBlock()->getPosition()->getWorld() === Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld()) {
+            $event->cancel();
+        }
     }
 
     public function onHitByProjectile(ProjectileHitEntityEvent $event): void

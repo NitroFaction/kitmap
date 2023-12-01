@@ -52,6 +52,15 @@ class Cache
         self::$claims = Util::getFile("data/claims")->getAll();
         self::$factions = Util::getFile("data/factions")->getAll();
 
+        Cache::$config["enderchest"] = [];
+
+        foreach (Cache::$config["pack"] as $name => $arr) {
+            [$x, $y, $z] = explode(":", $arr["enderchest"]);
+
+            Cache::$config["enderchest"][$arr["enderchest"]] = $name;
+            Cache::$config["floatings"][(intval($x) + 0.5) . ":" . (intval($y) + 1) . ":" . (intval($z) + 0.5) . ":map"] = "#" . Util::PREFIX . "Pack " . $name . " §q§l«";
+        }
+
         foreach (Util::listAllFiles(Main::getInstance()->getDataFolder() . "data/players") as $file) {
             $path = pathinfo($file);
             $username = $path["filename"];

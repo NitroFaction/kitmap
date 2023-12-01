@@ -59,6 +59,6 @@ class Removevalue extends BaseCommand
         $this->registerArgument(0, new TargetArgument("joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
         $this->registerArgument(1, new IntegerArgument("montant"));
-        $this->registerArgument(2, new OptionArgument("valeur", ["bounty", "death", "gem", "kill", "killstreak", "money", "pack"]));
+        $this->registerArgument(2, new OptionArgument("valeur", ["bounty", "death", "gem", "kill", "killstreak", "money"]));
     }
 }

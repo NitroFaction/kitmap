@@ -44,7 +44,7 @@ class Main extends PluginBase
         $this->getScheduler()->scheduleRepeatingTask(new PlayerTask(), 20);
         $this->getServer()->getPluginManager()->registerEvents(new EventsListener(), $this);
 
-        $this->getServer()->getWorldManager()->getDefaultWorld()->setTime(12500);
+        $this->getServer()->getWorldManager()->getDefaultWorld()->setTime(13200);
         $this->getServer()->getWorldManager()->getDefaultWorld()->stopTime();
 
         $this->getServer()->getWorldManager()->loadWorld("mine");

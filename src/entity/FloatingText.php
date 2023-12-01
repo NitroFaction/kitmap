@@ -100,7 +100,13 @@ class FloatingText extends FloatingTextEntity
                 return Util::PREFIX . "Salle des blocs §q§l«\nBienvenue dans la salle des §qblocs §f!\n§fTous les blocs que vous §qcassez §fsont mis\n§fdans votre inventaire en échange de §q15 §fpièces par bloc en illimité";
         }
 
+        if ($name[0] === "#") {
+            $text = substr($name, 1);
+        } else {
+            $text = "§r   \n  " . Util::stringToUnicode($name) . "  \n§r   ";
+        }
+
         $this->period = null;
-        return "§r   \n  " . Util::stringToUnicode($name) . "  \n§r   ";
+        return $text;
     }
 }

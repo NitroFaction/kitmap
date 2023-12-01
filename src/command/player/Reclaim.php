@@ -54,11 +54,11 @@ class Reclaim extends BaseCommand
                 return;
             }
 
-            $session->addValue("pack", $pack);
+            $session->data["pack"]["Classique"] += $pack;
             $session->setCooldown("reclaim", 60 * 60 * 24);
 
-            $sender->sendMessage(Util::PREFIX . "Vous venez de recevoir §q" . $pack . " §fpack(s) grace à votre reclaim !");
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $sender->getName() . " §fvient de recevoir §q" . $pack . " §fpack(s) grace à son reclaim !");
+            $sender->sendMessage(Util::PREFIX . "Vous venez de recevoir §q" . $pack . " §fpack(s) classique grace à votre reclaim !");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $sender->getName() . " §fvient de recevoir §q" . $pack . " §fpack(s) classique grace à son reclaim !");
         }
     }
 
