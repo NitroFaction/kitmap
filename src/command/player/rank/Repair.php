@@ -3,6 +3,7 @@
 namespace Kitmap\command\player\rank;
 
 use CortexPE\Commando\BaseCommand;
+use Element\Util as ElementUtil;
 use Element\util\args\OptionArgument;
 use Kitmap\handler\Rank;
 use Kitmap\Session;
@@ -78,8 +79,8 @@ class Repair extends BaseCommand
         if ($item instanceof Durable) {
             $item->setDamage(0);
 
-            if (!is_null($item->getNamedTag()->getTag("cdt"))) {
-                $item->getNamedTag()->removeTag("cdt");
+            if (!is_null($item->getNamedTag()->getTag(ElementUtil::DURABILITY_TAG))) {
+                $item->getNamedTag()->removeTag(ElementUtil::DURABILITY_TAG);
             }
 
             $inventory->setItem($index, $item);
