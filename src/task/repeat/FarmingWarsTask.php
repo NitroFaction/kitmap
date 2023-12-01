@@ -42,7 +42,7 @@ class FarmingWarsTask
                 ? "FarmingWars | Top 1 -> " . $bestPlayer . " avec " . $leaderboard[$bestPlayer] . " " . self::getTranslatedName(self::$block)
                 : "FarmingWars | Top 1 -> Aucun";
 
-            BossBarAPI::getInstance()->sendBossBar($player, $title, 3, $percentage, BossBarAPI::COLOR_RED);
+            BossBarAPI::getInstance()->sendBossBar($player, $title, 3, $percentage, BossBarAPI::COLOR_GREEN);
         }
 
         self::$time--;
