@@ -329,6 +329,20 @@
       "Classique": 0,
       "MEGA": 0
     },
+    "jobs": {
+      "Mineur": {
+        "lvl": 1,
+        "xp": 0
+      },
+      "Farmeur": {
+        "lvl": 1,
+        "xp": 0
+      },
+      "Hunter": {
+        "lvl": 1,
+        "xp": 0
+      }
+    },
     "staff_mod": [
       false,
       null,
@@ -347,6 +361,53 @@
     "ssi",
     "cid"
   ],
+  "jobs": {
+    "lvls": [
+      0,
+      100,
+      500,
+      1500,
+      3000,
+      4500,
+      7000,
+      10000,
+      14000,
+      20000,
+      26000,
+      32000,
+      40000,
+      46000,
+      53000,
+      60000,
+      68000,
+      78000,
+      88000,
+      100000,
+      1000000000000000000
+    ],
+    "rewards": {
+      "2": "0:rabbit_hide:1:1 fragment dIris",
+      "3": "1:paper:§r§bKit Roi:1:4:un Kit Roi",
+      "4": "0:netherite_sword:1:une Epee en Iris",
+      "5": "0:dragon_breath:1:1 Gant en Iris",
+      "6": "1:paper:§r§eBillet de 75k:0:75000:un Billet de 75k pièces",
+      "7": 2,
+      "8": "0:rabbit_hide:3:3 fragments dIris",
+      "9": 2,
+      "10": "0:netherite_ingot:1:1 lingot dIris",
+      "11": "1:paper:§r§e5 Pack:2:5:5 Pack",
+      "12": 2,
+      "13": "1:paper:§r§eBillet de 75k:0:75000:un Billet de 75k pièces",
+      "14": "1:paper:§r§bKit Roi:1:4:un Kit Roi",
+      "15": "0:netherite_sword:1:une Epee en Iris",
+      "16": "0:rabbit_hide:1:1 fragment dIris",
+      "17": 2,
+      "18": "0:rabbit_hide:3:3 fragments dIris",
+      "19": "1:paper:§r§eBillet de 100k:0:100000:un Billet de 100k pièces",
+      "20": "0:netherite_ingot:1:1 lingot dIris",
+      "21": 2
+    }
+  },
   "calendar": {
     "1": [
       "item:diamond:64",
@@ -1007,19 +1068,19 @@
     "18:00": "domination start",
     "21:00": "domination start"
   },
-  "island": {
+  "islands": {
     "default-max": 267,
-    "cherry": {
-      "spawn": "264.5:122:264.5"
+    "basic_is": {
+      "spawn": "265.5:65:265.5",
+      "chest": "266:65:267"
     },
-    "savana": {
-      "spawn": "265.5:83:265.5"
+    "cobblestone_is": {
+      "spawn": "265.5:65:265.5",
+      "chest": "266:65:267"
     },
-    "jungle": {
-      "spawn": "264.5:78:261.5"
-    },
-    "mangrove": {
-      "spawn": "265.5:65:265.5"
+    "cave_is": {
+      "spawn": "263.5:65:266.5",
+      "chest": "262:65:262"
     }
   },
   "clean-save-data": [

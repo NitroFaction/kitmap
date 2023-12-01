@@ -5,11 +5,11 @@ namespace Kitmap\listener;
 use Element\item\ExtraVanillaItems;
 use Element\util\data\ItemTypeNames;
 use Kitmap\command\player\{Anvil, Enchant, rank\Enderchest};
-use Kitmap\command\staff\{Ban, LastInventory, op\AddClaims, Question, Vanish};
+use Kitmap\command\staff\{Ban, LastInventory, Question, Vanish};
 use Kitmap\command\util\Bienvenue;
 use Kitmap\enchantment\EnchantmentIds;
 use Kitmap\entity\{AntiBackBallEntity, LightningBolt, LogoutEntity, SwitcherEntity};
-use Kitmap\handler\{Cache, Faction, Pack, PartnerItems, Rank, Sanction};
+use Kitmap\handler\{Cache, Faction, Jobs, Pack, PartnerItems, Rank, Sanction};
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\task\repeat\GamblingTask;
@@ -418,6 +418,8 @@ class EventsListener implements Listener
                     Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§q" . $damager->getName() . " §fa fait §q" . $damagerSession->data["killstreak"] . " §fkills sans mourrir ! Sa mort est désormais mise à prix à §q" . Session::get($damager)->data["bounty"] . " pièce(s) §8(§7+" . $amount . "§8) §f!");
                 }
 
+                Jobs::addXp($damager, "Hunter", 50 + $damagerSession->data["player"]["killstreak"]);
+
                 $item = $damager->getInventory()->getItemInHand();
 
                 $enchantmentIdMap = EnchantmentIdMap::getInstance();
@@ -699,6 +701,8 @@ class EventsListener implements Listener
                 if ($block->hasSameTypeId(VanillaBlocks::DEEPSLATE_EMERALD_ORE())) {
                     $emerald = Util::getItemByName(ItemTypeNames::EMERALD_NUGGET)->setCount(mt_rand(1, 5));
                     $event->setDrops([$emerald]);
+
+                    Jobs::addXp($player, "Mineur", 15);
                 }
             } else if ($block->hasSameTypeId(VanillaBlocks::NETHER_GOLD_ORE())) {
                 $respawn = 40;
@@ -733,6 +737,8 @@ class EventsListener implements Listener
 
                 $player->broadcastSound(new AmethystBlockChimeSound());
                 $event->setDrops([$items[array_rand($items)]]);
+
+                Jobs::addXp($player, "Mineur", 5, false);
             } else if ($block->hasSameTypeId(VanillaBlocks::WHEAT())) {
                 $respawn = 15;
 
@@ -775,6 +781,16 @@ class EventsListener implements Listener
             $event->setDrops([
                 VanillaBlocks::EMERALD()->asItem()->setCount(mt_rand(3, 6))
             ]);
+        }
+
+        if ($target->hasSameTypeId(VanillaBlocks::COBBLESTONE()) || $target->hasSameTypeId(VanillaBlocks::STONE())) {
+            Jobs::addXp($player, "Mineur", 1);
+        } else if ($target->hasSameTypeId(VanillaBlocks::MELON())) {
+            Jobs::addXp($player, "Farmeur", mt_rand(1, 3));
+        }
+
+        if ($target instanceof Crops && $target->getAge() === 7) {
+            Jobs::addXp($player, "Farmeur", mt_rand(1, 3));
         }
 
         if (!$player->isCreative() && $target->hasSameTypeId(VanillaBlocks::COBBLESTONE()) && mt_rand(0, 20) == 0) {

@@ -127,7 +127,10 @@ class Island extends FactionCommand
                 $world = Main::getInstance()->getServer()->getWorldManager()->getWorldByName($name);
 
                 if ($world instanceof World) {
-                    list($x, $y, $z) = explode(":", Cache::$config["island"][$data]["spawn"]);
+                    $world->setTime(13200);
+                    $world->stopTime();
+
+                    list($x, $y, $z) = explode(":", Cache::$config["islands"][$data]["spawn"]);
                     $world->setSpawnLocation(new Vector3(floatval($x), floatval($y), floatval($z)));
                 }
             }
@@ -137,11 +140,10 @@ class Island extends FactionCommand
         });
 
         $form->setTitle("Ile");
-        $form->setContent(Util::PREFIX . "Votre faction ne possède pas encore d'ile, veuillez choisir un biome pour votre ile :");
-        $form->addButton("Biome Sakura", 0, "textures/render/cherry_leaves", "cherry");
-        $form->addButton("Biome Jungle", 0, "textures/render/jungle_log", "jungle");
-        $form->addButton("Biome Boue", 0, "textures/render/mud", "mangrove");
-        $form->addButton("Biome Savane", 0, "textures/render/acacia_log", "savana");
+        $form->setContent(Util::PREFIX . "Votre faction ne possède pas encore d'ile, veuillez choisir une ile :");
+        $form->addButton("Basique", 0, "textures/render/cherry_leaves", "basic_is");
+        $form->addButton("Generateur", 0, "textures/render/jungle_log", "cobblestone_is");
+        $form->addButton("Cave", 0, "textures/render/mud", "cave_is");
         $player->sendForm($form);
     }
 
@@ -329,7 +331,7 @@ class Island extends FactionCommand
 
     private function getExpandPrice(string $faction): ?int
     {
-        $default = Cache::$config["island"]["default-max"];
+        $default = Cache::$config["islands"]["default-max"];
         $max = Cache::$factions[$faction]["island"]["zone"]["max"] ?? $default;
 
         return is_null($max) ? $max : ($max - ($default - 1)) * 5000;
