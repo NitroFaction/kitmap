@@ -10,7 +10,7 @@ use pocketmine\Server;
 
 class LotteryTask
 {
-    public static int $time = 120;
+    public static int $time = 7200;
 
     public static function run(): void
     {

@@ -20,8 +20,7 @@ class FarmingWarsTask
     public static bool $currentFarmingWars = false;
     public static ?Block $block = null;
     public static array $leaderboard = [];
-    // public static int $time = 900;
-    public static int $time = 60;
+    public static int $time = 900;
 
     public static function run(): void
     {
@@ -32,8 +31,7 @@ class FarmingWarsTask
         }
 
         foreach ($players as $player) {
-            // $percentage = self::$time / 900;
-            $percentage = self::$time / 60;
+            $percentage = self::$time / 900;
 
             $leaderboard = self::getArsortedLeaderboard();
             $bestPlayer = empty(self::$leaderboard) ? "Aucun" : array_keys($leaderboard)[0];
@@ -88,8 +86,7 @@ class FarmingWarsTask
         self::$currentFarmingWars = false;
         self::$block = null;
         self::$leaderboard = [];
-        // self::$time = 900;
-        self::$time = 60;
+        self::$time = 900;
 
         foreach (Main::getInstance()->getServer()->getOnlinePlayers() as $player) {
             BossBarAPI::getInstance()->hideBossBar($player, 3);
