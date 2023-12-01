@@ -12,10 +12,12 @@ use Kitmap\entity\{AntiBackBallEntity, LightningBolt, LogoutEntity, SwitcherEnti
 use Kitmap\handler\{Cache, Faction, Jobs, Pack, PartnerItems, Rank, Sanction};
 use Kitmap\Main;
 use Kitmap\Session;
+use Kitmap\task\repeat\FarmingWarsTask;
 use Kitmap\task\repeat\GamblingTask;
 use Kitmap\task\repeat\PlayerTask;
 use Kitmap\Util;
 use pocketmine\block\{Barrel,
+    Block,
     CartographyTable,
     Chest,
     CocoaBlock,
@@ -88,6 +90,7 @@ use pocketmine\world\particle\BlockBreakParticle;
 use pocketmine\world\sound\AmethystBlockChimeSound;
 use pocketmine\world\sound\BlockBreakSound;
 use pocketmine\world\sound\EndermanTeleportSound;
+use pocketmine\world\sound\XpLevelUpSound;
 use Symfony\Component\Filesystem\Path;
 
 class EventsListener implements Listener
@@ -805,7 +808,37 @@ class EventsListener implements Listener
             ]);
         }
 
-        foreach ($event->getDrops() as $item) {
+        $drops = $event->getDrops();
+
+        if (!$event->isCancelled() && FarmingWarsTask::$currentFarmingWars) {
+            $farmingWarsBlock = FarmingWarsTask::$block;
+
+            if ($target->getTypeId() === $farmingWarsBlock?->getTypeId()) {
+                if ($target instanceof Crops && $target->getAge() < $target::MAX_AGE) {
+                    $player->sendTip(Util::PREFIX . "Uniquement les plantations maxés sont comptabilisées dans l'event");
+                    return;
+                }
+
+                $addition = 0;
+
+                foreach ($drops as $drop) {
+                    $targetDrop = FarmingWarsTask::getItemByBlock($farmingWarsBlock);
+                    if ($drop->getTypeId() === $targetDrop->getTypeId()) {
+                        $addition += $drop->getCount();
+                        break;
+                    }
+                }
+
+                if ($addition > 0) {
+                    $player->broadcastSound(new XpLevelUpSound(1), [$player]);
+                    $player->sendTip("§q+ " . $addition . " +");
+
+                    FarmingWarsTask::updateScore($player, $addition);
+                }
+            }
+        }
+
+        foreach ($drops as $item) {
             Util::addItem($player, $item, !$drop);
         }
 

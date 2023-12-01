@@ -549,6 +549,11 @@ class Util
         return Cache::$config["unicodes"][strtolower($input)] ?? " ";
     }
 
+    public static function getUnderscoredName(Player $player): string
+    {
+        return str_replace(" ", "_", $player->getName());
+    }
+
     public static function antiBlockGlitch(Player $player): void
     {
         $session = Session::get($player);

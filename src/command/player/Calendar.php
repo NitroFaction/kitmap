@@ -109,7 +109,7 @@ class Calendar extends BaseCommand
 
                         $session->data["calendar"][$day] = true;
 
-                        $rewardsName = array_map(fn(Item $item) => TextFormat::clean($item->getName()), $rewards);
+                        $rewardsName = array_map(fn (Item $item) => $item->getCount() . "x " . TextFormat::clean($item->getName()), $rewards);
                         $formattedRewards = implode(", ", $rewardsName);
 
                         $player->sendMessage(Util::PREFIX . "§fEn ce §q" . $day . " Décembre§f, voici la liste des lots que vous avez récupéré : §q" . $formattedRewards . " §f!");

@@ -4,6 +4,7 @@ namespace Kitmap;
 
 use Kitmap\command\player\CoinFlip;
 use Kitmap\command\player\Gambling;
+use Kitmap\command\player\Lottery;
 use Kitmap\handler\Cache;
 use pocketmine\player\Player;
 use WeakMap;
@@ -90,6 +91,14 @@ class Session
                 if ($value["username"] === $username) {
                     $this->addValue("money", $value["price"]);
                     unset(CoinFlip::$coinflip[$id]);
+                }
+            }
+
+            foreach (Lottery::$bets as $name => $bet) {
+                $underscoredName = Util::getUnderscoredName($player);
+                if ($underscoredName === $name) {
+                    $this->addValue("money", $bet);
+                    unset(Lottery::$bets[$underscoredName]);
                 }
             }
 
