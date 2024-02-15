@@ -2,7 +2,7 @@
 
 namespace Kitmap\handler;
 
-use Kitmap\entity\LogoutEntity;
+use Kitmap\entity\LogoutNpc;
 use Kitmap\Main;
 use Kitmap\Util;
 use pocketmine\player\Player;
@@ -21,7 +21,7 @@ class Cache
     public static array $claims;
     public static array $factions;
 
-    /* @var array<string, LogoutEntity> */
+    /* @var array<string, LogoutNpc> */
     public static array $logouts;
 
     /* @var WeakMap<Player, boolean> */
@@ -54,11 +54,11 @@ class Cache
 
         Cache::$config["enderchest"] = [];
 
-        foreach (Cache::$config["pack"] as $name => $arr) {
+        foreach (Cache::$config["packs"] as $name => $arr) {
             [$x, $y, $z] = explode(":", $arr["enderchest"]);
 
             Cache::$config["enderchest"][$arr["enderchest"]] = $name;
-            Cache::$config["floatings"][(intval($x) + 0.5) . ":" . (intval($y) + 1) . ":" . (intval($z) + 0.5) . ":map"] = "#" . Util::PREFIX . "Pack " . $name . " §q§l«";
+            Cache::$config["floatings"][(intval($x) + 0.5) . ":" . (intval($y) + 1) . ":" . (intval($z) + 0.5) . ":map"] = "#" . Util::PREFIX . "Pack " . $name . " §9§l«";
         }
 
         foreach (Util::listAllFiles(Main::getInstance()->getDataFolder() . "data/players") as $file) {

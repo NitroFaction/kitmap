@@ -310,20 +310,20 @@ class Island extends FactionCommand
             $amount = $this->getExpandPrice($faction);
 
             if ($amount > $session->data["money"]) {
-                $player->sendMessage(Util::PREFIX . "Votre nombre de pièces est inférieur à §q" . $amount);
+                $player->sendMessage(Util::PREFIX . "Votre nombre de pièces est inférieur à §9" . $amount);
                 return;
             }
 
             $session->addValue("money", $amount, true);
-            Cache::$factions[$faction]["logs"][time()] = "§q" . $player->getName() . " §faugmente la taille de l'ile";
+            Cache::$factions[$faction]["logs"][time()] = "§9" . $player->getName() . " §faugmente la taille de l'ile";
 
             Cache::$factions[$faction]["island"]["zone"]["min"] -= 1;
             Cache::$factions[$faction]["island"]["zone"]["max"] += 1;
 
-            Faction::broadcastMessage($faction, "§q[§fF§q] §q" . $player->getName() . " §fvient d'augmenter la taille de l'ile et a utiliser §q" . Util::formatNumberWithSuffix($amount) . " §fpièces de sa poche");
+            Faction::broadcastMessage($faction, "§9[§fF§9] §9" . $player->getName() . " §fvient d'augmenter la taille de l'ile et a utiliser §9" . Util::formatNumberWithSuffix($amount) . " §fpièces de sa poche");
         });
         $form->setTitle("Ile");
-        $form->setContent(Util::PREFIX . "Le diamètre de l'ile sera augmenté de 1 bloc pour §q" . Util::formatNumberWithSuffix($amount) . " pièces §f!\n\n§fL'argent sera déduit de votre poche, alors réunissez l'argent au bon endroit\n\n" . Util::PREFIX . "Êtes vous sur de faire cela?");
+        $form->setContent(Util::PREFIX . "Le diamètre de l'ile sera augmenté de 1 bloc pour §9" . Util::formatNumberWithSuffix($amount) . " pièces §f!\n\n§fL'argent sera déduit de votre poche, alors réunissez l'argent au bon endroit\n\n" . Util::PREFIX . "Êtes vous sur de faire cela?");
         $form->addButton("Oui", -1, "", "yes");
         $form->addButton("Non", -1, "", "no");
         $player->sendForm($form);

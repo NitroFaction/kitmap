@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\staff\op;
 
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Rank;
 use Kitmap\Main;
 use Kitmap\Util;
@@ -45,13 +45,13 @@ class Clear extends BaseCommand
         if ($target->getName() === $sender->getName()) {
             $sender->sendMessage(Util::PREFIX . "Vous venez de supprimé tous les items de votre inventaire");
         } else {
-            $sender->sendMessage(Util::PREFIX . "Vous venez de supprimé tous les items de l'inventaire de §q" . $target->getName());
-            $target->sendMessage(Util::PREFIX . "Tous les items de votre inventaire vient d'être supprimé par §q" . $sender->getName());
+            $sender->sendMessage(Util::PREFIX . "Vous venez de supprimé tous les items de l'inventaire de §9" . $target->getName());
+            $target->sendMessage(Util::PREFIX . "Tous les items de votre inventaire vient d'être supprimé par §9" . $sender->getName());
         }
     }
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur", true));
+        $this->registerArgument(0, new TargetPlayerArgument(true, "joueur"));
     }
 }

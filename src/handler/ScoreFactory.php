@@ -4,7 +4,7 @@ namespace Kitmap\handler;
 
 use Kitmap\Main;
 use Kitmap\Session;
-use Kitmap\task\repeat\DominationTask;
+use Kitmap\task\repeat\child\DominationTask;
 use Kitmap\Util;
 use pocketmine\network\mcpe\protocol\RemoveObjectivePacket;
 use pocketmine\network\mcpe\protocol\SetDisplayObjectivePacket;
@@ -30,10 +30,10 @@ class ScoreFactory
 
         if (self::hasScore($player)) {
             if (DominationTask::$currentDomination) {
-                self::setScore($player, "§qDomination (§7" . date("H:i") . " #8§q)");
+                self::setScore($player, "§9Domination (§7" . date("H:i") . " #8§9)");
                 $lines = DominationTask::getScoreboardLines();
             } else {
-                self::setScore($player, "§qNitro (§7" . date("H:i") . "§q)");
+                self::setScore($player, "§9Nitro (§7" . date("H:i") . "§9)");
 
                 $rank = ($player->getName() === $player->getDisplayName()) ? ucfirst(strtolower($session->data["rank"])) : "Joueur";
                 $faction = Faction::hasFaction($player) ? Faction::getFactionUpperName($session->data["faction"]) : "Aucune";
@@ -43,14 +43,14 @@ class ScoreFactory
 
                 $lines = [
                     "§f ",
-                    "§l§q" . $player->getDisplayName(),
-                    "§fGrade: §q" . $rank,
-                    "§fFaction: §q" . $faction,
-                    "§fPieces: §q" . $money,
+                    "§l§9" . $player->getDisplayName(),
+                    "§fGrade: §9" . $rank,
+                    "§fFaction: §9" . $faction,
+                    "§fPieces: §9" . $money,
                     "§r ",
-                    "§l§qServeur",
-                    "§fConnectés: §q" . count(Main::getInstance()->getServer()->getOnlinePlayers()),
-                    "§fVoteParty: §q" . $voteparty . "§f/§q100",
+                    "§l§9Serveur",
+                    "§fConnectés: §9" . count(Main::getInstance()->getServer()->getOnlinePlayers()),
+                    "§fVoteParty: §9" . $voteparty . "§f/§9100",
                     "§7 ",
                     "   §7nitrofaction.fr  "
                 ];
@@ -60,7 +60,7 @@ class ScoreFactory
                 self::setScoreLine($player, $key + 1, $value);
             }
         } else {
-            self::setScore($player, "§qNitro (§7" . date("H:i") . "§q)");
+            self::setScore($player, "§9Nitro (§7" . date("H:i") . "§9)");
             self::updateScoreboard($player);
         }
     }

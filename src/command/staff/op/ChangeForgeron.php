@@ -3,7 +3,7 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\BaseCommand;
-use Kitmap\entity\Forgeron;
+use Kitmap\entity\BlackSmith;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Util;
@@ -33,14 +33,14 @@ class ChangeForgeron extends BaseCommand
         Cache::$data["forgeron-position"] = $position;
 
         foreach (Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld()->getEntities() as $entity) {
-            if ($entity instanceof Forgeron) {
+            if ($entity instanceof BlackSmith) {
                 $entity->flagForDespawn();
             }
         }
 
         list($x, $y, $z, $yaw) = explode(":", Cache::$data["forgeron-position"]);
 
-        $entity = new Forgeron(new Location(floatval($x), floatval($y), floatval($z), Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld(), intval($yaw), 0));
+        $entity = new BlackSmith(new Location(floatval($x), floatval($y), floatval($z), Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld(), intval($yaw), 0));
         $entity->spawnToAll();
 
         Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le forgeron a décidé de bougé ! Il est toujours au spawn, mais plus au meme endroit");

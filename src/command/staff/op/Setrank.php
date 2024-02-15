@@ -2,10 +2,10 @@
 
 namespace Kitmap\command\staff\op;
 
+use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\args\RawStringArgument;
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\OptionArgument;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Rank;
 use Kitmap\Main;
@@ -36,26 +36,20 @@ class Setrank extends BaseCommand
             return;
         }
 
-        /** @noinspection PhpDeprecationInspection */
-        if (($target = Main::getInstance()->getServer()->getPlayerByPrefix($args["joueur"])) instanceof Player) {
-            Session::get($target)->removeCooldown("kit");
-            $target = $target->getName();
-        } else {
-            $target = strtolower($args["joueur"]);
+        $player = Util::findPlayerByName($args["joueur"]);
 
-            if (!isset(Cache::$players["upper_name"][$target])) {
-                $sender->sendMessage(Util::PREFIX . "Ce joueur ne s'est jamais connecté au serveur (verifiez bien les caractères)");
-                return;
-            }
+        if (is_null($player)) {
+            $sender->sendMessage(Util::PREFIX . "Ce joueur ne s'est jamais connecté au serveur (verifiez bien les caractères)");
+            return;
         }
 
-        Rank::setRank($target, $args["grade"]);
-        $sender->sendMessage(Util::PREFIX . "Vous venez d'ajouter le rang §q" . $args["grade"] . " §fà un joueur (§q" . $target . "§f)");
+        Rank::setRank($player, $args["grade"]);
+        $sender->sendMessage(Util::PREFIX . "Vous venez d'ajouter le rang §9" . $args["grade"] . " §fà un joueur (§9" . $player . "§f)");
     }
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
         $this->registerArgument(1, new OptionArgument("grade", array_keys(Cache::$config["ranks"])));
     }

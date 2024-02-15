@@ -26,13 +26,13 @@ class Banlist extends BaseCommand
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
         $list = $this->getBanList();
-        $format = "§q{KEY}§f, raison: §q{REASON} §8(§f{TIME}§8)";
+        $format = "§9{KEY}§f, raison: §9{REASON} §8(§f{TIME}§8)";
 
         $i = 1;
         $page = $args["page"] ?? 1;
 
         $response = Util::arrayToPage($list, $page, 10);
-        $sender->sendMessage(Util::PREFIX . "Liste des joueurs banni du serveur §f(Page §q#" . $page . "§f/§q" . $response[0] . "§f)");
+        $sender->sendMessage(Util::PREFIX . "Liste des joueurs banni du serveur §f(Page §9#" . $page . "§f/§9" . $response[0] . "§f)");
 
         foreach ($response[1] as $value) {
             $sender->sendMessage("§7" . (($page - 1) * 10) + $i . ". " . str_replace(["{KEY}", "{REASON}", "{TIME}"], [$value[3], $value[2], $value[1]], $format));

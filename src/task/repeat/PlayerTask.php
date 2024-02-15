@@ -6,6 +6,11 @@ use Kitmap\handler\Cache;
 use Kitmap\handler\ScoreFactory;
 use Kitmap\Main;
 use Kitmap\Session;
+use Kitmap\task\repeat\child\DominationTask;
+use Kitmap\task\repeat\child\GamblingTask;
+use Kitmap\task\repeat\child\KothTask;
+use Kitmap\task\repeat\child\MoneyZoneTask;
+use Kitmap\task\repeat\child\OutpostTask;
 use Kitmap\Util;
 use pocketmine\block\Block;
 use pocketmine\math\Vector3;
@@ -20,6 +25,7 @@ class PlayerTask extends Task
 
     /* @var WeakMap<Player, Vector3> */
     private static WeakMap $lastPosition;
+
     private int $tick = 0;
 
     public function __construct()
@@ -36,15 +42,12 @@ class PlayerTask extends Task
         KothTask::run();
         GamblingTask::run();
         OutpostTask::run();
-        FarmingWarsTask::run();
 
-        LotteryTask::run(); // j'sais pas où le mettre tu le changeras de fichier stv
-
-        if ($this->tick % 3 == 0) {
+        if ($tick % 3 == 0) {
             MoneyZoneTask::run();
         }
 
-        if ($this->tick % 250 == 0) {
+        if ($tick % 250 == 0) {
             $messages = Cache::$config["messages"];
             Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . $messages[array_rand($messages)]);
         }

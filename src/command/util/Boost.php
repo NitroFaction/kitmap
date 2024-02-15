@@ -31,18 +31,18 @@ class Boost extends BaseCommand
             $booster = $session->data["boost"] ?? [0, false];
 
             if (time() > ($booster[0] + (60 * 60 * 24))) {
-                $sender->sendMessage(Util::PREFIX . "Vous n'êtes pas booster ou les §q24h§f pour récupérer vos récompenses ont §qéxpirés§f, vous pouvez refaire la commande §q/claim-boost §fsur le discord si vous êtes toujours booster !");
+                $sender->sendMessage(Util::PREFIX . "Vous n'êtes pas booster ou les §924h§f pour récupérer vos récompenses ont §9éxpirés§f, vous pouvez refaire la commande §9/claim-boost §fsur le discord si vous êtes toujours booster !");
                 return;
             } else if ($booster[1]) {
-                $sender->sendMessage(Util::PREFIX . "Vous avez déjà récupéré vos récompenses de booster aujourd'hui ! Revenez quad vous aurez de nouveau fait la commande §q/claim-boost §fsur le discord");
+                $sender->sendMessage(Util::PREFIX . "Vous avez déjà récupéré vos récompenses de booster aujourd'hui ! Revenez quad vous aurez de nouveau fait la commande §9/claim-boost §fsur le discord");
                 return;
             }
 
-            $session->data["pack"]["Classique"] += 2;
+            $session->data["packs"]["Classique"] += 2;
             $session->data["boost"][1] = true;
 
             Util::executeCommand("givekit \"" . $sender->getName() . "\" prince");
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $sender->getName() . " §fvient de recevoir §q2 §fpack(s) classique et un §qkit prince §fcar il a boosté le serveur discord !");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §9" . $sender->getName() . " §fvient de recevoir §92 §fpack(s) classique et un §9kit prince §fcar il a boosté le serveur discord !");
         }
     }
 

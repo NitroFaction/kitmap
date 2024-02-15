@@ -34,7 +34,7 @@ class Logs extends FactionCommand
         $content = "";
 
         foreach ($logs as $key => $value) {
-            $content .= "§q" . date("d-m H:i", $key) . "§f: " . $value . "\n";
+            $content .= "§9" . date("d-m H:i", $key) . "§f: " . $value . "\n";
         }
 
         $form = new SimpleForm(null);

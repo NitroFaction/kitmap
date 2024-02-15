@@ -64,10 +64,10 @@ class MarketSellSub extends BaseSubCommand
 
             $item->setLore(array_merge($item->getLore(), [
                 "§r§f ",
-                "§r§fVendeur: §q" . $sender->getName(),
-                "§r§fPrix: §q" . $args["prix"] . "$",
-                "§r§q ",
-                "§r§qCliquez ici pour acheter",
+                "§r§fVendeur: §9" . $sender->getName(),
+                "§r§fPrix: §9" . $args["prix"] . "$",
+                "§r§9 ",
+                "§r§9Cliquez ici pour acheter",
             ]));
 
             $item->getNamedTag()->setString("seller", $sender->getName());
@@ -77,7 +77,7 @@ class MarketSellSub extends BaseSubCommand
             Cache::$market[$id] = Market::serialize($item, $sender->getName());
 
             $sender->getInventory()->setItemInHand(VanillaItems::AIR());
-            $sender->sendMessage(Util::PREFIX . "Vous venez de vendre l'item dans votre main au prix de §q" . $args["prix"]);
+            $sender->sendMessage(Util::PREFIX . "Vous venez de vendre l'item dans votre main au prix de §9" . $args["prix"]);
         }
     }
 

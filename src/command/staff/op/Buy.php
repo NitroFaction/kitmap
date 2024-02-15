@@ -3,8 +3,8 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\RawStringArgument;
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Util;
@@ -32,10 +32,10 @@ class Buy extends BaseCommand
 
         if (is_numeric($value)) {
             Util::executeCommand("addvalue \"" . $player . "\" " . $value . " gem");
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $player . " §fvient d'acheter §q" . $value . " §fgemmes sur la boutique ! §qhttps://nitrofaction.tebex.io");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §9" . $player . " §fvient d'acheter §9" . $value . " §fgemmes sur la boutique ! §9https://nitrofaction.tebex.io");
         } else if (isset(Cache::$config["ranks"][$value])) {
             Util::executeCommand("setrank \"" . $player . "\" " . $value);
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $player . " §fvient d'acheter le grade §q" . $value . " §fsur la boutique ! §qhttps://nitrofaction.tebex.io");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §9" . $player . " §fvient d'acheter le grade §9" . $value . " §fsur la boutique ! §9https://nitrofaction.tebex.io");
         } else {
             if (str_contains($value, "unban")) {
                 if (!isset(Cache::$bans[$player])) {
@@ -50,7 +50,7 @@ class Buy extends BaseCommand
                 $seconds = $data[1] - time();
                 $days = $seconds / 86400;
 
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $player . " §fvient d'acheter un §qunban §fsur la boutique ! §qhttps://nitrofaction.tebex.io");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §9" . $player . " §fvient d'acheter un §9unban §fsur la boutique ! §9https://nitrofaction.tebex.io");
 
                 if ($maxDays > $days) {
                     Util::executeCommand("unban \"" . $player . "\"");
@@ -61,7 +61,7 @@ class Buy extends BaseCommand
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
         $this->registerArgument(1, new RawStringArgument("valeur"));
     }

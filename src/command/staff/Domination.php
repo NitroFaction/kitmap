@@ -2,10 +2,10 @@
 
 namespace Kitmap\command\staff;
 
+use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\OptionArgument;
 use Kitmap\Main;
-use Kitmap\task\repeat\DominationTask;
+use Kitmap\task\repeat\child\DominationTask;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
@@ -29,15 +29,15 @@ class Domination extends BaseCommand
         switch ($args["opt"]) {
             case "start":
                 if (30 > count(Main::getInstance()->getServer()->getOnlinePlayers())) {
-                    $sender->sendMessage(Util::PREFIX . "L'event domination demande au minimum §q30 §fjoueurs avant d'être lancé");
+                    $sender->sendMessage(Util::PREFIX . "L'event domination demande au minimum §930 §fjoueurs avant d'être lancé");
                     return;
                 } else if (DominationTask::$currentDomination) {
-                    $sender->sendMessage(Util::PREFIX . "Un event §qdomination §fest déjà en cours... Vous pouvez l'arrêter avec la commande §q/domination end");
+                    $sender->sendMessage(Util::PREFIX . "Un event §9domination §fest déjà en cours... Vous pouvez l'arrêter avec la commande §9/domination end");
                     return;
                 }
 
                 DominationTask::$currentDomination = true;
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Un event §qdomination §fvient de commencer ! Vous pouvez vous y téléporter grace à la commande §q/event domination");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Un event §9domination §fvient de commencer ! Vous pouvez vous y téléporter grace à la commande §9/event domination");
                 break;
             case "end":
                 DominationTask::$currentDomination = false;
@@ -45,7 +45,7 @@ class Domination extends BaseCommand
                 DominationTask::$zones = [];
                 DominationTask::$time = 900;
 
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "L'event §qdomination §fa été arrêté");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "L'event §9domination §fa été arrêté");
                 break;
         }
     }

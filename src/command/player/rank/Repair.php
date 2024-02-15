@@ -2,9 +2,8 @@
 
 namespace Kitmap\command\player\rank;
 
+use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\Util as ElementUtil;
-use Element\util\args\OptionArgument;
 use Kitmap\handler\Rank;
 use Kitmap\Session;
 use Kitmap\Util;
@@ -38,7 +37,7 @@ class Repair extends BaseCommand
                 return;
             } else if ($session->inCooldown("repair")) {
                 $format = Util::formatDurationFromSeconds($session->getCooldownData("repair")[0] - time());
-                $sender->sendMessage(Util::PREFIX . "Vous ne pourrez ré-utiliser la commande §q/repair §fque dans: §q" . $format);
+                $sender->sendMessage(Util::PREFIX . "Vous ne pourrez ré-utiliser la commande §9/repair §fque dans: §9" . $format);
                 return;
             } else if ($session->inCooldown("combat")) {
                 $sender->sendMessage(Util::PREFIX . "Cette commande est interdite en combat");
@@ -79,8 +78,8 @@ class Repair extends BaseCommand
         if ($item instanceof Durable) {
             $item->setDamage(0);
 
-            if (!is_null($item->getNamedTag()->getTag(ElementUtil::DURABILITY_TAG))) {
-                $item->getNamedTag()->removeTag(ElementUtil::DURABILITY_TAG);
+            if (!is_null($item->getNamedTag()->getTag("cdt"))) {
+                $item->getNamedTag()->removeTag("cdt");
             }
 
             $inventory->setItem($index, $item);

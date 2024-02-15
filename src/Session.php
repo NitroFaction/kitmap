@@ -4,7 +4,6 @@ namespace Kitmap;
 
 use Kitmap\command\player\CoinFlip;
 use Kitmap\command\player\Gambling;
-use Kitmap\command\player\Lottery;
 use Kitmap\handler\Cache;
 use pocketmine\player\Player;
 use WeakMap;
@@ -35,11 +34,8 @@ class Session
             $ownings = Util::getFile("ownings");
             $rank = $ownings->get(strtolower($player->getName()), "joueur");
 
-            $calendar = array_fill(1, 24, false);
-
             $data = array_merge(Cache::$config["default-data"], [
-                "rank" => $rank,
-                "calendar" => $calendar
+                "rank" => $rank
             ]);
         }
 
@@ -48,23 +44,24 @@ class Session
             "last_hit" => [null, time()],
             "invite" => [],
             "upper_name" => $player->getName(),
-            "xuid" => $player->getXuid(),
-            "play_time" => time()
+            "xuid" => $player->getXuid()
         ];
+
+        $data["connection"] = time();
 
         [$ip, $uuid] = [
             $player->getNetworkSession()->getIp(),
             $player->getNetworkSession()->getPlayerInfo()->getUuid()->toString()
         ];
 
-        [$did, $ssi, $cid] = array_values(array_intersect_key(
+        [$did] = array_values(array_intersect_key(
             $player->getPlayerInfo()->getExtraData(),
-            array_flip(["DeviceId", "SelfSignedId", "ClientRandomId"])
+            array_flip(["DeviceId"])
         ));
 
         $vars = array_filter(get_defined_vars(), fn($value) => is_int($value) || is_string($value));
 
-        foreach ([$ip, $uuid, $did, $ssi, $cid] as $value) {
+        foreach ([$ip, $uuid, $did] as $value) {
             if (in_array($value, array_values($vars)) && !in_array($value, $data[($column = array_search($value, $vars))])) {
                 $data[$column][] = $value;
             }
@@ -84,6 +81,11 @@ class Session
         $player = $this->player;
         $username = strtolower($player->getName());
 
+        $this->data["played_time"] += time() - $this->data["connection"];
+        $this->data["connection"] = time();
+
+        Cache::$players["played_time"][$username] = $this->data["played_time"];
+
         if ($destroy) {
             $this->removeCooldown("enderpearl");
 
@@ -91,14 +93,6 @@ class Session
                 if ($value["username"] === $username) {
                     $this->addValue("money", $value["price"]);
                     unset(CoinFlip::$coinflip[$id]);
-                }
-            }
-
-            foreach (Lottery::$bets as $name => $bet) {
-                $underscoredName = Util::getUnderscoredName($player);
-                if ($underscoredName === $name) {
-                    $this->addValue("money", $bet);
-                    unset(Lottery::$bets[$underscoredName]);
                 }
             }
 
@@ -114,11 +108,6 @@ class Session
             unset(self::$sessions[$player]);
         }
 
-        $this->data["played_time"] += time() - $this->data["play_time"];
-        $this->data["play_time"] = time();
-
-        Cache::$players["played_time"][$username] = $this->data["played_time"];
-
         $data = $this->data;
         $file = Util::getFile("data/players/" . $username);
 
@@ -131,18 +120,17 @@ class Session
         unset($this->data["cooldown"][$key]);
     }
 
-    public function addValue(string $key, int|float $value, bool $substraction = false): void
+    public function addValue(array|string $path, int|float $value, bool $substraction = false): void
     {
-        $value = intval($value);
-        $this->data[$key] = ($substraction ? $this->data[$key] - $value : $this->data[$key] + $value);
+        $this->data = Util::addArrayValue($this->data, $path, intval($value), $substraction);
 
-        if ($key === "bounty") {
+        if ($path === "bounty") {
             Util::updateBounty($this->player);
         }
 
-        if (isset(Cache::$players[$key])) {
+        if (is_string($path) && isset(Cache::$players[$path])) {
             $username = strtolower($this->player->getName());
-            Cache::$players[$key][$username] = $this->data[$key];
+            Cache::$players[$path][$username] = $this->data[$path];
         }
     }
 

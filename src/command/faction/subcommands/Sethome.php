@@ -32,7 +32,7 @@ class Sethome extends FactionCommand
         }
 
         Cache::$factions[$faction]["home"] = round($sender->getPosition()->x) . ":" . round($sender->getPosition()->y) . ":" . round($sender->getPosition()->z);
-        Cache::$factions[$faction]["logs"][time()] = "§q" . $sender->getName() . " §fsethome (§q" . Cache::$factions[$faction]["home"] . "§f)";
+        Cache::$factions[$faction]["logs"][time()] = "§9" . $sender->getName() . " §fsethome (§9" . Cache::$factions[$faction]["home"] . "§f)";
 
         $sender->sendMessage(Util::PREFIX . "Vous venez de définir le point de téléportation de votre home");
     }

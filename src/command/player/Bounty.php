@@ -8,8 +8,8 @@
 namespace Kitmap\command\player;
 
 use CortexPE\Commando\args\RawStringArgument;
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Session;
@@ -51,13 +51,13 @@ class Bounty extends BaseCommand
 
             if ($username === strtolower($sender->getName())) {
                 if ($bounty > 0) {
-                    $sender->sendMessage(Util::PREFIX . "Votre prime s'élève à §q" . $bounty . " pièce(s) §f!");
+                    $sender->sendMessage(Util::PREFIX . "Votre prime s'élève à §9" . $bounty . " pièce(s) §f!");
                 } else {
                     $sender->sendMessage(Util::PREFIX . "Vous ne possèdez pas de prime");
                 }
             } else {
                 if ($bounty > 0) {
-                    $sender->sendMessage(Util::PREFIX . "La prime de §q" . $upperName . " §fs'élève à §q" . $bounty . " pièce(s) §f!");
+                    $sender->sendMessage(Util::PREFIX . "La prime de §9" . $upperName . " §fs'élève à §9" . $bounty . " pièce(s) §f!");
                 } else {
                     $sender->sendMessage(Util::PREFIX . $upperName . " ne possède pas de prime");
                 }
@@ -67,7 +67,7 @@ class Bounty extends BaseCommand
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur", true));
+        $this->registerArgument(0, new TargetPlayerArgument(true, "joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur", true));
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Kitmap\command\staff\op;
 
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\args\TextArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use Kitmap\Main;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
@@ -52,7 +52,7 @@ class Sudo extends BaseCommand
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
         $this->registerArgument(1, new TextArgument("commande"));
     }
 }

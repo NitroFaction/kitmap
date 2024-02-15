@@ -3,7 +3,6 @@
 namespace Kitmap\command\player;
 
 use CortexPE\Commando\BaseCommand;
-use Element\util\data\ItemTypeNames;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
 use Kitmap\Main;
@@ -50,7 +49,7 @@ class CoinFlip extends BaseCommand
             $form->setTitle("Coinflip");
             $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
             $form->addButton("Créer");
-            $form->addButton("Rejoindre §q(" . count(CoinFlip::$coinflip) . ")");
+            $form->addButton("Rejoindre §9(" . count(CoinFlip::$coinflip) . ")");
             $sender->sendForm($form);
         }
     }
@@ -75,7 +74,7 @@ class CoinFlip extends BaseCommand
                 $player->sendMessage(Util::PREFIX . "Vous n'avez pas assez d'argent pour créer ce coinflip");
                 return;
             } else if ($session->inCooldown("coinflip")) {
-                $player->sendMessage(Util::PREFIX . "Vous devez encore attendre §q" . ($session->getCooldownData("coinflip")[0] - time()) . " §fsecondes avant de pouvoir re-créer un coinflip");
+                $player->sendMessage(Util::PREFIX . "Vous devez encore attendre §9" . ($session->getCooldownData("coinflip")[0] - time()) . " §fsecondes avant de pouvoir re-créer un coinflip");
                 return;
             }
 
@@ -95,7 +94,7 @@ class CoinFlip extends BaseCommand
             ];
 
             $session->setCooldown("coinflip", 30);
-            $player->sendMessage(Util::PREFIX . "Vous venez de miser §q" . $price . " §fpièces!");
+            $player->sendMessage(Util::PREFIX . "Vous venez de miser §9" . $price . " §fpièces!");
         });
         $form->setTitle("Coinflip");
         $form->addInput(Util::PREFIX . "Choisissez le prix de votre choix");
@@ -118,7 +117,7 @@ class CoinFlip extends BaseCommand
         $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
 
         foreach (CoinFlip::$coinflip as $id => $value) {
-            $form->addButton($value["username"] . ": §q" . $value["price"], -1, "", $id);
+            $form->addButton($value["username"] . ": §9" . $value["price"], -1, "", $id);
         }
         $form->addButton("Rafraîchir", -1, "", "refresh");
         $player->sendForm($form);
@@ -168,10 +167,10 @@ class CoinFlip extends BaseCommand
             shuffle($players);
 
             if ($players[array_rand($players)] === $player->getName()) {
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§q" . $player->getName() . " §fa remporté un coinflip de §q" . Util::formatNumberWithSuffix($price) . " §fpièces contre §q" . $target->getName() . " §f!");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§9" . $player->getName() . " §fa remporté un coinflip de §9" . Util::formatNumberWithSuffix($price) . " §fpièces contre §9" . $target->getName() . " §f!");
                 $session->addValue("money", $_price);
             } else {
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§q" . $target->getName() . " §fa remporté un coinflip de §q" . Util::formatNumberWithSuffix($price) . " §fpièces contre §q" . $player->getName() . " §f!");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§9" . $target->getName() . " §fa remporté un coinflip de §9" . Util::formatNumberWithSuffix($price) . " §fpièces contre §9" . $player->getName() . " §f!");
                 Session::get($target)->addValue("money", $_price);
             }
 

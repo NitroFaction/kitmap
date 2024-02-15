@@ -74,12 +74,12 @@ class Accept extends FactionCommand
         }
 
         Cache::$factions[$faction]["members"]["recruits"][] = $player->getName();
-        Cache::$factions[$faction]["logs"][time()] = "§q" . $player->getName() . " §fa rejoint la faction";
+        Cache::$factions[$faction]["logs"][time()] = "§9" . $player->getName() . " §fa rejoint la faction";
 
         $session->data["faction"] = $faction;
         $session->data["invite"] = [];
 
-        Faction::broadcastMessage($faction, "§q[§fF§q] §fLe joueur §q" . $player->getName() . " §fvient de rejoindre votre faction");
+        Faction::broadcastMessage($faction, "§9[§fF§9] §fLe joueur §9" . $player->getName() . " §fvient de rejoindre votre faction");
     }
 
     protected function prepare(): void

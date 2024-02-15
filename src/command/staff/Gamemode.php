@@ -2,11 +2,10 @@
 
 namespace Kitmap\command\staff;
 
+use CortexPE\Commando\args\OptionArgument;
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\OptionArgument;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Rank;
-use Kitmap\Session;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\Language;
@@ -66,10 +65,10 @@ class Gamemode extends BaseCommand
                 }
 
                 $target->setGamemode($gameMode);
-                $sender->sendMessage(Util::PREFIX . "Vous venez de changer le mode de jeu de §q" . $target->getName() . " §fpour §q" . $gameModeName . " §f!");
+                $sender->sendMessage(Util::PREFIX . "Vous venez de changer le mode de jeu de §9" . $target->getName() . " §fpour §9" . $gameModeName . " §f!");
             } else {
                 $sender->setGamemode($gameMode);
-                $sender->sendMessage(Util::PREFIX . "Vous venez de définir votre mode de jeu à §q" . $gameModeName . " §f!");
+                $sender->sendMessage(Util::PREFIX . "Vous venez de définir votre mode de jeu à §9" . $gameModeName . " §f!");
             }
         }
     }
@@ -77,6 +76,6 @@ class Gamemode extends BaseCommand
     protected function prepare(): void
     {
         $this->registerArgument(0, new OptionArgument("mode", ["0", "1", "2", "3", "survie", "creatif", "aventure", "spectateur"]));
-        $this->registerArgument(1, new TargetArgument("joueur", true));
+        $this->registerArgument(1, new TargetPlayerArgument(true, "joueur"));
     }
 }

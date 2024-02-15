@@ -3,8 +3,8 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\RawStringArgument;
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
@@ -38,18 +38,18 @@ class CheckProxy extends BaseCommand
         $bar = "§l§8-----------------------";
 
         $sender->sendMessage($bar);
-        $sender->sendMessage(Util::PREFIX . "Résultats du test proxy de §q" . $target);
+        $sender->sendMessage(Util::PREFIX . "Résultats du test proxy de §9" . $target);
 
         $isSuspect = false;
 
         foreach ($allCidDid as $column => $count) {
-            $sender->sendMessage("§l§q| §r§f" . strtoupper($column) . " §8- §f" . $count);
+            $sender->sendMessage("§l§9| §r§f" . strtoupper($column) . " §8- §f" . $count);
             if ($count >= 10) {
                 $isSuspect = true;
             }
         }
 
-        $sender->sendMessage("§l§q| §r§fVerdict §8- " . ($isSuspect ? "§aSUSPECTÉ" : "§cNON SUSPECTÉ"));
+        $sender->sendMessage("§l§9| §r§fVerdict §8- " . ($isSuspect ? "§aSUSPECTÉ" : "§cNON SUSPECTÉ"));
         $sender->sendMessage($bar);
     }
 
@@ -59,18 +59,15 @@ class CheckProxy extends BaseCommand
         $result = [];
         $file = Util::getFile("data/players/" . $name);
 
-        foreach (["did", "cid"] as $column) {
-            $values = $file->get($column, []);
-            $result[$column] = count($values);
-        }
+        $values = $file->get("did", []);
+        $result["did"] = count($values);
 
         return $result;
     }
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
     }
-
 }

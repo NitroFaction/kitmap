@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\player;
 
+use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\OptionArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Session;
 use Kitmap\Util;
@@ -47,7 +47,7 @@ class Sell extends BaseCommand
                 }
 
                 $session->addValue("money", $total);
-                $sender->sendMessage(Util::PREFIX . "Tous les items vendable de votre inventaire ont été vendu, cela vous a rapporté §q" . $total . " §fpièces");
+                $sender->sendMessage(Util::PREFIX . "Tous les items vendable de votre inventaire ont été vendu, cela vous a rapporté §9" . $total . " §fpièces");
                 return;
             }
 
@@ -64,7 +64,7 @@ class Sell extends BaseCommand
                 $total = ($item->getCount() * $sell[2]);
                 $session->addValue("money", $total);
 
-                $sender->sendMessage(Util::PREFIX . "Vous venez de vendre §q" . $item->getCount() . " " . $sell[1] . " §fpour §q" . $total . " §fpièces");
+                $sender->sendMessage(Util::PREFIX . "Vous venez de vendre §9" . $item->getCount() . " " . $sell[1] . " §fpour §9" . $total . " §fpièces");
             }
         }
     }

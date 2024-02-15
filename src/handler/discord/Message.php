@@ -2,9 +2,9 @@
 
 namespace Kitmap\handler\discord;
 
-class Message
+readonly class Message
 {
-    public function __construct(string $webhookUrl, private readonly string $message)
+    public function __construct(string $webhookUrl, private string $message)
     {
     }
 

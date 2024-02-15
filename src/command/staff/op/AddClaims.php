@@ -2,12 +2,14 @@
 
 namespace Kitmap\command\staff\op;
 
-use CortexPE\Commando\args\IntegerArgument;
 use CortexPE\Commando\BaseCommand;
 use Kitmap\handler\Cache;
-use Kitmap\Util;
 use pocketmine\command\CommandSender;
+use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\item\VanillaItems;
 use pocketmine\permission\DefaultPermissions;
+use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\world\format\Chunk;
 
@@ -26,32 +28,16 @@ class AddClaims extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
-        $x1 = intval($args["x1"]);
-        $z1 = intval($args["z1"]);
-        $x2 = intval($args["x2"]);
-        $z2 = intval($args["z2"]);
+        if ($sender instanceof Player) {
+            $item = VanillaItems::STONE_AXE();
 
-        $minX = min($x1, $x2);
-        $minZ = min($z1, $z2);
+            $item->setCustomName("§r§9Claims Axe");
 
-        $maxX = max($x1, $x2);
-        $maxZ = max($z1, $z2);
+            $item->getNamedTag()->setInt("claims", 1);
+            $item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::UNBREAKING(), 10));
 
-        $claims = 0;
-
-        if (!isset(Cache::$data["claims"])) {
-            Cache::$data["claims"] = [];
+            $sender->getInventory()->setItemInHand($item);
         }
-
-        for ($x = $minX; $x <= $maxX; $x++) {
-            for ($z = $minZ; $z <= $maxZ; $z++) {
-                if (self::addClaim($x, $z)) {
-                    $claims++;
-                }
-            }
-        }
-
-        $sender->sendMessage(Util::PREFIX . "§q" . $claims . " §fclaims ajoutés");
     }
 
     public static function addClaim(float|int $x, float|int $z): bool
@@ -70,9 +56,5 @@ class AddClaims extends BaseCommand
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new IntegerArgument("x1"));
-        $this->registerArgument(1, new IntegerArgument("z1"));
-        $this->registerArgument(2, new IntegerArgument("x2"));
-        $this->registerArgument(3, new IntegerArgument("z2"));
     }
 }

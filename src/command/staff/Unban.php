@@ -44,7 +44,7 @@ class Unban extends BaseCommand
                 return;
             }
 
-            $sender->sendMessage(Util::PREFIX . "Vous venez de supprimer la valeur §q" . $username . " §fde la liste des bans");
+            $sender->sendMessage(Util::PREFIX . "Vous venez de supprimer la valeur §9" . $username . " §fde la liste des bans");
             Main::getInstance()->getServer()->getNetwork()->unblockAddress($username);
 
             unset(Cache::$bans[$username]);
@@ -63,7 +63,7 @@ class Unban extends BaseCommand
             }
         }
 
-        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le staff §q" . $sender->getName() . " §fvient de débannir le joueur §q" . $username);
+        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le staff §9" . $sender->getName() . " §fvient de débannir le joueur §9" . $username);
 
         $embed = new EmbedBuilder();
         $embed->setDescription("**Unban**\n\n**Joueur**\n" . $username . "\n\n*Dé-Banni par le staff: " . $sender->getName() . "*");

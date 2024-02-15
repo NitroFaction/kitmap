@@ -6,7 +6,6 @@ use CortexPE\Commando\args\BooleanArgument;
 use CortexPE\Commando\BaseCommand;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
-use Kitmap\enchantment\EnchantmentIds as CustomEnchantmentIds;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
 use pocketmine\data\bedrock\EnchantmentIdMap;
@@ -74,12 +73,6 @@ class Enchant extends BaseCommand
 
         $form->addButton("Solidité", label: EnchantmentIds::UNBREAKING . ";Solidité;3");
 
-        if ($item instanceof Sword) {
-            $form->addButton("Pilleur", label: CustomEnchantmentIds::LOOTER . ";Pilleur;3");
-            $form->addButton("Foudroiement", label: CustomEnchantmentIds::LIGHTNING_STRIKE . ";Foudroiement;3");
-            $form->addButton("Arès", label: CustomEnchantmentIds::ARES . ";Arès;1");
-        }
-
         $player->sendForm($form);
     }
 
@@ -88,31 +81,24 @@ class Enchant extends BaseCommand
         [$enchantId, $enchantName, $maxLevel] = explode(";", $data);
         $x = 1;
 
-        $multiplier = match (intval($enchantId)) {
-            CustomEnchantmentIds::LOOTER => 2,
-            CustomEnchantmentIds::LIGHTNING_STRIKE => 3,
-            CustomEnchantmentIds::ARES => 5,
-            default => 1
-        };
-
         $onlyLevels = $enchantId > 1000;
 
-        $form = new SimpleForm(function (Player $player, mixed $data) use ($enchantId, $multiplier, $onlyLevels, $force) {
+        $form = new SimpleForm(function (Player $player, mixed $data) use ($enchantId, $onlyLevels, $force) {
             if (!is_int($data)) {
                 return;
             }
 
-            self::confirmationForm($player, $enchantId, $data + 1, $multiplier, $onlyLevels, $force);
+            self::confirmationForm($player, $enchantId, $data + 1, $onlyLevels, $force);
         });
 
         $form->setTitle("Enchantement");
         $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
 
         while ($x <= $maxLevel) {
-            $price = (($x * 10) * $multiplier);
+            $price = $x * 10;
             $content = $onlyLevels
-                ? $enchantName . " " . $x . "\n§q" . $price . " levels"
-                : $enchantName . " " . $x . "\n§q" . $price . " levels §8ou §q" . $price . " émeraudes";
+                ? $enchantName . " " . $x . "\n§9" . $price . " levels"
+                : $enchantName . " " . $x . "\n§9" . $price . " levels §8ou §9" . $price . " émeraudes";
             $form->addButton($content);
             $x++;
         }
@@ -120,28 +106,28 @@ class Enchant extends BaseCommand
         $player->sendForm($form);
     }
 
-    private static function confirmationForm(Player $player, int $enchantId, int $enchantLevel, int $multiplier, bool $onlyLevels, bool $force): void
+    private static function confirmationForm(Player $player, int $enchantId, int $enchantLevel, bool $onlyLevels, bool $force): void
     {
         if ($force) {
             self::enchantItem($player, $enchantId, $enchantLevel, 0, "levels");
             return;
         }
 
-        $form = new CustomForm(function (Player $player, mixed $data) use ($enchantId, $enchantLevel, $multiplier) {
+        $form = new CustomForm(function (Player $player, mixed $data) use ($enchantId, $enchantLevel) {
             if (!is_array($data) || !isset($data[1]) || !isset($data[2]) || !is_bool($data[2]) || !$data[2]) {
                 return;
             }
 
+            $finalPrice = $enchantLevel * 10;
+
             switch ($data[1]) {
                 case 0:
-                    $finalPrice = ($enchantLevel * 10) * $multiplier;
                     if ($finalPrice > $player->getXpManager()->getXpLevel()) {
                         $player->sendMessage(Util::PREFIX . "Vous n'avez pas assez de niveaux pour enchanter votre item");
                         return;
                     }
                     break;
                 case 1:
-                    $finalPrice = ($enchantLevel * 10) * $multiplier;
                     if ($finalPrice > Util::getItemCount($player, VanillaItems::EMERALD())) {
                         $player->sendMessage(Util::PREFIX . "Vous n'avez pas assez d'émeraudes pour enchanter votre item");
                         return;
@@ -173,38 +159,12 @@ class Enchant extends BaseCommand
         $enchant = EnchantmentIdMap::getInstance()->fromId($enchantId);
         $enchantInstance = new EnchantmentInstance($enchant, $enchantLevel);
 
-        $enchantName = $enchantInstance->getType()->getName();
-
         if ($item->hasEnchantment($enchant, $enchantLevel)) {
             $player->sendMessage(Util::PREFIX . "Votre item possède déjà cet enchantement");
             return;
         }
 
         $item->addEnchantment($enchantInstance);
-
-        if (is_string($enchantName)) {
-            $lore = $item->getLore();
-            $writed = false;
-
-            if (1 > count($lore)) {
-                $lore[] = "§r§q ";
-            }
-
-            $text = "§r§7" . $enchantName . " " . Util::formatToRomanNumber($enchantInstance->getLevel());
-
-            foreach ($lore as $index => $line) {
-                if (str_contains($line, $enchantName)) {
-                    $lore[$index] = $text;
-                    $writed = true;
-                }
-            }
-
-            if (!$writed) {
-                $lore[] = $text;
-            }
-
-            $item->setLore($lore);
-        }
 
         if ($type == "levels") {
             $player->getXpManager()->setXpLevel($player->getXpManager()->getXpLevel() - $price);

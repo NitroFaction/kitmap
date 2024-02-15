@@ -2,11 +2,11 @@
 
 namespace Kitmap\handler;
 
-use Kitmap\entity\AntiBackBallEntity;
-use Kitmap\entity\SwitcherEntity;
+use Kitmap\entity\AntiBackBall;
+use Kitmap\entity\SwitchBall;
 use Kitmap\Main;
 use Kitmap\Session;
-use Kitmap\task\repeat\GamblingTask;
+use Kitmap\task\repeat\child\GamblingTask;
 use Kitmap\Util;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\effect\EffectInstance;
@@ -36,7 +36,7 @@ class PartnerItems
             $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utilisé cet item au spawn");
             return false;
         } else if ($session->inCooldown("_partneritemblocker")) {
-            $player->sendTip(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData("_partneritemblocker")[0] - time()) . " §fseconde(s) avant d'utiliser un partner item");
+            $player->sendTip(Util::PREFIX . "Veuillez attendre §9" . ($session->getCooldownData("_partneritemblocker")[0] - time()) . " §fseconde(s) avant d'utiliser un partner item");
             return false;
         }
 
@@ -51,16 +51,16 @@ class PartnerItems
         switch ($name) {
             case "timewarp":
                 if ($session->inCooldown($name)) {
-                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser un warp-timer");
+                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §9" . ($session->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser un warp-timer");
                     return true;
                 } else {
                     if (!$session->inCooldown("enderpearl")) {
-                        $player->sendMessage(Util::PREFIX . "Vous n'avez pas lancé d'enderpearl les §q15 §fdernière secondes");
+                        $player->sendMessage(Util::PREFIX . "Vous n'avez pas lancé d'enderpearl les §915 §fdernière secondes");
                         return true;
                     }
 
                     $position = $session->getCooldownData("enderpearl")[1];
-                    $player->sendMessage(Util::PREFIX . "Vous allez être téléporté à l'emplacement de votre dernière enderperl dans §q3 secondes");
+                    $player->sendMessage(Util::PREFIX . "Vous allez être téléporté à l'emplacement de votre dernière enderperl dans §93 secondes");
 
                     Main::getInstance()->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($player, $session, $position) {
                         if ($player->isOnline()) {
@@ -111,36 +111,36 @@ class PartnerItems
                         $player->getInventory()->setItem($slot, $randomItem);
                     }
 
-                    $player->sendMessage(Util::PREFIX . "L'item §q" . $randomItem->getName() . " §fqui est dans votre inventaire a été réparé");
+                    $player->sendMessage(Util::PREFIX . "L'item §9" . $randomItem->getName() . " §fqui est dans votre inventaire a été réparé");
                 }
                 break;
             case "resistance":
                 if ($session->inCooldown($name)) {
-                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData($name)[0] - time()) . " §fsecondes avant d'avoir de nouveau un effet de resistance III");
+                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §9" . ($session->getCooldownData($name)[0] - time()) . " §fsecondes avant d'avoir de nouveau un effet de resistance III");
                     return true;
                 } else {
                     $session->setCooldown($name, 60);
                     $seconds = mt_rand(5, 10);
 
                     $player->getEffects()->add(new EffectInstance(VanillaEffects::RESISTANCE(), 20 * $seconds, 2, false));
-                    $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §qresistance III §fpendant " . $seconds . " secondes");
+                    $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §9resistance III §fpendant " . $seconds . " secondes");
                 }
                 break;
             case "strength":
                 if ($session->inCooldown($name)) {
-                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData($name)[0] - time()) . " §fsecondes avant d'avoir de nouveau un effet de force II");
+                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §9" . ($session->getCooldownData($name)[0] - time()) . " §fsecondes avant d'avoir de nouveau un effet de force II");
                     return true;
                 } else {
                     $session->setCooldown($name, 60);
                     $seconds = mt_rand(5, 10);
 
                     $player->getEffects()->add(new EffectInstance(VanillaEffects::STRENGTH(), 20 * $seconds, 1, false));
-                    $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §qforce II §fpendant " . $seconds . " secondes");
+                    $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §9force II §fpendant " . $seconds . " secondes");
                 }
                 break;
             case "focusmode":
                 if ($session->inCooldown($name)) {
-                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData($name)[0] - time()) . " §fsecondes avant d'utiliser de nouveau le focus mode");
+                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §9" . ($session->getCooldownData($name)[0] - time()) . " §fsecondes avant d'utiliser de nouveau le focus mode");
                     return true;
                 } else {
                     $hit = $session->data["last_hit"];
@@ -149,15 +149,15 @@ class PartnerItems
                         $player->sendMessage(Util::PREFIX . "Vous n'avez frappé aucun joueur depuis votre connexion");
                         return true;
                     } else if (time() - $hit[1] > 60) {
-                        $player->sendMessage(Util::PREFIX . "Vous devez avoir tappé un joueur les §q60 §fdernières secondes");
+                        $player->sendMessage(Util::PREFIX . "Vous devez avoir tappé un joueur les §960 §fdernières secondes");
                         return true;
                     } else if (!($target = Main::getInstance()->getServer()->getPlayerExact($hit[0])) instanceof Player) {
                         $player->sendMessage(Util::PREFIX . "Le dernier joueur que vous avez tapé n'est plus en ligne");
                         return true;
                     }
 
-                    $player->sendMessage(Util::PREFIX . "Vous venez d'activer le focus mode, le joueur §q" . $target->getDisplayName() . " §fperdra §q15% §fde vie en plus lorsqu'il sera frappé");
-                    $target->sendMessage(Util::PREFIX . "Un joueur a activé le focus mode sur vous, vous prendrez donc §q15% §fde dégat en plus les §q10 §fprochaine secondes");
+                    $player->sendMessage(Util::PREFIX . "Vous venez d'activer le focus mode, le joueur §9" . $target->getDisplayName() . " §fperdra §915% §fde vie en plus lorsqu'il sera frappé");
+                    $target->sendMessage(Util::PREFIX . "Un joueur a activé le focus mode sur vous, vous prendrez donc §915% §fde dégat en plus les §910 §fprochaine secondes");
 
                     Session::get($target)->setCooldown("_focusmode", 10, [$player->getName()]);
                     $session->setCooldown($name, 60);
@@ -165,7 +165,7 @@ class PartnerItems
                 break;
             case "ninjastar":
                 if ($session->inCooldown($name)) {
-                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData($name)[0] - time()) . " §fsecondes avant d'utiliser de nouveau une ninjastar");
+                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §9" . ($session->getCooldownData($name)[0] - time()) . " §fsecondes avant d'utiliser de nouveau une ninjastar");
                     return true;
                 } else {
                     $data = $session->getCooldownData("combat");
@@ -185,8 +185,8 @@ class PartnerItems
                         }
                     }), 3 * 20);
 
-                    $target->sendMessage(Util::PREFIX . "Le joueur §q" . $player->getDisplayName() . " §fva se téléporter sur vous dans §q3 §fsecondes car il a utilisé une ninjastar");
-                    $player->sendMessage(Util::PREFIX . "Vous allez être téléporté sur §q" . $target->getDisplayName() . " §fdans §q3 §fsecondes avec votre ninjastar");
+                    $target->sendMessage(Util::PREFIX . "Le joueur §9" . $player->getDisplayName() . " §fva se téléporter sur vous dans §93 §fsecondes car il a utilisé une ninjastar");
+                    $player->sendMessage(Util::PREFIX . "Vous allez être téléporté sur §9" . $target->getDisplayName() . " §fdans §93 §fsecondes avec votre ninjastar");
 
                     $session->setCooldown($name, 60);
                 }
@@ -196,10 +196,10 @@ class PartnerItems
                     $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser de switchball dans ce monde");
                     return true;
                 } else if ($session->inCooldown($name)) {
-                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser une switchball");
+                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §9" . ($session->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser une switchball");
                     return true;
                 } else {
-                    $entity = new SwitcherEntity(Location::fromObject($player->getEyePos(), $player->getWorld(), $player->getLocation()->getYaw(), $player->getLocation()->getPitch()), $player);
+                    $entity = new SwitchBall(Location::fromObject($player->getEyePos(), $player->getWorld(), $player->getLocation()->getYaw(), $player->getLocation()->getPitch()), $player);
 
                     $entity->setMotion($event->getDirectionVector()->multiply(1.3));
                     $entity->spawnToAll();
@@ -213,14 +213,14 @@ class PartnerItems
                     return true;
                 }
 
-                $entity = new AntiBackBallEntity(Location::fromObject($player->getEyePos(), $player->getWorld(), $player->getLocation()->getYaw(), $player->getLocation()->getPitch()), $player);
+                $entity = new AntiBackBall(Location::fromObject($player->getEyePos(), $player->getWorld(), $player->getLocation()->getYaw(), $player->getLocation()->getPitch()), $player);
 
                 $entity->setMotion($event->getDirectionVector()->multiply(1.7));
                 $entity->spawnToAll();
                 break;
             case "rocket":
                 if ($session->inCooldown($name)) {
-                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($session->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser de nouveau un rocket");
+                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §9" . ($session->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser de nouveau un rocket");
                     return true;
                 } else {
                     $player->setMotion(new Vector3(0, 4, 0));
@@ -266,7 +266,7 @@ class PartnerItems
         if (is_null($item->getNamedTag()->getTag("partneritem"))) {
             return;
         } else if ($playerSession->inCooldown("_partneritemblocker")) {
-            $player->sendTip(Util::PREFIX . "Veuillez attendre §q" . ($playerSession->getCooldownData("_partneritemblocker")[0] - time()) . " §fseconde(s) avant d'utiliser un partner item");
+            $player->sendTip(Util::PREFIX . "Veuillez attendre §9" . ($playerSession->getCooldownData("_partneritemblocker")[0] - time()) . " §fseconde(s) avant d'utiliser un partner item");
             return;
         }
 
@@ -279,14 +279,14 @@ class PartnerItems
         switch ($name) {
             case "antibuild":
                 if ($playerSession->inCooldown($name)) {
-                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($playerSession->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser un antibuild");
+                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §9" . ($playerSession->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser un antibuild");
                     return;
                 } else {
                     $playerSession->setCooldown($name, 60);
                     $targetSession->setCooldown("_" . $name, 10);
 
-                    $player->sendMessage(Util::PREFIX . "Vous venez d'utiliser un antibuild sur §q" . $target->getDisplayName());
-                    $target->sendMessage(Util::PREFIX . "Le joueur §q" . $player->getDisplayName() . " §fvous ne pouvez donc plus construire pendant 10 secondes");
+                    $player->sendMessage(Util::PREFIX . "Vous venez d'utiliser un antibuild sur §9" . $target->getDisplayName());
+                    $target->sendMessage(Util::PREFIX . "Le joueur §9" . $player->getDisplayName() . " §fvous ne pouvez donc plus construire pendant 10 secondes");
                 }
                 break;
             case "pumpkinaxe":
@@ -294,13 +294,13 @@ class PartnerItems
                     $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser une pumpkin axe sur une personne qui a déjà une citrouille sur la tête");
                     return;
                 } else if ($playerSession->inCooldown($name)) {
-                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($playerSession->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser une pumpkin axe");
+                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §9" . ($playerSession->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser une pumpkin axe");
                     return;
                 } else {
                     $playerSession->setCooldown($name, 60);
 
-                    $player->sendMessage(Util::PREFIX . "Vous venez d'utiliser une pumpkin axe sur §q" . $target->getDisplayName());
-                    $target->sendMessage(Util::PREFIX . "Le joueur §q" . $player->getDisplayName() . " §fvient d'utiliser une pumpkin axe sur vous");
+                    $player->sendMessage(Util::PREFIX . "Vous venez d'utiliser une pumpkin axe sur §9" . $target->getDisplayName());
+                    $target->sendMessage(Util::PREFIX . "Le joueur §9" . $player->getDisplayName() . " §fvient d'utiliser une pumpkin axe sur vous");
 
                     $helmet = $target->getArmorInventory()->getHelmet();
                     $target->getArmorInventory()->setHelmet(VanillaBlocks::PUMPKIN()->asItem());
@@ -319,26 +319,26 @@ class PartnerItems
                 break;
             case "partneritemblocker":
                 if ($playerSession->inCooldown($name)) {
-                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($playerSession->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser un partneritem blocker");
+                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §9" . ($playerSession->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser un partneritem blocker");
                     return;
                 } else {
                     $playerSession->setCooldown($name, 60);
                     $targetSession->setCooldown("_" . $name, 30);
 
-                    $player->sendMessage(Util::PREFIX . "Vous venez d'utiliser un partneritem blocker sur §q" . $target->getDisplayName());
-                    $target->sendMessage(Util::PREFIX . "Le joueur §q" . $player->getDisplayName() . " §fvient d'utiliser un partneritem blocker sur vous");
+                    $player->sendMessage(Util::PREFIX . "Vous venez d'utiliser un partneritem blocker sur §9" . $target->getDisplayName());
+                    $target->sendMessage(Util::PREFIX . "Le joueur §9" . $player->getDisplayName() . " §fvient d'utiliser un partneritem blocker sur vous");
                 }
                 break;
             case "antipearl":
                 if ($playerSession->inCooldown($name)) {
-                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §q" . ($playerSession->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser un anti perle");
+                    $player->sendMessage(Util::PREFIX . "Veuillez attendre §9" . ($playerSession->getCooldownData($name)[0] - time()) . " §fseconde(s) avant de réutiliser un anti perle");
                     return;
                 } else {
                     $playerSession->setCooldown($name, 60);
                     $targetSession->setCooldown("_" . $name, 30);
 
-                    $player->sendMessage(Util::PREFIX . "Vous venez d'utiliser un anti perle sur §q" . $target->getDisplayName());
-                    $target->sendMessage(Util::PREFIX . "Le joueur §q" . $player->getDisplayName() . " §fvient d'utiliser un anti perle sur vous");
+                    $player->sendMessage(Util::PREFIX . "Vous venez d'utiliser un anti perle sur §9" . $target->getDisplayName());
+                    $target->sendMessage(Util::PREFIX . "Le joueur §9" . $player->getDisplayName() . " §fvient d'utiliser un anti perle sur vous");
                 }
                 break;
         }

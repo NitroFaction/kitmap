@@ -70,16 +70,16 @@ class Fly extends BaseCommand
             if ($money >= 1000000) {
                 $session->addValue("money", 1000000, true);
                 $session->data["fly"] = true;
-                $player->sendMessage(Util::PREFIX . "Vous venez d'acheter la commande §q/fly §favec §q1M §fpièces");
+                $player->sendMessage(Util::PREFIX . "Vous venez d'acheter la commande §9/fly §favec §91M §fpièces");
             } else {
-                $player->sendMessage(Util::PREFIX . "Vous ne possedez pas assez de pièces pour acheter la commande §q/fly");
+                $player->sendMessage(Util::PREFIX . "Vous ne possedez pas assez de pièces pour acheter la commande §9/fly");
             }
 
             Util::givePlayerPreferences($player);
         });
 
         $form->setTitle("Fly");
-        $form->addLabel(Util::PREFIX . "Cette commande vous donnera la possibilité de voler dans votre île de faction !\n\nPrix: §q1M §fpièces\n\nVous possedez §q" . Util::formatNumberWithSuffix($session->data["money"]) . " §fpièces(s)\n");
+        $form->addLabel(Util::PREFIX . "Cette commande vous donnera la possibilité de voler dans votre île de faction !\n\nPrix: §91M §fpièces\n\nVous possedez §9" . Util::formatNumberWithSuffix($session->data["money"]) . " §fpièces(s)\n");
         $form->addToggle("Acheter la commande /fly ?", true);
 
         $player->sendForm($form);

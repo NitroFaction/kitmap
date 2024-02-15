@@ -26,7 +26,7 @@ class Delhome extends FactionCommand
     public function onNormalRun(Player $sender, Session $session, ?string $faction, array $args): void
     {
         Cache::$factions[$faction]["home"] = "0:0:0";
-        Cache::$factions[$faction]["logs"][time()] = "§q" . $sender->getName() . " §fsupprime le f home";
+        Cache::$factions[$faction]["logs"][time()] = "§9" . $sender->getName() . " §fsupprime le f home";
 
         $sender->sendMessage(Util::PREFIX . "Vous venez de supprimer le point de téléportation de votre home");
     }

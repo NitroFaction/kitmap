@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\player\rank;
 
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Rank;
 use Kitmap\Main;
 use Kitmap\Session;
@@ -41,7 +41,7 @@ class Stuff extends BaseCommand
                 return;
             } else if ($session->inCooldown("stuff")) {
                 $format = Util::formatDurationFromSeconds($session->getCooldownData("stuff")[0] - time());
-                $sender->sendMessage(Util::PREFIX . "Vous ne pourrez ré-utiliser la commande §q/stuff §fque dans: §q" . $format);
+                $sender->sendMessage(Util::PREFIX . "Vous ne pourrez ré-utiliser la commande §9/stuff §fque dans: §9" . $format);
                 return;
             } else if (!$player instanceof Player) {
                 $sender->sendMessage(Util::PREFIX . "Le joueur indiqué n'est pas connecté sur le serveur");
@@ -69,6 +69,6 @@ class Stuff extends BaseCommand
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
     }
 }

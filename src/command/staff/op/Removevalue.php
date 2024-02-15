@@ -3,10 +3,10 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\IntegerArgument;
+use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\args\RawStringArgument;
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\OptionArgument;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Util;
@@ -33,32 +33,21 @@ class Removevalue extends BaseCommand
         $data = $args["valeur"];
         $amount = intval($args["montant"]);
 
-        /** @noinspection PhpDeprecationInspection */
-        if (($target = Main::getInstance()->getServer()->getPlayerByPrefix($args["joueur"])) instanceof Player) {
-            $target = $target->getName();
-        } else {
-            $target = strtolower($args["joueur"]);
+        $player = Addvalue::addValue($sender, $this->getName(), $args);
 
-            if (!isset(Cache::$players["upper_name"][$target])) {
-                $sender->sendMessage(Util::PREFIX . "Ce joueur ne s'est jamais connecté au serveur (verifiez bien les caractères)");
-                return;
-            }
-        }
-
-        if (0 > $amount) {
-            $sender->sendMessage(Util::PREFIX . "Le montant que vous avez inscrit est invalide");
+        if (is_null($player)) {
             return;
         }
 
-        $sender->sendMessage(Util::PREFIX . "Vous venez de retirer §q" . $amount . " §f" . $data . " au joueur §q" . $target);
-        Addvalue::addValue($sender->getName(), $target, $data, -$amount);
+        $sender->sendMessage(Util::PREFIX . "Vous venez de retirer §9" . $amount . " §f" . $data . " au joueur §9" . $player);
+        Util::addValue($sender->getName(), $player, $data, $amount, true);
     }
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
         $this->registerArgument(1, new IntegerArgument("montant"));
-        $this->registerArgument(2, new OptionArgument("valeur", ["bounty", "death", "gem", "kill", "killstreak", "money"]));
+        $this->registerArgument(2, new OptionArgument("valeur", array_keys(array_filter(Cache::$config["default-data"], "is_int"))));
     }
 }

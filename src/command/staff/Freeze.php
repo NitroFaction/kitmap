@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\staff;
 
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Rank;
 use Kitmap\Main;
 use Kitmap\Util;
@@ -38,17 +38,17 @@ class Freeze extends BaseCommand
             $target->setNoClientPredictions(false);
 
             $target->sendMessage(Util::PREFIX . "Vous venez d'être unfreeze, vous pouvez désormais bouger");
-            $sender->sendMessage(Util::PREFIX . "Vous venez de unfreeze le joueur §q" . $target->getName());
+            $sender->sendMessage(Util::PREFIX . "Vous venez de unfreeze le joueur §9" . $target->getName());
         } else {
             $target->setNoClientPredictions();
 
             $target->sendMessage(Util::PREFIX . "Vous venez d'être freeze, vous ne pouvez plus bouger");
-            $sender->sendMessage(Util::PREFIX . "Vous venez de freeze le joueur §q" . $target->getName());
+            $sender->sendMessage(Util::PREFIX . "Vous venez de freeze le joueur §9" . $target->getName());
         }
     }
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
     }
 }

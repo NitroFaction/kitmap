@@ -3,13 +3,14 @@
 namespace Kitmap;
 
 use CortexPE\Commando\PacketHooker;
+use Kitmap\block\ExtraVanillaBlocks;
 use Kitmap\command\Commands;
-use Kitmap\enchantment\Enchantments;
 use Kitmap\entity\Entities;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Rank;
+use Kitmap\item\ExtraVanillaItems;
 use Kitmap\listener\EventsListener;
-use Kitmap\task\repeat\GamblingTask;
+use Kitmap\task\repeat\child\GamblingTask;
 use Kitmap\task\repeat\PlayerTask;
 use muqsit\invmenu\InvMenuHandler;
 use pocketmine\plugin\PluginBase;
@@ -39,7 +40,9 @@ class Main extends PluginBase
         new Rank();
         new Commands();
         new Entities();
-        new Enchantments();
+
+        new ExtraVanillaBlocks();
+        new ExtraVanillaItems();
 
         $this->getScheduler()->scheduleRepeatingTask(new PlayerTask(), 20);
         $this->getServer()->getPluginManager()->registerEvents(new EventsListener(), $this);

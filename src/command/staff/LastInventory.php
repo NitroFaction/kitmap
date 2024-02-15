@@ -3,8 +3,8 @@
 namespace Kitmap\command\staff;
 
 use CortexPE\Commando\args\RawStringArgument;
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use jojoe77777\FormAPI\SimpleForm;
 use Kitmap\handler\Cache;
 use Kitmap\handler\discord\Discord;
@@ -113,7 +113,7 @@ class LastInventory extends BaseCommand
             return;
         }
 
-        $message = "§q- §fXP: §q" . $information["xp"] . "\n§q- §fDate: §q" . $information["date"] . "\n§q- §fKillstreak: §q" . $information["killstreak"];
+        $message = "§9- §fXP: §9" . $information["xp"] . "\n§9- §fDate: §9" . $information["date"] . "\n§9- §fKillstreak: §9" . $information["killstreak"];
 
         $form = new SimpleForm(function (?Player $player, mixed $choice) use ($target, $data) {
             if ($choice === 0) {
@@ -123,15 +123,15 @@ class LastInventory extends BaseCommand
 
         if (!is_null($information["killer"])) {
             $killer = $information["killer"];
-            $message .= "\n§q- §fTueur: " . $killer . "\n";
+            $message .= "\n§9- §fTueur: " . $killer . "\n";
 
             if (isset(Cache::$bans[strtolower($killer)])) {
-                $message .= "§q- §fLe tueur est actuellement banni";
+                $message .= "§9- §fLe tueur est actuellement banni";
             } else {
-                $message .= "§q- §fLe tueur n'est pas banni";
+                $message .= "§9- §fLe tueur n'est pas banni";
             }
         } else {
-            $message .= "§q- Le joueur est mort de façon naturel";
+            $message .= "§9- Le joueur est mort de façon naturel";
         }
 
         $form->setTitle("Inventaires");
@@ -159,7 +159,7 @@ class LastInventory extends BaseCommand
             $array = $file->getAll();
             $inventory = $array["save"][$data] ?? null;
 
-            if ($transaction->getItemClicked()->getCustomName() !== "§r§qRendre l'inventaire") {
+            if ($transaction->getItemClicked()->getCustomName() !== "§r§9Rendre l'inventaire") {
                 return;
             } else if (is_null($inventory)) {
                 Util::removeCurrentWindow($player);
@@ -175,7 +175,7 @@ class LastInventory extends BaseCommand
 
             Util::removeCurrentWindow($player);
 
-            $player->sendMessage(Util::PREFIX . "Vous venez de rendre l'inventaire du joueur §q" . $target . " §fde sa mort datant du §q" . $inventory["date"]);
+            $player->sendMessage(Util::PREFIX . "Vous venez de rendre l'inventaire du joueur §9" . $target . " §fde sa mort datant du §9" . $inventory["date"]);
             Main::getInstance()->getLogger()->info("Le staff " . $player->getName() . " vient de rembourser l'inventaire d'une precedente mort du joueur " . $target);
 
             $embed = new EmbedBuilder();
@@ -198,13 +198,13 @@ class LastInventory extends BaseCommand
             $count++;
         }
 
-        $menu->getInventory()->setItem(51, VanillaItems::PAPER()->setCustomName("§r§qRendre l'inventaire"));
+        $menu->getInventory()->setItem(51, VanillaItems::PAPER()->setCustomName("§r§9Rendre l'inventaire"));
         $menu->send($player);
     }
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
     }
 }

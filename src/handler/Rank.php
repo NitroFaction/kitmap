@@ -83,6 +83,8 @@ class Rank
 
         if ($player instanceof Player) {
             $session = Session::get($player);
+
+            $session->removeCooldown("kit");
             $session->data["rank"] = $rank;
 
             self::updateNameTag($player);

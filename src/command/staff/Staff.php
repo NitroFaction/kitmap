@@ -72,19 +72,19 @@ class Staff extends BaseCommand
 
         $knockback = new EnchantmentInstance(VanillaEnchantments::KNOCKBACK(), 2);
 
-        $player->getInventory()->setItem(0, VanillaItems::BANNER()->setColor(DyeColor::LIGHT_GRAY())->setCustomName("§r" . Util::PREFIX . "Spectateur §q§l«"));
-        $player->getInventory()->setItem(2, VanillaItems::SLIMEBALL()->setCustomName("§r" . Util::PREFIX . "Knockback 2 §q§l«")->addEnchantment($knockback));
-        $player->getInventory()->setItem(3, VanillaItems::PAPER()->setCustomName("§r" . Util::PREFIX . "Alias §q§l«"));
-        $player->getInventory()->setItem(4, VanillaItems::SPIDER_EYE()->setCustomName("§r" . Util::PREFIX . "Random Tp §q§l«"));
-        $player->getInventory()->setItem(5, VanillaItems::BLAZE_ROD()->setCustomName("§r" . Util::PREFIX . "Freeze §q§l«"));
-        $player->getInventory()->setItem(6, VanillaItems::STICK()->setCustomName("§r" . Util::PREFIX . "Sanction §q§l«"));
-        $player->getInventory()->setItem(7, VanillaBlocks::CHEST()->asItem()->setCustomName("§r" . Util::PREFIX . "Invsee §q§l«"));
-        $player->getInventory()->setItem(8, VanillaBlocks::ENDER_CHEST()->asItem()->setCustomName("§r" . Util::PREFIX . "Ecsee §q§l«"));
+        $player->getInventory()->setItem(0, VanillaItems::BANNER()->setColor(DyeColor::LIGHT_GRAY())->setCustomName("§r" . Util::PREFIX . "Spectateur §9§l«"));
+        $player->getInventory()->setItem(2, VanillaItems::SLIMEBALL()->setCustomName("§r" . Util::PREFIX . "Knockback 2 §9§l«")->addEnchantment($knockback));
+        $player->getInventory()->setItem(3, VanillaItems::PAPER()->setCustomName("§r" . Util::PREFIX . "Alias §9§l«"));
+        $player->getInventory()->setItem(4, VanillaItems::SPIDER_EYE()->setCustomName("§r" . Util::PREFIX . "Random Tp §9§l«"));
+        $player->getInventory()->setItem(5, VanillaItems::BLAZE_ROD()->setCustomName("§r" . Util::PREFIX . "Freeze §9§l«"));
+        $player->getInventory()->setItem(6, VanillaItems::STICK()->setCustomName("§r" . Util::PREFIX . "Sanction §9§l«"));
+        $player->getInventory()->setItem(7, VanillaBlocks::CHEST()->asItem()->setCustomName("§r" . Util::PREFIX . "Invsee §9§l«"));
+        $player->getInventory()->setItem(8, VanillaBlocks::ENDER_CHEST()->asItem()->setCustomName("§r" . Util::PREFIX . "Ecsee §9§l«"));
 
         if (in_array($player->getName(), Vanish::$vanish)) {
-            $player->getInventory()->setItem(1, VanillaItems::DYE()->setColor(DyeColor::GREEN())->setCustomName("§r" . Util::PREFIX . "Vanish §q§l«"));
+            $player->getInventory()->setItem(1, VanillaItems::DYE()->setColor(DyeColor::GREEN())->setCustomName("§r" . Util::PREFIX . "Vanish §9§l«"));
         } else {
-            $player->getInventory()->setItem(1, VanillaItems::DYE()->setColor(DyeColor::LIGHT_GRAY())->setCustomName("§r" . Util::PREFIX . "Vanish §q§l«"));
+            $player->getInventory()->setItem(1, VanillaItems::DYE()->setColor(DyeColor::LIGHT_GRAY())->setCustomName("§r" . Util::PREFIX . "Vanish §9§l«"));
         }
     }
 

@@ -35,18 +35,18 @@ class Annonce extends BaseCommand
                 $sender->sendMessage(Util::PREFIX . "Vous n'avez pas la permission de faire cela");
                 return;
             } else if ($session->inCooldown("mute")) {
-                $sender->sendMessage(Util::PREFIX . "Vous êtes mute, temps restant: §q" . Util::formatDurationFromSeconds($session->getCooldownData("mute")[0] - time()));
+                $sender->sendMessage(Util::PREFIX . "Vous êtes mute, temps restant: §9" . Util::formatDurationFromSeconds($session->getCooldownData("mute")[0] - time()));
                 return;
             }
 
             if ($session->inCooldown("annonce")) {
                 $format = Util::formatDurationFromSeconds($session->getCooldownData("annonce")[0] - time());
-                $sender->sendMessage(Util::PREFIX . "Vous ne pourrez ré-utiliser la commande §q/annonce §fque dans: §q" . $format);
+                $sender->sendMessage(Util::PREFIX . "Vous ne pourrez ré-utiliser la commande §9/annonce §fque dans: §9" . $format);
                 return;
             }
 
             $session->setCooldown("annonce", 60 * 120);
-            Main::getInstance()->getServer()->broadcastMessage("§q§lANNONCE§r §f" . $sender->getName() . " " . Util::PREFIX . implode(" ", $args));
+            Main::getInstance()->getServer()->broadcastMessage("§9§lANNONCE§r §f" . $sender->getName() . " " . Util::PREFIX . implode(" ", $args));
         }
     }
 

@@ -45,7 +45,7 @@ class MarketAverageSub extends BaseSubCommand
             $prices = array_slice($avg, -5);
             $average = array_sum($prices) / count($prices);
 
-            $sender->sendMessage(Util::PREFIX . "L'item dans votre main est vendu à §q" . Util::formatNumberWithSuffix($average) . " §fpièces en moyenne à l'hôtel des ventes");
+            $sender->sendMessage(Util::PREFIX . "L'item dans votre main est vendu à §9" . Util::formatNumberWithSuffix($average) . " §fpièces en moyenne à l'hôtel des ventes");
         }
     }
 

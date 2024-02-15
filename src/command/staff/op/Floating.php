@@ -2,11 +2,11 @@
 
 namespace Kitmap\command\staff\op;
 
+use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\OptionArgument;
+use Kitmap\entity\BlackSmith;
+use Kitmap\entity\DefaultFloatingText;
 use Kitmap\entity\ElevatorPhantom;
-use Kitmap\entity\FloatingText;
-use Kitmap\entity\Forgeron;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Util;
@@ -35,7 +35,7 @@ class Floating extends BaseCommand
                 foreach (Cache::$config["floatings"] as $key => $value) {
                     list ($x, $y, $z, $world) = explode(":", $key);
 
-                    $entity = new FloatingText(new Location(floatval($x), floatval($y), floatval($z), Main::getInstance()->getServer()->getWorldManager()->getWorldByName($world), 0, 0));
+                    $entity = new DefaultFloatingText(new Location(floatval($x), floatval($y), floatval($z), Main::getInstance()->getServer()->getWorldManager()->getWorldByName($world), 0, 0));
                     $entity->spawnToAll();
                 }
 
@@ -48,7 +48,7 @@ class Floating extends BaseCommand
 
                 list($x, $y, $z, $yaw) = explode(":", Cache::$data["forgeron-position"] ?? Cache::$config["forgeron-positions"][0]);
 
-                $entity = new Forgeron(new Location(floatval($x), floatval($y), floatval($z), Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld(), intval($yaw), 0));
+                $entity = new BlackSmith(new Location(floatval($x), floatval($y), floatval($z), Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld(), intval($yaw), 0));
                 $entity->spawnToAll();
 
                 $sender->sendMessage(Util::PREFIX . "Vous venez de faire apparaitre les floatings texts");
@@ -56,7 +56,7 @@ class Floating extends BaseCommand
             case "despawn":
                 foreach (Main::getInstance()->getServer()->getWorldManager()->getWorlds() as $world) {
                     foreach ($world->getEntities() as $entity) {
-                        if ($entity instanceof FloatingText || $entity instanceof ElevatorPhantom || $entity instanceof Forgeron) {
+                        if ($entity instanceof DefaultFloatingText || $entity instanceof ElevatorPhantom || $entity instanceof BlackSmith) {
                             $entity->flagForDespawn();
                         }
                     }

@@ -2,25 +2,23 @@
 
 namespace Kitmap\listener;
 
-use Element\item\ExtraVanillaItems;
-use Element\util\data\ItemTypeNames;
-use Kitmap\command\player\{Anvil, Enchant, rank\Enderchest};
+use Kitmap\block\ExtraVanillaBlocks;
+use Kitmap\command\player\rank\Enderchest;
 use Kitmap\command\staff\{Ban, LastInventory, Question, Vanish};
 use Kitmap\command\util\Bienvenue;
-use Kitmap\enchantment\EnchantmentIds;
-use Kitmap\entity\{AntiBackBallEntity, LightningBolt, LogoutEntity, SwitcherEntity};
+use Kitmap\entity\{AntiBackBall, LogoutNpc, SwitchBall};
 use Kitmap\handler\{Cache, Faction, Jobs, Pack, PartnerItems, Rank, Sanction};
+use Kitmap\item\Armor;
+use Kitmap\item\ExtraVanillaItems;
 use Kitmap\Main;
 use Kitmap\Session;
-use Kitmap\task\repeat\FarmingWarsTask;
-use Kitmap\task\repeat\GamblingTask;
+use Kitmap\task\repeat\child\GamblingTask;
 use Kitmap\task\repeat\PlayerTask;
 use Kitmap\Util;
 use pocketmine\block\{Barrel,
     Block,
     CartographyTable,
     Chest,
-    CocoaBlock,
     CraftingTable,
     Crops,
     Door,
@@ -32,18 +30,20 @@ use pocketmine\block\{Barrel,
     inventory\EnderChestInventory,
     Lava,
     Liquid,
-    NetherWartPlant,
     SweetBerryBush,
     Trapdoor,
-    utils\DyeColor,
-    VanillaBlocks,
-    Wheat};
-use pocketmine\data\bedrock\EnchantmentIdMap;
+    VanillaBlocks};
 use pocketmine\entity\animation\ArmSwingAnimation;
-use pocketmine\entity\animation\HurtAnimation;
 use pocketmine\entity\effect\{EffectInstance, VanillaEffects};
+use pocketmine\entity\Living;
 use pocketmine\entity\object\ItemEntity;
-use pocketmine\event\block\{BlockBreakEvent, BlockMeltEvent, BlockPlaceEvent, BlockSpreadEvent, LeavesDecayEvent};
+use pocketmine\event\block\{BlockBreakEvent,
+    BlockGrowEvent,
+    BlockMeltEvent,
+    BlockPlaceEvent,
+    BlockSpreadEvent,
+    BlockUpdateEvent,
+    LeavesDecayEvent};
 use pocketmine\event\entity\{EntityDamageByEntityEvent,
     EntityDamageEvent,
     EntityItemPickupEvent,
@@ -52,14 +52,16 @@ use pocketmine\event\entity\{EntityDamageByEntityEvent,
     EntityTrampleFarmlandEvent,
     ItemSpawnEvent,
     ProjectileHitEntityEvent};
-use pocketmine\event\inventory\{InventoryOpenEvent, InventoryTransactionEvent};
+use pocketmine\event\inventory\{CraftItemEvent, InventoryOpenEvent, InventoryTransactionEvent, ItemDamageEvent};
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerBucketEvent,
     PlayerChatEvent,
     PlayerDataSaveEvent,
     PlayerDeathEvent,
     PlayerDropItemEvent,
+    PlayerExhaustEvent,
     PlayerInteractEvent,
+    PlayerItemConsumeEvent,
     PlayerItemUseEvent,
     PlayerJoinEvent,
     PlayerMissSwingEvent,
@@ -75,22 +77,15 @@ use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\{Axe, Bucket, Durable, Hoe, Item, PaintingItem, PotionType, Shovel, Stick, VanillaItems};
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\NetworkBroadcastUtils;
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\protocol\types\LevelEvent;
-use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\{GameMode, Player};
 use pocketmine\player\chat\LegacyRawChatFormatter;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\particle\BlockBreakParticle;
-use pocketmine\world\sound\AmethystBlockChimeSound;
 use pocketmine\world\sound\BlockBreakSound;
 use pocketmine\world\sound\EndermanTeleportSound;
-use pocketmine\world\sound\XpLevelUpSound;
 use Symfony\Component\Filesystem\Path;
 
 class EventsListener implements Listener
@@ -98,15 +93,9 @@ class EventsListener implements Listener
     public function onInteract(PlayerInteractEvent $event): void
     {
         $player = $event->getPlayer();
+
         $block = $event->getBlock();
         $item = $event->getItem();
-
-        $position = $block->getPosition();
-
-        if ($item->equals(VanillaItems::FLINT_AND_STEEL(), false, false)) {
-            $event->cancel();
-            return;
-        }
 
         if (
             $event->getAction() === $event::RIGHT_CLICK_BLOCK &&
@@ -118,28 +107,12 @@ class EventsListener implements Listener
             if ($block instanceof Door || $block instanceof Trapdoor || $block instanceof FenceGate) {
                 Util::antiBlockGlitch($player);
             }
-        } else if (!$player->isSneaking() && $event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK && $block->hasSameTypeId(VanillaBlocks::ANVIL())) {
-            $event->cancel();
-            Util::removeCurrentWindow($player);
 
-            Anvil::openAnvil($player);
-        } else if (!$player->isSneaking() && $event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK && $block->hasSameTypeId(VanillaBlocks::ENCHANTING_TABLE())) {
-            $event->cancel();
-            Util::removeCurrentWindow($player);
-
-            Enchant::openEnchantTable($player, false);
+            return;
         }
 
-        if (PlayerInteractEvent::RIGHT_CLICK_BLOCK && $position->getWorld() === Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld()) {
-            $format = $position->x . ":" . $position->y . ":" . $position->z;
-            $pack = Cache::$config["enderchest"][$format] ?? null;
-
-            if (!is_null($pack)) {
-                $event->cancel();
-
-                Util::removeCurrentWindow($player);
-                Pack::openPackCategoryUI($player, $pack);
-            }
+        if (!ExtraVanillaItems::getItem($item)->onInteract($event)) {
+            ExtraVanillaBlocks::getBlock($block)->onInteract($event);
         }
     }
 
@@ -152,7 +125,7 @@ class EventsListener implements Listener
 
         if (str_contains($message, "@here") && !$player->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
             $event->cancel();
-            $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser §q@here §fdans votre message");
+            $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser §9@here §fdans votre message");
             return;
         }
 
@@ -162,19 +135,19 @@ class EventsListener implements Listener
             switch (Question::$currentEvent) {
                 case 1:
                     if ($event->getMessage() === Question::$currentReply) {
-                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§q" . $player->getDisplayName() . " §fa gagné §q5k$ §fen ayant réécrit le code §q" . Question::$currentReply . " §fen premier !");
+                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§9" . $player->getDisplayName() . " §fa gagné §95k$ §fen ayant réécrit le code §9" . Question::$currentReply . " §fen premier !");
                         $valid = true;
                     }
                     break;
                 case 2:
                     if (strtolower($event->getMessage()) === Question::$currentReply) {
-                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§q" . $player->getDisplayName() . " §fa gagné §q5k$ §fen ayant trouver le mot §q" . Question::$currentReply . " §fen premier !");
+                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§9" . $player->getDisplayName() . " §fa gagné §95k$ §fen ayant trouver le mot §9" . Question::$currentReply . " §fen premier !");
                         $valid = true;
                     }
                     break;
                 case 3:
                     if ($event->getMessage() === strval(Question::$currentReply)) {
-                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§q" . $player->getDisplayName() . " §fa gagné §q5k$ §fen ayant répondu au calcul §q" . Question::$currentReply . " §fen premier !");
+                        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§9" . $player->getDisplayName() . " §fa gagné §95k$ §fen ayant répondu au calcul §9" . Question::$currentReply . " §fen premier !");
                         $valid = true;
                     }
                     break;
@@ -206,12 +179,12 @@ class EventsListener implements Listener
             $event->cancel();
 
             Main::getInstance()->getLogger()->info("[F] [" . $faction . "] " . $player->getName() . " » " . $message);
-            Faction::broadcastMessage($faction, "§q[§fF§q] §f" . $player->getName() . " " . Util::PREFIX . $message);
+            Faction::broadcastMessage($faction, "§9[§fF§9] §f" . $player->getName() . " " . Util::PREFIX . $message);
 
             return;
         } else if ($session->inCooldown("mute")) {
             $format = Util::formatDurationFromSeconds($session->getCooldownData("mute")[0] - time());
-            $player->sendMessage(Util::PREFIX . "Vous êtes mute, temps restant: §q" . $format);
+            $player->sendMessage(Util::PREFIX . "Vous êtes mute, temps restant: §9" . $format);
 
             $event->cancel();
             return;
@@ -238,7 +211,7 @@ class EventsListener implements Listener
 
         if (Faction::hasFaction($player)) {
             Cache::$factions[$session->data["faction"]]["activity"][date("m-d")] = $player->getName();
-            Faction::broadcastMessage($session->data["faction"], "§q[§fF§q] §fLe joueur de votre faction §q" . $player->getName() . " §fvient de se connecter");
+            Faction::broadcastMessage($session->data["faction"], "§9[§fF§9] §fLe joueur de votre faction §9" . $player->getName() . " §fvient de se connecter");
         }
 
         foreach (Vanish::$vanish as $target) {
@@ -256,7 +229,7 @@ class EventsListener implements Listener
             $path = Path::join(Main::getInstance()->getServer()->getDataPath(), "players");
             $count = count(glob($path . "/*")) + 1;
 
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§q" . $player->getName() . " §fa rejoint le serveur pour la §qpremière §ffois ! Souhaitez lui la §qbienvenue §favec la commande §q/bvn §f(#§q" . $count . "§f)!");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§9" . $player->getName() . " §fa rejoint le serveur pour la §9première §ffois ! Souhaitez lui la §9bienvenue §favec la commande §9/bvn §f(#§9" . $count . "§f)!");
 
             Bienvenue::$alreadyWished = [];
             Bienvenue::$lastJoin = $player->getName();
@@ -277,10 +250,6 @@ class EventsListener implements Listener
                 }
             }
         }, null));
-
-        if ($session->data["snow"]) {
-            $player->getNetworkSession()->sendDataPacket(LevelEventPacket::create(LevelEvent::START_RAIN, 10000, null));
-        }
 
         Util::givePlayerPreferences($player);
 
@@ -334,7 +303,7 @@ class EventsListener implements Listener
             $ev = new PlayerDeathEvent($player, [], 0, "");
             $ev->call();
         } else if (Util::getTpTime($player) > 0) {
-            $entity = new LogoutEntity($player->getLocation(), $player->getSkin());
+            $entity = new LogoutNpc($player->getLocation(), $player->getSkin());
             $entity->initEntityB($player);
             $entity->spawnToAll();
         }
@@ -397,7 +366,7 @@ class EventsListener implements Listener
                 $pot2 = Util::getItemCount($damager, VanillaItems::SPLASH_POTION()->setType(PotionType::STRONG_HEALING()));
 
                 Main::getInstance()->getLogger()->info($player->getDisplayName() . " (" . $player->getName() . ") a été tué par " . $damager->getDisplayName() . " (" . $damager->getName() . ")");
-                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§q" . $player->getDisplayName() . "[§7" . $pot1 . "§q] §fa été tué par le joueur §q" . $damager->getDisplayName() . "[§7" . $pot2 . "§q]");
+                Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§9" . $player->getDisplayName() . "[§7" . $pot1 . "§9] §fa été tué par le joueur §9" . $damager->getDisplayName() . "[§7" . $pot2 . "§9]");
 
                 $damagerSession = Session::get($damager);
 
@@ -411,51 +380,17 @@ class EventsListener implements Listener
 
                 if ($playerBounty > 0) {
                     $damagerSession->addValue("money", $playerBounty);
-                    Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§q" . $damager->getName() . " §fvient de remporter un prime de §q" . $playerBounty . " pièce(s) §fen tuant §q" . $player->getName() . " §f!");
+                    Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§9" . $damager->getName() . " §fvient de remporter un prime de §9" . $playerBounty . " pièce(s) §fen tuant §9" . $player->getName() . " §f!");
                 }
 
                 if ($damagerKillstreak % 5 == 0) {
                     $amount = Cache::$config["bounties"][array_rand(Cache::$config["bounties"])];
                     $damagerSession->addValue("bounty", $amount);
 
-                    Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§q" . $damager->getName() . " §fa fait §q" . $damagerSession->data["killstreak"] . " §fkills sans mourrir ! Sa mort est désormais mise à prix à §q" . Session::get($damager)->data["bounty"] . " pièce(s) §8(§7+" . $amount . "§8) §f!");
+                    Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "§9" . $damager->getName() . " §fa fait §9" . $damagerSession->data["killstreak"] . " §fkills sans mourrir ! Sa mort est désormais mise à prix à §9" . Session::get($damager)->data["bounty"] . " pièce(s) §8(§7+" . $amount . "§8) §f!");
                 }
 
-                Jobs::addXp($damager, "Hunter", 50 + $damagerSession->data["player"]["killstreak"]);
-
-                $item = $damager->getInventory()->getItemInHand();
-
-                $enchantmentIdMap = EnchantmentIdMap::getInstance();
-                $looter = $enchantmentIdMap->fromId(EnchantmentIds::LOOTER);
-                $ares = $enchantmentIdMap->fromId(EnchantmentIds::ARES);
-
-                if ($item->hasEnchantment($looter)) {
-                    $enchantLevel = $item->getEnchantment($looter)?->getLevel();
-                    $moneyToLoot = round($session->data["money"] * (0.02 * $enchantLevel));
-
-                    $session->addValue("money", $moneyToLoot, true);
-                    $player->sendMessage(Util::PREFIX . "§q" . $damager->getName() . " §fvous a volé §q" . $moneyToLoot . " pièce(s) §fà cause de l'enchantement §qPilleur " . Util::formatToRomanNumber($enchantLevel) . " §fsur son épée !");
-
-                    $damagerSession->addValue("money", $moneyToLoot);
-                    $damager->sendMessage(Util::PREFIX . "§fVous avez volé §q" . $moneyToLoot . " pièce(s) §fà §q" . $player->getName() . " §fgrâce à votre enchantement §qPilleur " . Util::formatToRomanNumber($enchantLevel) . " §f!");
-                }
-
-                if ($item->hasEnchantment($ares)) {
-                    $updatedItem = clone $item;
-
-                    if (!is_null($updatedItem->getNamedTag()->getTag("kills"))) {
-                        $kills = $updatedItem->getNamedTag()->getInt("kills");
-
-                        $updatedItem->getNamedTag()->setInt("kills", ($updatedKills = $kills + 1));
-                        $updatedItem->setCustomName("§r§bÉpée de " . $damager->getName() . " §8(§7" . $updatedKills . " kill(s)§8)");
-                    } else {
-                        $updatedItem->getNamedTag()->setInt("kills", 1);
-                        $updatedItem->setCustomName("§r§bÉpée de " . $damager->getName() . " §8(§71 kill§8)");
-                    }
-
-                    $damager->getInventory()->setItemInHand($updatedItem);
-                }
-
+                Jobs::addXp($damager, "Hunter", 50 + $damagerSession->data["killstreak"]);
                 return;
             }
         } else {
@@ -470,6 +405,138 @@ class EventsListener implements Listener
         $event->cancel();
     }
 
+    public function onItemDamage(ItemDamageEvent $event): void
+    {
+        ExtraVanillaItems::getItem($event->getItem())->onDamage($event);
+    }
+
+    public function onDamage(EntityDamageEvent $event): void
+    {
+        $entity = $event->getEntity();
+
+        if ($entity instanceof ItemEntity) {
+            if ($event->getCause() === $event::CAUSE_ENTITY_ATTACK && $entity->getItem()->getTypeId() === VanillaBlocks::CACTUS()->asItem()->getTypeId()) {
+                $entity->setMotion(new Vector3(0.3, 0.3, 0.3));
+                $event->cancel();
+            } else if ($event->getCause() === $event::CAUSE_VOID) {
+                $entity->teleport($entity->getWorld()->getSpawnLocation());
+                $event->cancel();
+            }
+
+            return;
+        } else if ($event->getModifier(EntityDamageEvent::MODIFIER_PREVIOUS_DAMAGE_COOLDOWN) < 0.0) {
+            $event->cancel();
+            return;
+        } else if ($entity instanceof Living) {
+            Armor::applyDamageModifiers($event, $entity);
+
+            if (!$entity instanceof Player) {
+                return;
+            }
+        }
+
+        $entitySession = Session::get($entity);
+
+        if ($event->getCause() === EntityDamageEvent::CAUSE_VOID) {
+            $entity->teleport($entity->getPosition()->getWorld()->getSpawnLocation());
+            $event->cancel();
+
+            return;
+        } else if (
+            $event->getCause() === EntityDamageEvent::CAUSE_FALL ||
+            $event->getCause() === EntityDamageEvent::CAUSE_SUFFOCATION ||
+            (Util::insideZone($entity->getPosition(), "spawn") && !in_array($entity->getName(), GamblingTask::$players)) ||
+            $entitySession->data["staff_mod"][0] ||
+            str_starts_with($entity->getPosition()->getWorld()->getFolderName(), "island-") ||
+            $entity->getPosition()->getWorld()->getFolderName() === "mine"
+        ) {
+            $event->cancel();
+        }
+
+        if ($event instanceof EntityDamageByEntityEvent) {
+            $damager = $event->getDamager();
+
+            if ($damager instanceof Player) {
+                if (Util::insideZone($damager->getPosition(), "spawn") && !in_array($damager->getName(), GamblingTask::$players)) {
+                    $event->cancel();
+                }
+
+                $damagerSession = Session::get($damager);
+
+                if ($damagerSession->data["staff_mod"][0]) {
+                    $message = match ($damager->getInventory()->getItemInHand()->getCustomName()) {
+                        "§r" . Util::PREFIX . "Sanction §9§l«" => "custom",
+                        "§r" . Util::PREFIX . "Alias §9§l«" => "/alias \"" . $entity->getName() . "\"",
+                        "§r" . Util::PREFIX . "Freeze §9§l«" => "/freeze \"" . $entity->getName() . "\"",
+                        "§r" . Util::PREFIX . "Invsee §9§l«" => "/invsee \"" . $entity->getName() . "\"",
+                        "§r" . Util::PREFIX . "Ecsee §9§l«" => "/ecsee \"" . $entity->getName() . "\"",
+                        default => null
+                    };
+
+                    if ($message === "custom") {
+                        if ($damager->getInventory()->getItemInHand()->getCustomName() === "§r" . Util::PREFIX . "Knockback 2 §e§l«") {
+                            return;
+                        }
+
+                        Sanction::chooseSanction($damager, $entity->getName());
+                    } else {
+                        if (!is_null($message)) {
+                            $damager->chat($message);
+                        } else {
+                            $damager->sendMessage("Vous venez de taper le joueur §9" . $entity->getName());
+                        }
+                    }
+
+                    $event->cancel();
+                    return;
+                }
+
+                if ($event->isCancelled() || Faction::hasFaction($damager) && Faction::hasFaction($entity) && $damagerSession->data["faction"] === $entitySession->data["faction"] || $entity->isFlying() || $entity->getAllowFlight()) {
+                    $event->cancel();
+                    return;
+                } else if (ExtraVanillaItems::getItem($damager->getInventory()->getItemInHand())->onAttack($event, $damager)) {
+                    return;
+                }
+
+                if ($entity->getGamemode() === GameMode::CREATIVE() || $damager->getGamemode() === GameMode::CREATIVE() || $entity->hasNoClientPredictions()) {
+                    goto skip;
+                }
+
+                PartnerItems::executeHitPartnerItem($damager, $entity);
+
+                $damagerSession->setCooldown("combat", 20, [$entity->getName()]);
+                $entitySession->setCooldown("combat", 20, [$damager->getName()]);
+
+                $event->setKnockback(0.38);
+                $event->setAttackCooldown(8);
+
+                $damagerSession->data["last_hit"] = [$entity->getName(), time()];
+
+                if ($entitySession->inCooldown("_focusmode") && $damager->getName() === $entitySession->getCooldownData("_focusmode")[1]) {
+                    $event->setBaseDamage($event->getBaseDamage() + (($event->getBaseDamage() / 100) * 15));
+                }
+
+                Util::updateBounty($entity);
+                Util::updateBounty($damager);
+            }
+        }
+
+        skip:
+
+        if (!$event->isCancelled() && in_array($entity->getName(), GamblingTask::$players) && $event->getFinalDamage() >= $entity->getHealth()) {
+            $ev = new PlayerDeathEvent($entity, [], 0, "");
+            $ev->call();
+
+            $event->setBaseDamage(0);
+        }
+    }
+
+    public function onExhaust(PlayerExhaustEvent $event): void
+    {
+        $event->getPlayer()->getHungerManager()->setExhaustion(2.5);
+        $event->getPlayer()->getHungerManager()->setFood(18);
+    }
+
     /**
      * @handleCancelled
      */
@@ -482,9 +549,9 @@ class EventsListener implements Listener
 
         if ($session->data["staff_mod"][0]) {
             $command = match ($item->getCustomName()) {
-                "§r" . Util::PREFIX . "Vanish §q§l«" => "/vanish",
-                "§r" . Util::PREFIX . "Random Tp §q§l«" => "/randomtp",
-                "§r" . Util::PREFIX . "Spectateur §q§l«" => "/spec",
+                "§r" . Util::PREFIX . "Vanish §9§l«" => "/vanish",
+                "§r" . Util::PREFIX . "Random Tp §9§l«" => "/randomtp",
+                "§r" . Util::PREFIX . "Spectateur §9§l«" => "/spec",
                 default => null
             };
 
@@ -507,16 +574,7 @@ class EventsListener implements Listener
             return;
         }
 
-        if (!is_null($item->getNamedTag()->getTag("xp_bottle"))) {
-            $xp = $item->getNamedTag()->getInt("xp_bottle");
-
-            $player->getXpManager()->addXpLevels($xp);
-            $player->getInventory()->removeItem($item->setCount(1));
-
-            $player->sendMessage(Util::PREFIX . "§fVous venez de récupérer §q" . $xp . " §fniveaux d'expérience");
-
-            $event->cancel();
-        }
+        ExtraVanillaItems::getItem($item)->onUse($event);
     }
 
     public function onPick(EntityItemPickupEvent $event): void
@@ -573,17 +631,26 @@ class EventsListener implements Listener
     public function onPlace(BlockPlaceEvent $event): void
     {
         $player = $event->getPlayer();
+        $block = null;
 
         if (Session::get($player)->data["staff_mod"][0]) {
             $event->cancel();
             return;
         }
 
-        foreach ($event->getTransaction()->getBlocks() as [$x, $y, $z, $block]) {
-            if (!Faction::canBuild($player, $block, "place")) {
-                $event->cancel();
+        foreach ($event->getTransaction()->getBlocks() as [$x, $y, $z, $transactionBlock]) {
+            $block = $transactionBlock;
+
+            if (!Faction::canBuild($player, $transactionBlock, "place")) {
                 Util::antiBlockGlitch($player);
+
+                $event->cancel();
+                return;
             }
+        }
+
+        if ($block instanceof Block) {
+            ExtraVanillaBlocks::getBlock($block)->onPlace($event);
         }
     }
 
@@ -630,10 +697,44 @@ class EventsListener implements Listener
         $event->cancel();
     }
 
+    public function onGrow(BlockGrowEvent $event): void
+    {
+        if ($event->getBlock()->getPosition()->getWorld()->getFolderName() === "mine") {
+            $event->cancel();
+        }
+    }
+
+    public function onUpdate(BlockUpdateEvent $event): void
+    {
+        if ($event->getBlock()->getPosition()->getWorld()->getFolderName() === "mine") {
+            $event->cancel();
+        }
+    }
+
     public function onDrop(PlayerDropItemEvent $event): void
     {
         if (in_array($event->getPlayer()->getName(), GamblingTask::$players)) {
             $event->cancel();
+        }
+    }
+
+    public function onCraft(CraftItemEvent $event): void
+    {
+        $input = $event->getInputs();
+        $player = $event->getPlayer();
+
+        foreach ($input as $item) {
+            if (!is_null($item->getNamedTag()->getTag("partneritem"))) {
+                $event->cancel();
+                Util::removeCurrentWindow($player);
+
+                $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser des partneritems pour craft des items ou autre");
+                break;
+            } else if (!is_null($item->getNamedTag()->getTag("menu_item"))) {
+                $event->cancel();
+                Util::removeCurrentWindow($player);
+                break;
+            }
         }
     }
 
@@ -642,32 +743,26 @@ class EventsListener implements Listener
         $player = $event->getPlayer();
         $block = $event->getBlock();
 
-        $target = clone $block;
-        $drop = true;
-
         $session = Session::get($player);
 
-        /*if ($player->getInventory()->getItemInHand()->getTypeId() === VanillaItems::STONE_AXE()->getTypeId()) {
-            if (AddClaims::addClaim($block->getPosition()->getX(), $block->getPosition()->getZ())) {
-                $player->sendMessage(Util::PREFIX . "Chunk ajouté");
-            }
-
+        if ($session->data["staff_mod"][0]) {
             $event->cancel();
-        }*/
-
-        if (!$player->isCreative() && $player->getPosition()->getWorld()->getFolderName() === "mine" && $player->getPosition()->getFloorX() > 4500) {
-            $event->cancel();
-            $drop = false;
+            return;
+        } else if (!$player->isCreative() && $player->getPosition()->getWorld()->getFolderName() === "mine" && $player->getPosition()->getFloorX() > 4500) {
+            Util::addItems($player, $event->getDrops(), false);
 
             if ($session->data["money"] >= 15) {
                 $session->addValue("money", 15, true);
-                $player->sendTip("§q- 15 pièces");
+                $player->sendTip("§9- 15 pièces");
 
                 $event->setDrops([$block->asItem()->setCount(1)]);
                 $event->setXpDropAmount(0);
             } else {
-                $player->sendTip("§qVous n'avez pas assez d'argent pour acheter les blocs (15 pièces/u)");
+                $player->sendTip("§9Vous n'avez pas assez d'argent pour acheter les blocs (15 pièces/u)");
             }
+
+            $event->cancel();
+            return;
         } else if ($player->getPosition()->getWorld()->getFolderName() !== "mine" && !Faction::canBuild($player, $block, "break")) {
             if ($block->isFullCube()) {
                 Util::antiBlockGlitch($player);
@@ -677,170 +772,53 @@ class EventsListener implements Listener
             return;
         }
 
-        if ($session->data["staff_mod"][0]) {
-            $event->cancel();
-            return;
-        } else if ($session->data["cobblestone"] === false && ($block->hasSameTypeId(VanillaBlocks::COBBLESTONE()) || $block->hasSameTypeId(VanillaBlocks::STONE()))) {
+        if ($session->data["cobblestone"] === false && ($block->hasSameTypeId(VanillaBlocks::COBBLESTONE()) || $block->hasSameTypeId(VanillaBlocks::STONE()))) {
             $event->setDrops([]);
         }
 
         if (!$player->isCreative() && $block->getPosition()->getWorld()->getFolderName() === "mine" && $player->getPosition()->getFloorX() < 4500) {
-            $respawn = 0;
-            $bedrock = false;
+            $data = ExtraVanillaBlocks::getBlock($block)->getDropsMine($player, $block);
 
-            if ($block->hasSameTypeId(VanillaBlocks::COCOA_POD())) {
-                $respawn = 15;
-
-                if ($block instanceof CocoaBlock) {
-                    $block = $block->setAge(CocoaBlock::MAX_AGE);
-                }
-
-                $cookies = [VanillaItems::COOKED_FISH(), VanillaItems::COOKED_SALMON(), VanillaItems::RAW_SALMON()];
-                $event->setDrops([$cookies[array_rand($cookies)]]);
-            } else if ($block->hasSameTypeId(VanillaBlocks::DEEPSLATE_EMERALD_ORE())) {
-                $respawn = 15;
-                $bedrock = true;
-
-                if ($block->hasSameTypeId(VanillaBlocks::DEEPSLATE_EMERALD_ORE())) {
-                    $emerald = Util::getItemByName(ItemTypeNames::EMERALD_NUGGET)->setCount(mt_rand(1, 5));
-                    $event->setDrops([$emerald]);
-
-                    Jobs::addXp($player, "Mineur", 15);
-                }
-            } else if ($block->hasSameTypeId(VanillaBlocks::NETHER_GOLD_ORE())) {
-                $respawn = 40;
-                $bedrock = true;
-
-                $items = [
-                    ExtraVanillaItems::MINER_HELMET(),
-                    VanillaItems::COOKED_FISH(),
-                    VanillaItems::COOKED_SALMON(),
-                    VanillaItems::RAW_SALMON(),
-                    VanillaBlocks::REDSTONE()->asItem(),
-                    VanillaBlocks::CHISELED_NETHER_BRICKS()->asItem(),
-                    VanillaBlocks::SUNFLOWER()->asItem(),
-                    VanillaBlocks::FLOWERING_AZALEA_LEAVES()->asItem(),
-                    VanillaItems::EXPERIENCE_BOTTLE()->setCount(3),
-                    VanillaBlocks::LAPIS_LAZULI()->asItem(),
-                    VanillaItems::NAUTILUS_SHELL(),
-                    VanillaBlocks::STAINED_GLASS()->setColor(DyeColor::BROWN())->asItem(),
-                    VanillaItems::CARROT(),
-                    VanillaItems::POTATO(),
-                    VanillaItems::BEETROOT(),
-                    VanillaItems::WHEAT_SEEDS(),
-                    VanillaItems::BEETROOT_SEEDS(),
-                    VanillaBlocks::STONE()->asItem(),
-                    VanillaBlocks::COBBLESTONE()->asItem(),
-                    VanillaBlocks::DIRT()->asItem(),
-                    VanillaBlocks::GLASS()->asItem(),
-                    VanillaItems::BAMBOO(),
-                    VanillaItems::MELON(),
-                    VanillaItems::SWEET_BERRIES()
-                ];
-
-                $player->broadcastSound(new AmethystBlockChimeSound());
-                $event->setDrops([$items[array_rand($items)]]);
-
-                Jobs::addXp($player, "Mineur", 5, false);
-            } else if ($block->hasSameTypeId(VanillaBlocks::WHEAT())) {
-                $respawn = 15;
-
-                if ($block instanceof Wheat) {
-                    $block = $block->setAge(Crops::MAX_AGE);
-                }
-
-                $session->addValue("money", ($rand = mt_rand(1, 10)));
-                $player->sendTip("+ §q" . $rand . " §fPièces §q+");
-
-                $event->setDrops([]);
-            } else {
-                $event->setDrops([]);
-                $event->setXpDropAmount(0);
-            }
-
-            if ($respawn > 0) {
+            if (is_array($data) && $data[0] > 0) {
                 $item = $event->getItem();
-                $position = $target->getPosition();
-
-                $replace = $bedrock ? VanillaBlocks::BEDROCK() : VanillaBlocks::AIR();
+                $position = $block->getPosition();
 
                 if ($item instanceof Durable) {
                     $item->applyDamage(1);
                 }
 
                 $player->getInventory()->setItemInHand($item);
-                $position->getWorld()->setBlock($position, $replace, false);
+                $position->getWorld()->setBlock($position, $data[1], false);
 
-                PlayerTask::$blocks[] = [time() + $respawn, $position, $block];
+                PlayerTask::$blocks[] = [time() + $data[0], $position, $data[2]];
 
-                $position->getWorld()->addSound($position, new BlockBreakSound($target));
-                $position->getWorld()->addParticle($position->add(0.5, 0.5, 0.5), new BlockBreakParticle($target));
+                $position->getWorld()->addSound($position, new BlockBreakSound($block));
+                $position->getWorld()->addParticle($position->add(0.5, 0.5, 0.5), new BlockBreakParticle($block));
+
+                Util::addItems($player, $data[3]);
+
+                if ($event->getXpDropAmount() > 0) {
+                    $player->getXpManager()->addXp($event->getXpDropAmount());
+                }
             }
 
             $event->cancel();
+            return;
         }
 
-        if (!$player->isCreative() && $target->hasSameTypeId(VanillaBlocks::TRAPPED_CHEST())) {
-            $event->setDrops([
-                VanillaBlocks::EMERALD()->asItem()->setCount(mt_rand(3, 6))
-            ]);
+        if (ExtraVanillaItems::getItem($event->getItem())->onBreak($event)) {
+            return;
+        } else if (ExtraVanillaBlocks::getBlock($event->getBlock())->onBreak($event)) {
+            return;
         }
 
-        if ($target->hasSameTypeId(VanillaBlocks::COBBLESTONE()) || $target->hasSameTypeId(VanillaBlocks::STONE())) {
+        if ($block->hasSameTypeId(VanillaBlocks::COBBLESTONE()) || $block->hasSameTypeId(VanillaBlocks::STONE())) {
             Jobs::addXp($player, "Mineur", 1);
-        } else if ($target->hasSameTypeId(VanillaBlocks::MELON())) {
+        } else if ($block->hasSameTypeId(VanillaBlocks::MELON()) || ($block instanceof Crops && !$block->ticksRandomly())) {
             Jobs::addXp($player, "Farmeur", mt_rand(1, 3));
         }
 
-        if ($target instanceof Crops && $target->getAge() === 7) {
-            Jobs::addXp($player, "Farmeur", mt_rand(1, 3));
-        }
-
-        if (!$player->isCreative() && $target->hasSameTypeId(VanillaBlocks::COBBLESTONE()) && mt_rand(0, 20) == 0) {
-            $event->setDrops([
-                Util::getItemByName(ItemTypeNames::IRIS_DUST)->setCount(1)
-            ]);
-        }
-
-        if (!$player->isCreative() && $target instanceof NetherWartPlant && $target->getAge() === NetherWartPlant::MAX_AGE && mt_rand(0, 30) == 0) {
-            $event->setDrops([
-                Util::getItemByName(ItemTypeNames::IRIS_DUST)->setCount(1)
-            ]);
-        }
-
-        $drops = $event->getDrops();
-
-        if (!$event->isCancelled() && FarmingWarsTask::$currentFarmingWars) {
-            $farmingWarsBlock = FarmingWarsTask::$block;
-
-            if ($target->getTypeId() === $farmingWarsBlock?->getTypeId()) {
-                if ($target instanceof Crops && $target->getAge() < $target::MAX_AGE) {
-                    $player->sendTip(Util::PREFIX . "Uniquement les plantations maxés sont comptabilisées dans l'event");
-                    return;
-                }
-
-                $addition = 0;
-
-                foreach ($drops as $drop) {
-                    $targetDrop = FarmingWarsTask::getItemByBlock($farmingWarsBlock);
-                    if ($drop->getTypeId() === $targetDrop->getTypeId()) {
-                        $addition += $drop->getCount();
-                        break;
-                    }
-                }
-
-                if ($addition > 0) {
-                    $player->broadcastSound(new XpLevelUpSound(1), [$player]);
-                    $player->sendTip("§q+ " . $addition . " +");
-
-                    FarmingWarsTask::updateScore($player, $addition);
-                }
-            }
-        }
-
-        foreach ($drops as $item) {
-            Util::addItem($player, $item, !$drop);
-        }
+        Util::addItems($player, $event->getDrops());
 
         if ($event->getXpDropAmount() > 0) {
             $player->getXpManager()->addXp($event->getXpDropAmount());
@@ -872,7 +850,7 @@ class EventsListener implements Listener
                 return;
             }
 
-            if ($entity instanceof SwitcherEntity) {
+            if ($entity instanceof SwitchBall) {
                 if (Session::get($damager)->inCooldown("teleportation_switch")) {
                     $damager->sendMessage(Util::PREFIX . "Vous ne pouvez pas vous téléporté puis switch un joueur");
                     return;
@@ -884,13 +862,13 @@ class EventsListener implements Listener
                 $player->broadcastSound(new EndermanTeleportSound());
                 $player->broadcastSound(new EndermanTeleportSound());
 
-                $damager->sendMessage(Util::PREFIX . "Vous avez été switch avec le joueur §q" . $player->getDisplayName());
-                $player->sendMessage(Util::PREFIX . "Vous avez été switch avec le joueur §q" . $damager->getDisplayName());
-            } else if ($entity instanceof AntiBackBallEntity) {
+                $damager->sendMessage(Util::PREFIX . "Vous avez été switch avec le joueur §9" . $player->getDisplayName());
+                $player->sendMessage(Util::PREFIX . "Vous avez été switch avec le joueur §9" . $damager->getDisplayName());
+            } else if ($entity instanceof AntiBackBall) {
                 $player->setNoClientPredictions();
 
-                $damager->sendMessage(Util::PREFIX . "Vous avez touché §q" . $player->getDisplayName() . " §favec votre antiback ball, il est donc freeze pendant §q2 §fsecondes");
-                $player->sendMessage(Util::PREFIX . "Vous avez été touché par une antiback ball par §q" . $damager->getDisplayName() . " §fvous êtes donc freeze pendant §q2 §fsecondes");
+                $damager->sendMessage(Util::PREFIX . "Vous avez touché §9" . $player->getDisplayName() . " §favec votre antiback ball, il est donc freeze pendant §92 §fsecondes");
+                $player->sendMessage(Util::PREFIX . "Vous avez été touché par une antiback ball par §9" . $damager->getDisplayName() . " §fvous êtes donc freeze pendant §92 §fsecondes");
 
                 Session::get($damager)->setCooldown("combat", 30, [$player->getName()]);
                 Session::get($player)->setCooldown("combat", 30, [$damager->getName()]);
@@ -951,7 +929,7 @@ class EventsListener implements Listener
         $username = $event->getPlayerInfo()->getUsername();
 
         foreach (Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld()->getEntities() as $entity) {
-            if ($entity instanceof LogoutEntity) {
+            if ($entity instanceof LogoutNpc) {
                 $name = $entity->player;
                 $name = is_null($name) ? "" : $name;
 
@@ -963,152 +941,16 @@ class EventsListener implements Listener
         }
     }
 
-    public function onDamage(EntityDamageEvent $event): void
+    public function onConsume(PlayerItemConsumeEvent $event): void
     {
-        $entity = $event->getEntity();
+        $item = $event->getItem();
 
-        if (!$event->isCancelled() && $event->getModifier(EntityDamageEvent::MODIFIER_PREVIOUS_DAMAGE_COOLDOWN) < 0.0) {
+        if ($item->getTypeId() === VanillaItems::GOLDEN_APPLE()->getTypeId() || $item->getTypeId() === VanillaItems::GOLDEN_CARROT()->getTypeId()) {
             $event->cancel();
             return;
         }
 
-        if ($entity instanceof Player) {
-            $entitySession = Session::get($entity);
-
-            if ($event->getCause() === EntityDamageEvent::CAUSE_VOID) {
-                $entity->teleport($entity->getPosition()->getWorld()->getSpawnLocation());
-                $event->cancel();
-                return;
-            } else if (
-                $event->getCause() === EntityDamageEvent::CAUSE_FALL ||
-                $event->getCause() === EntityDamageEvent::CAUSE_SUFFOCATION ||
-                (Util::insideZone($entity->getPosition(), "spawn") && !in_array($entity->getName(), GamblingTask::$players)) ||
-                $entitySession->data["staff_mod"][0] ||
-                str_starts_with($entity->getPosition()->getWorld()->getFolderName(), "island-") ||
-                $entity->getPosition()->getWorld()->getFolderName() === "mine"
-            ) {
-                $event->cancel();
-            }
-
-            if ($event instanceof EntityDamageByEntityEvent) {
-                $damager = $event->getDamager();
-
-                if ($damager instanceof Player) {
-                    if (Util::insideZone($damager->getPosition(), "spawn") && !in_array($damager->getName(), GamblingTask::$players)) {
-                        $event->cancel();
-                    }
-
-                    $damagerSession = Session::get($damager);
-
-                    if ($damagerSession->data["staff_mod"][0]) {
-                        $message = match ($damager->getInventory()->getItemInHand()->getCustomName()) {
-                            "§r" . Util::PREFIX . "Sanction §q§l«" => "custom",
-                            "§r" . Util::PREFIX . "Alias §q§l«" => "/alias \"" . $entity->getName() . "\"",
-                            "§r" . Util::PREFIX . "Freeze §q§l«" => "/freeze \"" . $entity->getName() . "\"",
-                            "§r" . Util::PREFIX . "Invsee §q§l«" => "/invsee \"" . $entity->getName() . "\"",
-                            "§r" . Util::PREFIX . "Ecsee §q§l«" => "/ecsee \"" . $entity->getName() . "\"",
-                            default => null
-                        };
-
-                        if ($message === "custom") {
-                            if ($damager->getInventory()->getItemInHand()->getCustomName() === "§r" . Util::PREFIX . "Knockback 2 §e§l«") {
-                                return;
-                            }
-
-                            Sanction::chooseSanction($damager, $entity->getName());
-                        } else {
-                            if (!is_null($message)) {
-                                $damager->chat($message);
-                            } else {
-                                $damager->sendMessage("Vous venez de taper le joueur §q" . $entity->getName());
-                            }
-                        }
-
-                        $event->cancel();
-                        return;
-                    }
-
-                    if ($event->isCancelled() || Faction::hasFaction($damager) && Faction::hasFaction($entity) && $damagerSession->data["faction"] === $entitySession->data["faction"] || $entity->isFlying() || $entity->getAllowFlight()) {
-                        $event->cancel();
-                        return;
-                    }
-                    if ($entity->getGamemode() === GameMode::CREATIVE() || $damager->getGamemode() === GameMode::CREATIVE() || $entity->hasNoClientPredictions()) {
-                        goto skip;
-                    }
-
-                    if ($damager->getInventory()->getItemInHand() instanceof Axe) {
-                        $event->setBaseDamage(max(1, $event->getBaseDamage() - 2));
-                    }
-
-                    PartnerItems::executeHitPartnerItem($damager, $entity);
-
-                    $damagerSession->setCooldown("combat", 20, [$entity->getName()]);
-                    $entitySession->setCooldown("combat", 20, [$damager->getName()]);
-
-                    $event->setKnockback(0.38);
-                    $event->setAttackCooldown(8);
-
-                    $damagerSession->data["last_hit"] = [$entity->getName(), time()];
-
-                    if ($entitySession->inCooldown("_focusmode") && $damager->getName() === $entitySession->getCooldownData("_focusmode")[1]) {
-                        $event->setBaseDamage($event->getBaseDamage() + (($event->getBaseDamage() / 100) * 15));
-                    }
-
-                    $sup = "";
-
-                    if (($bounty = $entitySession->data["bounty"]) > 0) {
-                        $sup .= " §7| §q" . Util::formatNumberWithSuffix($bounty) . " \u{E102}";
-                    }
-
-                    $entity->setScoreTag("§7" . round($entity->getHealth(), 2) . " §c❤" . $sup);
-
-                    $item = $damager->getInventory()->getItemInHand();
-                    $lightningStrike = EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::LIGHTNING_STRIKE);
-
-                    if ($item->hasEnchantment($lightningStrike)) {
-                        $level = $item->getEnchantment($lightningStrike)?->getLevel();
-
-                        $chance = match ($level) {
-                            1 => 200,
-                            2 => 150,
-                            3 => 100
-                        };
-
-                        if (mt_rand(0, $chance) < 1) {
-                            $lightning = new LightningBolt($entity->getLocation());
-                            $lightning->spawnToAll();
-
-                            $entity->setLastDamageCause(new EntityDamageByEntityEvent($damager, $entity, $event::CAUSE_CUSTOM, 2));
-                            $entity->setHealth(max($entity->getHealth() - 2, 0));
-
-                            $hurtAnimation = new HurtAnimation($entity);
-                            $viewers = array_merge($entity->getViewers(), $damager->getViewers());
-
-                            NetworkBroadcastUtils::broadcastPackets(array_unique($viewers), $hurtAnimation->encode());
-                            $entity->getWorld()->broadcastPacketToViewers($entity->getPosition()->asVector3(), LevelSoundEventPacket::create(LevelSoundEvent::THUNDER, $entity->getLocation(), -1, "minecraft:lightning_bolt", false, false));
-
-                            $entity->sendMessage(Util::PREFIX . "§q" . $damager->getName() . " §fvient de vous envoyer un éclair dessus grâce à son enchantement §qFoudroiement §f!");
-                        }
-                    }
-                }
-            }
-
-            skip:
-
-            if (!$event->isCancelled() && in_array($entity->getName(), GamblingTask::$players) && $event->getFinalDamage() >= $entity->getHealth()) {
-                $ev = new PlayerDeathEvent($entity, [], 0, "");
-                $ev->call();
-
-                $event->setBaseDamage(0);
-            }
-        } else if ($entity instanceof ItemEntity) {
-            $entity->teleport($entity->getWorld()->getSpawnLocation());
-
-            if ($entity->getItem()->getTypeId() === VanillaBlocks::CACTUS()->asItem()->getTypeId()) {
-                $entity->setMotion(new Vector3(0.3, 0.3, 0.3));
-                $event->cancel();
-            }
-        }
+        ExtraVanillaItems::getItem($item)->onConsume($event);
     }
 
     public function onItemSpawn(ItemSpawnEvent $event): void

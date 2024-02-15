@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\player\rank;
 
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Rank;
 use Kitmap\Main;
 use Kitmap\Util;
@@ -42,12 +42,12 @@ class StealSkin extends BaseCommand
             $sender->setSkin($player->getSkin());
             $sender->sendSkin();
 
-            $sender->sendMessage(Util::PREFIX . "Vous venez de voler le skin de §q" . $player->getName());
+            $sender->sendMessage(Util::PREFIX . "Vous venez de voler le skin de §9" . $player->getName());
         }
     }
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
     }
 }

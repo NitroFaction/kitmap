@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\staff\op;
 
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
@@ -39,12 +39,12 @@ class PvClear extends BaseCommand
             $session = Session::get($player);
             unset($session->data["private_vaults"]);
 
-            $sender->sendMessage(Util::PREFIX . "Vous venez de clear les pv de §q" . $sender->getName());
+            $sender->sendMessage(Util::PREFIX . "Vous venez de clear les pv de §9" . $sender->getName());
         }
     }
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
     }
 }

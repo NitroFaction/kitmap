@@ -26,7 +26,7 @@ class Logs extends BaseSubCommand
             $faction = strtolower($args["faction"]);
 
             if (!Faction::exists($faction)) {
-                $sender->sendMessage(Util::PREFIX . "La faction §q" . $faction . " §fn'existe pas");
+                $sender->sendMessage(Util::PREFIX . "La faction §9" . $faction . " §fn'existe pas");
                 return;
             }
 

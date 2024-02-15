@@ -4,6 +4,7 @@ namespace Kitmap\command\faction\subcommands\admin;
 
 use CortexPE\Commando\BaseSubCommand;
 use Kitmap\command\faction\subcommands\admin\claim\Here;
+use Kitmap\command\faction\subcommands\admin\claim\Reset;
 use Kitmap\Main;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
@@ -28,5 +29,6 @@ class Claim extends BaseSubCommand
     protected function prepare(): void
     {
         $this->registerSubCommand(new Here());
+        $this->registerSubCommand(new Reset());
     }
 }

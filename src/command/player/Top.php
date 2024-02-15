@@ -3,8 +3,8 @@
 namespace Kitmap\command\player;
 
 use CortexPE\Commando\args\IntegerArgument;
+use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\OptionArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
@@ -30,12 +30,12 @@ class Top extends BaseCommand
         $i = 1;
 
         $page = !isset($args["page"]) ? 1 : $args["page"];
-        $format = "§7{COUNT}. §q{KEY} §8(§f{VALUE}§8)";
+        $format = "§7{COUNT}. §9{KEY} §8(§f{VALUE}§8)";
 
         $top = self::getTopByCategory($args["categorie"]);
         $response = Util::arrayToPage($top, $page, 10);
 
-        $sender->sendMessage(Util::PREFIX . self::getTopName($args["categorie"]) . " §f(Page §q#" . $page . "§f/§q" . $response[0] . "§f)");
+        $sender->sendMessage(Util::PREFIX . self::getTopName($args["categorie"]) . " §f(Page §9#" . $page . "§f/§9" . $response[0] . "§f)");
 
         foreach ($response[1] as $key => $value) {
             if ($args["categorie"] === "nerd") {
@@ -72,13 +72,13 @@ class Top extends BaseCommand
     public static function getTopName(string $category): string
     {
         return match ($category) {
-            "killstreak" => "Joueurs avec les plus gros §qkillstreak",
-            "faction" => "Faction avec le plus de §qpowers",
-            "death" => "Joueurs ayant le plus de §qmorts",
-            "money" => "Joueurs ayant le plus de §qpièces",
-            "nerd" => "Joueurs ayant le plus de §qjoué",
-            "bounty" => "Joueurs ayant la plus grosse §qprime",
-            default => "Joueurs ayant le plus de §qkills"
+            "killstreak" => "Joueurs avec les plus gros §9killstreak",
+            "faction" => "Faction avec le plus de §9powers",
+            "death" => "Joueurs ayant le plus de §9morts",
+            "money" => "Joueurs ayant le plus de §9pièces",
+            "nerd" => "Joueurs ayant le plus de §9joué",
+            "bounty" => "Joueurs ayant la plus grosse §9prime",
+            default => "Joueurs ayant le plus de §9kills"
         };
     }
 

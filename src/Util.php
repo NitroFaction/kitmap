@@ -42,7 +42,7 @@ use Symfony\Component\Filesystem\Path;
 
 class Util
 {
-    const PREFIX = "§q§l» §r§f";
+    const PREFIX = "§9§l» §r§f";
 
     public static function arrayToPage(array $array, ?int $page, int $separator): array
     {
@@ -67,10 +67,27 @@ class Util
         return [$pageMax, $result];
     }
 
+    public static function findPlayerByName(string $name): ?string
+    {
+        /** @noinspection PhpDeprecationInspection */
+        $player = Main::getInstance()->getServer()->getPlayerByPrefix($name);
+
+        if ($player instanceof Player) {
+            $name = $player->getName();
+        } else {
+            $name = strtolower($name);
+
+            if (!isset(Cache::$players["upper_name"][$name])) {
+                return null;
+            }
+        }
+        return $name;
+    }
+
     public static function allSelectorExecute(CommandSender $sender, string $command, array $args): void
     {
         if (!$sender->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {
-            $sender->sendMessage(Util::PREFIX . "Vous n'avez pas la permission de faire cela");
+            $sender->sendMessage(self::PREFIX . "Vous n'avez pas la permission de faire cela");
             return;
         }
 
@@ -79,6 +96,53 @@ class Util
             $cmd = str_replace("@a", "\"" . $player->getName() . "\"", $cmd);
 
             self::executeCommand($cmd);
+        }
+    }
+
+    public static function addArrayValue(array $data, array|string $path, int $value, bool $substraction = false): array
+    {
+        $path = is_string($path) ? [$path] : $path;
+        $lastPart = array_pop($path);
+
+        $current = &$data;
+
+        foreach ($path as $part) {
+            if (!isset($current[$part])) {
+                $current[$part] = [];
+            }
+
+            $current = &$current[$part];
+        }
+
+        $current[$lastPart] = ($substraction ? ($current[$lastPart] ?? 0) - $value : ($current[$lastPart] ?? 0) + $value);
+        return $data;
+    }
+
+    public static function addValue(string $staff, string $player, array|string $path, int $value, bool $substraction = false): void
+    {
+        $player = Main::getInstance()->getServer()->getPlayerExact($player);
+
+        if ($player instanceof Player) {
+            Session::get($player)->addValue($path, $value, $substraction);
+            $word = is_string($path) ? $path : implode(" ", $path);
+
+            $player->sendMessage(
+                $substraction ?
+                    self::PREFIX . "Le staff §9" . $staff . " §fvient de vous retirer §9" . $value . " §f" . $word :
+                    self::PREFIX . "Le staff §9" . $staff . " §fvient de vous ajouter §9" . $value . " §f" . $word
+            );
+        } else {
+            $file = self::getFile("data/players/" . $player);
+            $data = self::addArrayValue($file->getAll(), $path, $value);
+
+            if (is_string($path) && isset(Cache::$players[$path])) {
+                Cache::$players[$path][$player] = $file->get($path) + $value;
+            }
+
+            if ($file->getAll() !== []) {
+                $file->setAll($data);
+                $file->save();
+            }
         }
     }
 
@@ -159,7 +223,7 @@ class Util
         $sup = "";
 
         if (($bounty = Session::get($player)->data["bounty"]) > 0) {
-            $sup .= " §7| §q" . Util::formatNumberWithSuffix($bounty) . " \u{E102}";
+            $sup .= " §7| §9" . self::formatNumberWithSuffix($bounty) . " \u{E102}";
         }
 
         $player->setScoreTag("§7" . round($player->getHealth(), 2) . " §c❤" . $sup);
@@ -184,36 +248,8 @@ class Util
 
     public static function getItemByName(string $name): Item
     {
-        $name = str_replace(" ", "_", strtolower($name));
-        $item = StringToItemParser::getInstance()->parse("nitro:" . $name);
-
-        if ($item instanceof Item) {
-            return $item;
-        } else {
-            $item = StringToItemParser::getInstance()->parse("minecraft:" . $name);
-            return $item instanceof Item ? $item : VanillaItems::AIR();
-        }
-    }
-
-    public static function formatToRomanNumber(int $integer): string
-    {
-        $romanNumber = "";
-
-        $units = [
-            "X" => 10,
-            "IX" => 9,
-            "V" => 5,
-            "IV" => 4,
-            "I" => 1
-        ];
-
-        foreach ($units as $unit => $value) {
-            while ($integer >= $value) {
-                $integer -= $value;
-                $romanNumber .= $unit;
-            }
-        }
-        return $romanNumber;
+        $item = StringToItemParser::getInstance()->parse("minecraft:" . $name);
+        return $item instanceof Item ? $item : VanillaItems::AIR();
     }
 
     public static function savePlayerData(Player $player): string|null|bool
@@ -230,7 +266,7 @@ class Util
     public static function serializeCompoundTag(CompoundTag $tag): string
     {
         $nbt = new BigEndianNbtSerializer();
-        return utf8_encode($nbt->write(new TreeRoot($tag)));
+        return base64_encode(zlib_encode($nbt->write(new TreeRoot($tag)), ZLIB_ENCODING_DEFLATE));
     }
 
     public static function listAllFiles(string $dir): array
@@ -290,7 +326,7 @@ class Util
         return floor($player->getPosition()->getX() + $player->getPosition()->getY() + $player->getPosition()->getZ());
     }
 
-    public static function addItems(Player $player, array $items, bool $noDrop = false): void
+    public static function addItems(Player $player, array $items, bool $canDrop = true): void
     {
         foreach ($items as $item) {
             if ($item instanceof Armor) {
@@ -300,13 +336,13 @@ class Util
                 }
             }
 
-            Util::addItem($player, $item, $noDrop);
+            self::addItem($player, $item, $canDrop);
         }
     }
 
-    public static function addItem(Player $player, Item $item, bool $noDrop = false): void
+    public static function addItem(Player $player, Item $item, bool $canDrop = true): void
     {
-        if (!$noDrop && !$player->getInventory()->canAddItem($item)) {
+        if ($canDrop && !$player->getInventory()->canAddItem($item)) {
             $player->getWorld()->dropItem($player->getPosition()->asVector3(), $item);
         }
 
@@ -407,16 +443,16 @@ class Util
 
     public static function restorePlayer(Player $player, string $nbt): void
     {
-        $nbt = Util::deserializePlayerData($player->getName(), $nbt);
+        $nbt = self::deserializePlayerData($player->getName(), $nbt);
 
         $gamemode = $nbt->getInt("playerGameType");
         $xpLevel = $nbt->getInt("XpLevel");
         $xpProgress = $nbt->getFloat("XpP");
         $litetimeXpTotal = $nbt->getInt("XpTotal");
 
-        $inventory = Util::readInventory($nbt);
-        $armorInventory = Util::readArmorInventory($nbt);
-        $effects = Util::readEffects($nbt);
+        $inventory = self::readInventory($nbt);
+        $armorInventory = self::readArmorInventory($nbt);
+        $effects = self::readEffects($nbt);
 
         $player->setGamemode(GameModeIdMap::getInstance()->fromId($gamemode));
         $player->getXpManager()->setXpLevel($xpLevel);
@@ -437,7 +473,7 @@ class Util
     public static function deserializePlayerData(string $identifier, string $contents): CompoundTag
     {
         try {
-            return (new BigEndianNbtSerializer())->read(utf8_decode($contents))->mustGetCompoundTag();
+            return (new BigEndianNbtSerializer())->read(zlib_decode(base64_decode($contents)))->mustGetCompoundTag();
         } catch (NbtDataException $e) {
             throw new PlayerDataLoadException("Failed to decode NBT data for \"" . $identifier . "\": " . $e->getMessage(), 0, $e);
         }
@@ -547,11 +583,6 @@ class Util
     public static function caracterToUnicode(string $input): string
     {
         return Cache::$config["unicodes"][strtolower($input)] ?? " ";
-    }
-
-    public static function getUnderscoredName(Player $player): string
-    {
-        return str_replace(" ", "_", $player->getName());
     }
 
     public static function antiBlockGlitch(Player $player): void

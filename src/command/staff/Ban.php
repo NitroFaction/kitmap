@@ -3,8 +3,8 @@
 namespace Kitmap\command\staff;
 
 use CortexPE\Commando\args\RawStringArgument;
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Rank;
 use Kitmap\handler\Sanction;
@@ -64,7 +64,7 @@ class Ban extends BaseCommand
             $reason = $data[2];
 
             Main::getInstance()->getServer()->getNetwork()->blockAddress($player->getNetworkSession()->getIp(), 600);
-            $player->kick("§fVous êtes banni de nitrofaction.\n\n§fTemps restant: §q" . $time . "\n§fRaison: §q" . $reason . "\n§fStaff: §q" . $staff);
+            $player->kick("§fVous êtes banni de nitrofaction.\n\n§fTemps restant: §9" . $time . "\n§fRaison: §9" . $reason . "\n§fStaff: §9" . $staff);
 
             return true;
         } else {
@@ -87,7 +87,7 @@ class Ban extends BaseCommand
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
     }
 }

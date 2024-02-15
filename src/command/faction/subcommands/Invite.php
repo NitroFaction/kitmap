@@ -2,7 +2,7 @@
 
 namespace Kitmap\command\faction\subcommands;
 
-use Element\util\args\TargetArgument;
+use CortexPE\Commando\args\TargetPlayerArgument;
 use Kitmap\command\faction\FactionCommand;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Faction;
@@ -48,14 +48,14 @@ class Invite extends FactionCommand
             $targetSession->data["invite"][] = $faction;
         }
 
-        $target->sendMessage(Util::PREFIX . "Vous avez été invité à rejoindre la faction §q" . Faction::getFactionUpperName($faction) . "\n§f/f accept §q" . $faction . " §fpour accepter l'invitation");
+        $target->sendMessage(Util::PREFIX . "Vous avez été invité à rejoindre la faction §9" . Faction::getFactionUpperName($faction) . "\n§f/f accept §9" . $faction . " §fpour accepter l'invitation");
 
-        Cache::$factions[$faction]["logs"][time()] = "§q" . $sender->getName() . " §finvite §q" . $target->getName();
-        Faction::broadcastMessage($faction, "§q[§fF§q] §fLe joueur §q" . $target->getName() . " §fvient d'être invité dans votre faction");
+        Cache::$factions[$faction]["logs"][time()] = "§9" . $sender->getName() . " §finvite §9" . $target->getName();
+        Faction::broadcastMessage($faction, "§9[§fF§9] §fLe joueur §9" . $target->getName() . " §fvient d'être invité dans votre faction");
     }
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
     }
 }

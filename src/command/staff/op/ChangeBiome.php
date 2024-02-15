@@ -4,9 +4,9 @@ namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\IntegerArgument;
 use CortexPE\Commando\BaseCommand;
-use Kitmap\Main;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
+use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
@@ -26,6 +26,10 @@ class ChangeBiome extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
+        if (!$sender instanceof Player) {
+            return;
+        }
+
         $id = $args["biome"];
         $around = $args["around"];
 
@@ -41,7 +45,7 @@ class ChangeBiome extends BaseCommand
             $chunkX = $chunk[0];
             $chunkZ = $chunk[1];
 
-            $chunk = Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld()->loadChunk($chunkX, $chunkZ);
+            $chunk = $sender->getWorld()->loadChunk($chunkX, $chunkZ);
 
             if (!$chunk instanceof Chunk) {
                 continue;

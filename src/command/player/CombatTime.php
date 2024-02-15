@@ -34,7 +34,7 @@ class CombatTime extends BaseCommand
             }
 
             $data = $session->getCooldownData("combat");
-            $sender->sendMessage(Util::PREFIX . "Vous êtes en combat encore §q" . ($data[0] - time()) . " §fseconde(s)");
+            $sender->sendMessage(Util::PREFIX . "Vous êtes en combat encore §9" . ($data[0] - time()) . " §fseconde(s)");
         }
     }
 

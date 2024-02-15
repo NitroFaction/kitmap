@@ -10,7 +10,7 @@ use Kitmap\handler\Rank;
 use Kitmap\handler\ScoreFactory;
 use Kitmap\Main;
 use Kitmap\Session;
-use Kitmap\task\repeat\OutpostTask;
+use Kitmap\task\repeat\child\OutpostTask;
 use Kitmap\Util;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
@@ -79,9 +79,9 @@ class Rename extends FactionCommand
         Faction::renameWorld("island-" . $faction, "island-" . $name);
 
         unset(Cache::$factions[$faction]);
-        Cache::$factions[$name]["logs"][time()] = "§q" . $sender->getName() . " §frenome la faction §q" . $name;
+        Cache::$factions[$name]["logs"][time()] = "§9" . $sender->getName() . " §frenome la faction §9" . $name;
 
-        $sender->sendMessage(Util::PREFIX . "Vous venez de renommer votre faction §q" . $faction . " §fen §q" . $name);
+        $sender->sendMessage(Util::PREFIX . "Vous venez de renommer votre faction §9" . $faction . " §fen §9" . $name);
     }
 
     protected function prepare(): void

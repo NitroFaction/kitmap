@@ -18,31 +18,31 @@ class Jobs
 
         if ($option === "UI") {
             if ($level === 20) {
-                return "0§q/§8-1 §q- §8Level: §q" . $level;
+                return "0§9/§8-1 §9- §8Level: §9" . $level;
             } else {
-                return $xp . "§q/§8" . $nextXp . " §q- §8Level: §q" . $level;
+                return $xp . "§9/§8" . $nextXp . " §9- §8Level: §9" . $level;
             }
         }
 
         if ($level === 20) {
             return "§cNiveau maximum atteint";
         } else {
-            $progress = max(1, round((($xp / $nextXp) * 100) / 2, 2));
+            $progress = intval(max(1, round((($xp / $nextXp) * 100) / 2, 2)));
             return "§a" . str_repeat("|", $progress) . "§c" . str_repeat("|", 50 - $progress);
         }
     }
 
-    public static function getLevel(Player $player, string $job): int
+    public static function getLevel(Player $player, string $job): int|float
     {
         return Session::get($player)->data["jobs"][$job]["lvl"];
     }
 
-    public static function getXp(Player $player, string $job): int
+    public static function getXp(Player $player, string $job): int|float
     {
         return Session::get($player)->data["jobs"][$job]["xp"];
     }
 
-    public static function addXp(Player $player, string $job, int $xp, bool $tip = true): void
+    public static function addXp(Player $player, string $job, int|float $xp, bool $tip = true): void
     {
         if ($player->isCreative()) {
             return;
@@ -60,7 +60,7 @@ class Jobs
         $total = self::getXp($player, $job) + $xp;
 
         if ($tip) {
-            $player->sendTip(Util::PREFIX . "+ §q" . $xp . " §f" . $job);
+            $player->sendTip(Util::PREFIX . "+ §9" . $xp . " §f" . $job);
         }
 
         if ($total > $nextTotal) {
@@ -72,8 +72,8 @@ class Jobs
 
             $session->addValue("money", $nextLevel * 2000);
 
-            $player->sendMessage(Util::PREFIX . "Vous venez de passer niveau §q" . $nextLevel . " §fdu métier de §q" . $job . " §f!!");
-            $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §q" . $nextLevel * 2000 . " §fpièces pour vos récompenses de jobs !");
+            $player->sendMessage(Util::PREFIX . "Vous venez de passer niveau §9" . $nextLevel . " §fdu métier de §9" . $job . " §f!!");
+            $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §9" . $nextLevel * 2000 . " §fpièces pour vos récompenses de métiers !");
 
             $player->broadcastSound(new BlazeShootSound());
 
@@ -83,16 +83,16 @@ class Jobs
 
                 switch (intval($data[0])) {
                     case 0:
-                        $name = intval($data[1]);
+                        $name = $data[1];
                         $count = intval($data[2]);
 
                         $item = Util::getItemByName($name)->setCount($count);
                         Util::addItem($player, $item);
 
-                        $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §q" . $data[4] . " §fpour vos récompenses de jobs !");
+                        $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §9" . $data[3] . " §fpour vos récompenses de métier !");
                         break;
                     case 1:
-                        $name = intval($data[1]);
+                        $name = $data[1];
                         $customName = $data[2];
                         $type = intval($data[3]);
                         $_data = intval($data[4]);
@@ -101,7 +101,7 @@ class Jobs
                         $item = Pack::initializeItem($item, [$customName, $type, $_data]);
 
                         Util::addItem($player, $item);
-                        $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §q" . $data[6] . " §fpour vos récompenses de jobs !");
+                        $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §9" . $data[5] . " §fpour vos récompenses de métiers !");
                         break;
                     case 2:
                         $partneritems = array_keys(Cache::$config["partneritems"]);
@@ -116,7 +116,7 @@ class Jobs
                         }
 
                         Util::addItem($player, $item);
-                        $player->sendMessage(Util::PREFIX . "Vous venez de recevoir un(e) §q" . $customName . " §fpour vos récompenses de jobs !");
+                        $player->sendMessage(Util::PREFIX . "Vous venez de recevoir un(e) §9" . $customName . " §fpour vos récompenses de métiers !");
                         break;
                 }
             }

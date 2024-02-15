@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\player\rank;
 
+use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\OptionArgument;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
 use Kitmap\command\util\market\Market;
@@ -162,7 +162,7 @@ class PrivateVaults extends BaseCommand
 
             $session->data["private_vaults"][$vault]["name"] = $name;
 
-            $player->sendMessage(Util::PREFIX . "Vous venez de renommer votre coffre privé §q" . $name . " §f(" . $vault . ")");
+            $player->sendMessage(Util::PREFIX . "Vous venez de renommer votre coffre privé §9" . $name . " §f(" . $vault . ")");
         });
         $form->setTitle("Coffres Privés");
         $form->addInput(Util::PREFIX . "Choissisez le nouveau nom du coffre:");

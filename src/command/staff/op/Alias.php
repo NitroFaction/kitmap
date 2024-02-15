@@ -3,8 +3,8 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\RawStringArgument;
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Rank;
 use Kitmap\Util;
@@ -37,15 +37,15 @@ class Alias extends BaseCommand
         $bar = "§l§8-----------------------";
 
         if (count($alias) === 0) {
-            $sender->sendMessage(Util::PREFIX . "Le joueur §q" . $target . " §fne possède aucun double compte lié à son ip, did etc...");
+            $sender->sendMessage(Util::PREFIX . "Le joueur §9" . $target . " §fne possède aucun double compte lié à son ip, did etc...");
             return;
         }
 
         $sender->sendMessage($bar);
-        $sender->sendMessage(Util::PREFIX . "Liste de compte lié au compte §q" . $target);
+        $sender->sendMessage(Util::PREFIX . "Liste de compte lié au compte §9" . $target);
 
         foreach ($alias as $username) {
-            $sender->sendMessage("§f- §q" . $username);
+            $sender->sendMessage("§f- §9" . $username);
         }
 
         $sender->sendMessage($bar);
@@ -63,7 +63,7 @@ class Alias extends BaseCommand
                 $similar = array_intersect_assoc($value, $ip);
 
                 if (count($similar) > 0 && $key !== $name) {
-                    $result[] = $key . " §f- Depuis son §q" . $column;
+                    $result[] = $key . " §f- Depuis son §9" . $column;
                 }
             }
         }
@@ -72,7 +72,7 @@ class Alias extends BaseCommand
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
     }
 }

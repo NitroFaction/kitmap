@@ -1,112 +1,78 @@
-<?php
+<?php /** @noinspection PhpUnused */
 
 namespace Kitmap\entity;
 
-use Element\entity\FloatingText as FloatingTextEntity;
-use Kitmap\command\player\Gambling;
-use Kitmap\handler\Cache;
-use Kitmap\handler\Faction;
-use Kitmap\task\repeat\DominationTask;
-use Kitmap\task\repeat\GamblingTask;
-use Kitmap\task\repeat\KothTask;
-use Kitmap\task\repeat\OutpostTask;
-use Kitmap\Util;
+use pocketmine\entity\EntitySizeInfo;
+use pocketmine\entity\Living;
+use pocketmine\entity\Location;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 
-class FloatingText extends FloatingTextEntity
+abstract class FloatingText extends Living
 {
-    protected function getPeriod(): ?int
+    const DEFAULT_PERIOD = 20;
+
+    protected bool $gravityEnabled = false;
+    protected float $gravity = 0.0;
+
+    protected ?int $period = self::DEFAULT_PERIOD;
+    private int $tickToUpdate;
+
+    public function __construct(Location $location, ?CompoundTag $nbt = null)
     {
-        return $this->period;
+        parent::__construct($location, $nbt);
+        $this->tickToUpdate = $this->getPeriod();
+
+        $this->setNameTagAlwaysVisible();
+        $this->setNameTag($this->getUpdate());
+
+        $this->setScale(0.001);
+        $this->setNoClientPredictions();
     }
 
-    protected function getUpdate(): string
+    abstract protected function getPeriod(): ?int;
+
+    abstract protected function getUpdate(): string;
+
+    public static function getNetworkTypeId(): string
     {
-        $floatings = Cache::$config["floatings"];
+        return EntityIds::CHICKEN;
+    }
 
-        $position = $this->getLocation();
-        $text = $position->getX() . ":" . $position->getY() . ":" . $position->getZ() . ":" . $position->getWorld()->getFolderName();
+    public function getName(): string
+    {
+        return "Floating";
+    }
 
-        $name = $floatings[$text] ?? false;
+    public function attack(EntityDamageEvent $source): void
+    {
+        $source->cancel();
+    }
 
-        if (is_bool($name)) {
-            return "";
+    public function knockBack(float $x, float $z, float $force = 0.4, ?float $verticalLimit = 0.4): void
+    {
+    }
+
+    protected function getInitialSizeInfo(): EntitySizeInfo
+    {
+        return new EntitySizeInfo(0.7, 0.4);
+    }
+
+    protected function entityBaseTick(int $tickDiff = 1): bool
+    {
+        if ($this->isClosed()) {
+            return false;
         }
 
-        switch ($name) {
-            case "domination":
-                foreach (array_keys(Cache::$config["domination"]) as $zone) {
-                    if (DominationTask::insideZone($zone, $this->getPosition())) {
-                        if (!DominationTask::$currentDomination) {
-                            DominationTask::updateZoneBlocks($zone);
-                            return Util::PREFIX . "Domination §q§l«\n§fAucun event §qdomination §fn'est en cours";
-                        }
+        if (is_int($this->getPeriod()) && $this->isAlive()) {
+            --$this->tickToUpdate;
 
-                        $status = DominationTask::$zones[$zone][1][0] ?? "uncaptured";
-                        DominationTask::updateZoneBlocks($zone, $status);
-
-                        $status = match ($status) {
-                            "captured" => "§aCapturé",
-                            "uncaptured" => "§7Libre",
-                            "contested" => "§cContesté"
-                        };
-
-                        $actual = DominationTask::$zones[$zone][0] ?? null;
-                        $actual = is_null($actual) ? false : Faction::getFactionUpperName($actual);
-
-                        if ($status === "§7Libre") {
-                            $actual = false;
-                        }
-
-                        $actual = match (true) {
-                            is_bool($actual) => "§fAucune faction contrôle le point",
-                            default => "§fLa faction §q" . $actual . " §fcontrôle le point"
-                        };
-
-                        return Util::PREFIX . "Point " . $zone . " §q§l«\n" . $actual . "\n§fStatus du point: " . $status;
-                    }
-                }
-                break;
-            case "koth":
-                if (is_numeric(KothTask::$currentKoth)) {
-                    $player = KothTask::$currentPlayer;
-                    $player = is_null($player) ? "Aucun joueur" : $player;
-
-                    $remaining = Util::formatDurationFromSeconds(KothTask::$currentKoth);
-                    return Util::PREFIX . "Koth §q§l«\n§q" . $player . " §fcontrôle le koth actuellement\n§fTemps restant : §q" . $remaining;
-                } else {
-                    return Util::PREFIX . "Koth §q§l«\n§fAucun event §qkoth §fn'est en cours";
-                }
-            case "outpost":
-                if (!is_null(Cache::$data["outpost"])) {
-                    $remaining = Util::formatDurationFromSeconds(OutpostTask::$nextReward);
-                    $faction = Faction::getFactionUpperName(Cache::$data["outpost"]);
-
-                    return Util::PREFIX . "Outpost §q§l«\n§fLa faction §q" . $faction . " §fcontrôle l'outpost\n§fRécompense dans §q" . $remaining . "\n§fPlus controlé dans §q" . OutpostTask::$currentOutpost . " §fsecondes";
-                } else {
-                    $remaining = Util::formatDurationFromSeconds(OutpostTask::$currentOutpost);
-                    return Util::PREFIX . "Outpost §q§l«\n§qAucune §ffaction ne contrôle l'outpost\n§fOutpost contrôlé dans §q" . $remaining;
-                }
-            case "gambling":
-                if (GamblingTask::$currently) {
-                    return Util::PREFIX . "Gambling §q§l«\nUn gambling est actuellement en cours depuis §q" . Util::formatDurationFromSeconds(GamblingTask::$since, 1) . "\nLe gambling actuel oppose §q" . GamblingTask::$players[0] . " §fet §q" . GamblingTask::$players[1] . "\n\n§q" . count(Gambling::$gamblings) . " §fautre(s) §qgambling(s) §fsont en attente d'adversaire";
-                } else {
-                    return Util::PREFIX . "Gambling §q§l«\nAucun gambling n'est actuellement en cours\n§q" . count(Gambling::$gamblings) . " gambling(s) §fsont en attente d'adversaire\nPour rejoindre un gambling utilisez la commande §q/gambling";
-                }
-            case "money-zone":
-                $this->period = null;
-                return Util::PREFIX . "Zone Money §q§l«\nReste ici et gagne §q50 §fpièces toutes les §q3 §fsecondes\n§fATTENTION ! Tu dois être §qseul §fsur la platforme";
-            case "blocks":
-                $this->period = null;
-                return Util::PREFIX . "Salle des blocs §q§l«\nBienvenue dans la salle des §qblocs §f!\n§fTous les blocs que vous §qcassez §fsont mis\n§fdans votre inventaire en échange de §q15 §fpièces par bloc en illimité";
+            if ($this->tickToUpdate <= 0) {
+                $this->setNameTag($this->getUpdate());
+                $this->tickToUpdate = $this->getPeriod();
+            }
         }
-
-        if ($name[0] === "#") {
-            $text = substr($name, 1);
-        } else {
-            $text = "§r   \n  " . Util::stringToUnicode($name) . "  \n§r   ";
-        }
-
-        $this->period = null;
-        return $text;
+        return parent::entityBaseTick($tickDiff);
     }
 }

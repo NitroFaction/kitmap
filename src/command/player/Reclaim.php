@@ -42,7 +42,7 @@ class Reclaim extends BaseCommand
                 return;
             } else if ($session->inCooldown("reclaim")) {
                 $format = Util::formatDurationFromSeconds($session->getCooldownData("reclaim")[0] - time());
-                $sender->sendMessage(Util::PREFIX . "Vous ne pourrez avoir vos pack(s) journalier que dans: §q" . $format);
+                $sender->sendMessage(Util::PREFIX . "Vous ne pourrez avoir vos pack(s) journalier que dans: §9" . $format);
                 return;
             }
 
@@ -54,11 +54,11 @@ class Reclaim extends BaseCommand
                 return;
             }
 
-            $session->data["pack"]["Classique"] += $pack;
+            $session->data["packs"]["Classique"] += $pack;
             $session->setCooldown("reclaim", 60 * 60 * 24);
 
-            $sender->sendMessage(Util::PREFIX . "Vous venez de recevoir §q" . $pack . " §fpack(s) classique grace à votre reclaim !");
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $sender->getName() . " §fvient de recevoir §q" . $pack . " §fpack(s) classique grace à son reclaim !");
+            $sender->sendMessage(Util::PREFIX . "Vous venez de recevoir §9" . $pack . " §fpack(s) classique grace à votre reclaim !");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §9" . $sender->getName() . " §fvient de recevoir §9" . $pack . " §fpack(s) classique grace à son reclaim !");
         }
     }
 
@@ -76,7 +76,7 @@ class Reclaim extends BaseCommand
         });
 
         foreach ($inventorys as $key => $value) {
-            $form->addButton("Mort par §q" . $value["killer"], -1, "", $key);
+            $form->addButton("Mort par §9" . $value["killer"], -1, "", $key);
         }
 
         $form->setTitle("Remboursement");
@@ -107,7 +107,7 @@ class Reclaim extends BaseCommand
                 $session = Session::get($player);
                 $session->addValue("death", 1, true);
 
-                $player->sendMessage(Util::PREFIX . "Vous venez de récupérer votre inventaire que vous avez perdu le §q" . $data["date"]);
+                $player->sendMessage(Util::PREFIX . "Vous venez de récupérer votre inventaire que vous avez perdu le §9" . $data["date"]);
                 $player->sendMessage(Util::PREFIX . "Une mort a été soustraite de votre compteur de mort");
                 $player->sendMessage(Util::PREFIX . "Vous venez de récupérer votre xp");
 
@@ -127,7 +127,7 @@ class Reclaim extends BaseCommand
         });
 
         $form->setTitle("Remboursement");
-        $form->setContent("§fL'inventaire contient §q" . count($items) . " §fitems\nVerifiez que votre inventaire a assez de place pour récupérer les items");
+        $form->setContent("§fL'inventaire contient §9" . count($items) . " §fitems\nVerifiez que votre inventaire a assez de place pour récupérer les items");
         $form->addButton("Récupérer l'inventaire");
         $form->addButton("Récupérer plus tard");
         $player->sendForm($form);

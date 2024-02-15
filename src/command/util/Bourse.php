@@ -32,7 +32,7 @@ class Bourse extends BaseCommand
         foreach ($items as $item) {
             list($name, , , $sell) = explode(":", $item);
 
-            $sender->sendMessage("§q" . $name . "§f - Prix de vente: §q" . $sell . " §fpièces§q/u - §fVendus: §q" . Util::formatNumberWithSuffix(Cache::$data["bourse"][$name]));
+            $sender->sendMessage("§9" . $name . "§f - Prix de vente: §9" . $sell . " §fpièces§9/u - §fVendus: §9" . Util::formatNumberWithSuffix(Cache::$data["bourse"][$name]));
         }
 
         $sender->sendMessage($bar);

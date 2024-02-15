@@ -3,17 +3,14 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\IntegerArgument;
+use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\args\RawStringArgument;
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\OptionArgument;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
-use Kitmap\Main;
-use Kitmap\Session;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
 class Addvalue extends BaseCommand
@@ -34,61 +31,43 @@ class Addvalue extends BaseCommand
         $data = $args["valeur"];
         $amount = intval($args["montant"]);
 
-        if ($args["joueur"] === "@a") {
-            Util::allSelectorExecute($sender, $this->getName(), $args);
+        $player = self::addValue($sender, $this->getName(), $args);
+
+        if (is_null($player)) {
             return;
         }
 
-        /** @noinspection PhpDeprecationInspection */
-        if (($target = Main::getInstance()->getServer()->getPlayerByPrefix($args["joueur"])) instanceof Player) {
-            $target = $target->getName();
-        } else {
-            $target = strtolower($args["joueur"]);
-
-            if (!isset(Cache::$players["upper_name"][$target])) {
-                $sender->sendMessage(Util::PREFIX . "Ce joueur ne s'est jamais connecté au serveur (verifiez bien les caractères)");
-                return;
-            }
-        }
-
-        if (0 > $amount) {
-            $sender->sendMessage(Util::PREFIX . "Le montant que vous avez inscrit est invalide");
-            return;
-        }
-
-        $sender->sendMessage(Util::PREFIX . "Vous venez d'ajouter §q" . $amount . " §f" . $data . " au joueur §q" . $target);
-        Addvalue::addValue($sender->getName(), $target, $data, $amount);
+        $sender->sendMessage(Util::PREFIX . "Vous venez d'ajouter §9" . $amount . " §f" . $data . " au joueur §9" . $player);
+        Util::addValue($sender->getName(), $player, $data, $amount);
     }
 
-    public static function addValue(string $staff, string $key, string $column, int $value): void
+    public static function addValue(CommandSender $sender, string $commandName, array $args): ?string
     {
-        $player = Main::getInstance()->getServer()->getPlayerExact($key);
+        $amount = intval($args["montant"]);
 
-        if ($player instanceof Player) {
-            Session::get($player)->addValue($column, $value);
-
-            if ($value > 0) {
-                $player->sendMessage(Util::PREFIX . "Le staff §q" . $staff . " §fvient de vous ajouter §q" . $value . " §f" . $column);
-            } else {
-                $player->sendMessage(Util::PREFIX . "Le staff §q" . $staff . " §fvient de vous retirer §q" . $value . " §f" . $column);
-            }
-        } else {
-            $file = Util::getFile("data/players/" . $key);
-
-            Cache::$players[$column][$key] = $file->get($column) + $value;
-
-            if ($file->getAll() !== []) {
-                $file->set($column, $file->get($column) + $value);
-                $file->save();
-            }
+        if ($args["joueur"] === "@a") {
+            Util::allSelectorExecute($sender, $commandName, $args);
+            return null;
         }
+
+        $player = Util::findPlayerByName($args["joueur"]);
+
+        if (is_null($player)) {
+            $sender->sendMessage(Util::PREFIX . "Ce joueur ne s'est jamais connecté au serveur (verifiez bien les caractères)");
+            return null;
+        } else if (0 > $amount) {
+            $sender->sendMessage(Util::PREFIX . "Le montant que vous avez inscrit est invalide");
+            return null;
+        }
+
+        return $player;
     }
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
         $this->registerArgument(1, new IntegerArgument("montant"));
-        $this->registerArgument(2, new OptionArgument("valeur", ["bounty", "death", "gem", "kill", "killstreak", "money"]));
+        $this->registerArgument(2, new OptionArgument("valeur", array_keys(array_filter(Cache::$config["default-data"], "is_int"))));
     }
 }

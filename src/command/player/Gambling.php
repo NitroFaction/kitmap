@@ -2,16 +2,15 @@
 
 namespace Kitmap\command\player;
 
+use CortexPE\Commando\args\OptionArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\item\ExtraVanillaItems;
-use Element\util\args\OptionArgument;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
 use Kitmap\handler\Faction as FactionAPI;
 use Kitmap\handler\PartnerItems;
 use Kitmap\Main;
 use Kitmap\Session;
-use Kitmap\task\repeat\GamblingTask;
+use Kitmap\task\repeat\child\GamblingTask;
 use Kitmap\Util;
 use muqsit\invmenu\InvMenu;
 use muqsit\invmenu\type\InvMenuTypeIds;
@@ -82,7 +81,7 @@ class Gambling extends BaseCommand
             $form->setTitle("Gambling");
             $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
             $form->addButton("Créer");
-            $form->addButton("Rejoindre §q(" . count(self::$gamblings) . ")");
+            $form->addButton("Rejoindre §9(" . count(self::$gamblings) . ")");
             $form->addButton("Visualiser les kits");
             $sender->sendForm($form);
         }
@@ -98,7 +97,7 @@ class Gambling extends BaseCommand
             $session = Session::get($player);
 
             if ($session->inCooldown("gambling")) {
-                $player->sendMessage(Util::PREFIX . "Vous devez encore attendre §q" . Util::formatDurationFromSeconds($session->getCooldownData("gambling")[0] - time()) . " §favant de pouvoir re-créer un gambling");
+                $player->sendMessage(Util::PREFIX . "Vous devez encore attendre §9" . Util::formatDurationFromSeconds($session->getCooldownData("gambling")[0] - time()) . " §favant de pouvoir re-créer un gambling");
                 return;
             }
 
@@ -127,7 +126,7 @@ class Gambling extends BaseCommand
             $session->setCooldown("gambling", 60 * 5);
             $session->addValue("money", $bet, true);
 
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $player->getName() . " §fvient de créer un gambling ! Affrontez le via la commande §q/gambling §f!");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §9" . $player->getName() . " §fvient de créer un gambling ! Affrontez le via la commande §9/gambling §f!");
         });
         $form->setTitle("Gambling");
         $form->addInput(Util::PREFIX . "Combien misez vous sur votre victoire?", default: 0, label: "bet");
@@ -151,7 +150,7 @@ class Gambling extends BaseCommand
         $form->setContent(Util::PREFIX . "Cliquez sur le boutton de votre choix");
 
         foreach (self::$gamblings as $target => $value) {
-            $form->addButton($value["upper_name"] . "\nMise de §q" . Util::formatNumberWithSuffix($value["bet"]) . " pièces §8- Kit §q" . $value["kit"] + 1, -1, "", $target);
+            $form->addButton($value["upper_name"] . "\nMise de §9" . Util::formatNumberWithSuffix($value["bet"]) . " pièces §8- Kit §9" . $value["kit"] + 1, -1, "", $target);
         }
 
         $form->addButton("Rafraîchir", -1, "", "refresh");
@@ -294,41 +293,41 @@ class Gambling extends BaseCommand
 
         $kits = [
             [
-                ExtraVanillaItems::EMERALD_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::EMERALD_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::EMERALD_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::EMERALD_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::IRIS_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
+                VanillaItems::GOLDEN_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::GOLDEN_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::GOLDEN_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::GOLDEN_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::NETHERITE_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
                 VanillaItems::ENDER_PEARL()->setCount(16),
                 VanillaItems::RAW_FISH()->setCount(16),
                 VanillaItems::SPLASH_POTION()->setType(PotionType::STRONG_HEALING())->setCount(6)
             ],
             [
-                ExtraVanillaItems::EMERALD_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::EMERALD_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::EMERALD_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::EMERALD_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::IRIS_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
+                VanillaItems::GOLDEN_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::GOLDEN_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::GOLDEN_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::GOLDEN_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::NETHERITE_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
                 VanillaItems::ENDER_PEARL()->setCount(16),
                 VanillaItems::RAW_FISH()->setCount(16),
                 VanillaItems::SPLASH_POTION()->setType(PotionType::STRONG_HEALING())->setCount(15)
             ],
             [
-                ExtraVanillaItems::IRIS_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::IRIS_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::IRIS_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::IRIS_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::IRIS_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
+                VanillaItems::NETHERITE_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::NETHERITE_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::NETHERITE_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::NETHERITE_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::NETHERITE_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
                 VanillaItems::ENDER_PEARL()->setCount(16),
                 VanillaItems::RAW_FISH()->setCount(16),
                 VanillaItems::SPLASH_POTION()->setType(PotionType::STRONG_HEALING())->setCount(15)
             ],
             [
-                ExtraVanillaItems::IRIS_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::IRIS_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::IRIS_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::IRIS_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
-                ExtraVanillaItems::IRIS_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
+                VanillaItems::NETHERITE_HELMET()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::NETHERITE_CHESTPLATE()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::NETHERITE_LEGGINGS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::NETHERITE_BOOTS()->addEnchantment($unbreaking)->addEnchantment($protection),
+                VanillaItems::NETHERITE_SWORD()->addEnchantment($sharpness)->addEnchantment($unbreaking),
                 VanillaItems::ENDER_PEARL()->setCount(16),
                 VanillaItems::RAW_FISH()->setCount(16),
                 PartnerItems::createItem("focusmode")->setCount(4),

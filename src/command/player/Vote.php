@@ -41,7 +41,7 @@ class Vote extends BaseCommand
                 self::sendPlayer($player, "action");
             } else {
                 $message = match ($result) {
-                    0 => "Vous n'avez toujours pas voté sur le serveur, rendez vous sur §qhttps://nitrofaction.fr/vote§f, pour pouvoir voté !",
+                    0 => "Vous n'avez toujours pas voté sur le serveur, rendez vous sur §9https://nitrofaction.fr/vote§f, pour pouvoir voté !",
                     default => "Vous avez déjà voté dans les 24 dernières heures"
                 };
 
@@ -80,18 +80,18 @@ class Vote extends BaseCommand
             $packs = mt_rand(2, 4);
 
             foreach (Main::getInstance()->getServer()->getOnlinePlayers() as $target) {
-                Session::get($target)->data["pack"]["Vote"] += $packs;
-                $target->sendTitle("§qVoteParty !", "§fVos récompenses vous ont été données");
+                Session::get($target)->data["packs"]["Vote"] += $packs;
+                $target->sendTitle("§9VoteParty !", "§fVos récompenses vous ont été données");
             }
 
-            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le voteparty est arrivé à son maximum ! Vous venez tous de recevoir.... §q" . $packs . " pack vote §f! Profitez bien !!");
+            Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le voteparty est arrivé à son maximum ! Vous venez tous de recevoir.... §9" . $packs . " pack vote §f! Profitez bien !!");
             Cache::$data["voteparty"] = 0;
         }
 
-        Session::get($player)->data["pack"]["Vote"] += 2;
+        Session::get($player)->data["packs"]["Vote"] += 2;
 
-        $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §q2 packs vote §fcar vous avez voté sur le serveur !");
-        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §q" . $player->getDisplayName() . " §fvient de recevoir §q2 packs vote §fcar il a voté sur §qhttps://nitrofaction.fr/vote");
+        $player->sendMessage(Util::PREFIX . "Vous venez de recevoir §92 packs vote §fcar vous avez voté sur le serveur !");
+        Main::getInstance()->getServer()->broadcastMessage(Util::PREFIX . "Le joueur §9" . $player->getDisplayName() . " §fvient de recevoir §92 packs vote §fcar il a voté sur §9https://nitrofaction.fr/vote");
     }
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
@@ -101,7 +101,7 @@ class Vote extends BaseCommand
 
             if ($session->inCooldown("vote")) {
                 $seconds = $session->getCooldownData("vote")[0] - time();
-                $sender->sendMessage(Util::PREFIX . "Vous ne pouvez actuellement pas faire de /vote, merci d'attendre §q" . $seconds . " §fsecondes !");
+                $sender->sendMessage(Util::PREFIX . "Vous ne pouvez actuellement pas faire de /vote, merci d'attendre §9" . $seconds . " §fsecondes !");
             }
 
             self::sendPlayer($sender);

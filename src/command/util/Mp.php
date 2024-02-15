@@ -2,9 +2,9 @@
 
 namespace Kitmap\command\util;
 
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\args\TextArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
@@ -34,7 +34,7 @@ class Mp extends BaseCommand
             $session = Session::get($sender);
 
             if ($session->inCooldown("mute")) {
-                $sender->sendMessage(Util::PREFIX . "Vous êtes mute, temps restant: §q" . Util::formatDurationFromSeconds($session->getCooldownData("mute")[0] - time()));
+                $sender->sendMessage(Util::PREFIX . "Vous êtes mute, temps restant: §9" . Util::formatDurationFromSeconds($session->getCooldownData("mute")[0] - time()));
                 return;
             }
 
@@ -48,7 +48,7 @@ class Mp extends BaseCommand
                 Session::get($player)->data["reply"] = $sender->getName();
 
                 foreach ([$player, $sender] as $players) {
-                    $players->sendMessage("§q[§fMP§q] §q[§f" . $sender->getName() . " " . Util::PREFIX . $player->getName() . "§q] §f" . implode(" ", $args));
+                    $players->sendMessage("§9[§fMP§9] §9[§f" . $sender->getName() . " " . Util::PREFIX . $player->getName() . "§9] §f" . implode(" ", $args));
                     $players->broadcastSound(new ClickSound());
                 }
             } else {
@@ -59,7 +59,7 @@ class Mp extends BaseCommand
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
         $this->registerArgument(1, new TextArgument("message"));
     }
 }

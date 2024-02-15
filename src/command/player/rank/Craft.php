@@ -3,10 +3,10 @@
 namespace Kitmap\command\player\rank;
 
 use CortexPE\Commando\BaseCommand;
-use Element\util\inventory\CraftingTableInvMenu;
 use Kitmap\handler\Rank;
 use Kitmap\Session;
 use Kitmap\Util;
+use muqsit\invmenu\InvMenu;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
@@ -15,6 +15,8 @@ use pocketmine\plugin\PluginBase;
 
 class Craft extends BaseCommand
 {
+    public const INV_MENU_TYPE_WORKBENCH = "nitro:workbench";
+
     public function __construct(PluginBase $plugin)
     {
         parent::__construct(
@@ -39,7 +41,7 @@ class Craft extends BaseCommand
                 return;
             }
 
-            CraftingTableInvMenu::create()->send($sender);
+            InvMenu::create(self::INV_MENU_TYPE_WORKBENCH)->send($sender);
         }
     }
 

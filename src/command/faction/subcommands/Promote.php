@@ -53,8 +53,8 @@ class Promote extends FactionCommand
         unset(Cache::$factions[$faction]["members"][$target_rank . "s"][array_search($args["membre"], Cache::$factions[$faction]["members"][$target_rank . "s"])]);
         Cache::$factions[$faction]["members"][$next_rank . "s"][] = $args["membre"];
 
-        Cache::$factions[$faction]["logs"][time()] = "§q" . $sender->getName() . " §fpromote §q" . $args["membre"] . "§f" . $rank_name;
-        Faction::broadcastMessage($faction, "§q[§fF§q] §fLe joueur §q" . $args["membre"] . " §fvient d'être promu §q" . $rank_name);
+        Cache::$factions[$faction]["logs"][time()] = "§9" . $sender->getName() . " §fpromote §9" . $args["membre"] . "§f" . $rank_name;
+        Faction::broadcastMessage($faction, "§9[§fF§9] §fLe joueur §9" . $args["membre"] . " §fvient d'être promu §9" . $rank_name);
     }
 
     protected function prepare(): void

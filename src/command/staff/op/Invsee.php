@@ -3,9 +3,9 @@
 namespace Kitmap\command\staff\op;
 
 use CortexPE\Commando\args\RawStringArgument;
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
 use Element\player\InvSeePlayerList;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Cache;
 use Kitmap\Main;
 use Kitmap\Session;
@@ -30,6 +30,8 @@ class Invsee extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
+        return;
+
         if ($sender instanceof Player) {
             if ($sender->getGamemode() === GameMode::SPECTATOR()) {
                 $sender->sendMessage(Util::PREFIX . "Vous ne pouvez pas ecsee en spectateur");
@@ -58,7 +60,7 @@ class Invsee extends BaseCommand
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
     }
 }

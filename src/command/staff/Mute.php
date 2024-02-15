@@ -2,8 +2,8 @@
 
 namespace Kitmap\command\staff;
 
+use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
-use Element\util\args\TargetArgument;
 use Kitmap\handler\Rank;
 use Kitmap\handler\Sanction;
 use pocketmine\command\CommandSender;
@@ -32,6 +32,6 @@ class Mute extends BaseCommand
 
     protected function prepare(): void
     {
-        $this->registerArgument(0, new TargetArgument("joueur"));
+        $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
     }
 }

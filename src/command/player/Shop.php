@@ -79,7 +79,7 @@ class Shop extends BaseCommand
             list($name, $itemName, $buy) = explode(":", $item);
 
             $form->addButton(
-                $name . "\nPrix: §q" . $buy . " §8pièces§q/u",
+                $name . "\nPrix: §9" . $buy . " §8pièces§9/u",
                 0,
                 "textures/render/" . $itemName,
                 $item
@@ -126,7 +126,7 @@ class Shop extends BaseCommand
                 $session->addValue("money", $buy * $count, true);
                 Util::addItem($player, $item);
 
-                $player->sendMessage(Util::PREFIX . "Vous venez d'acheter §q" . $count . " §f" . $name . " pour §q" . ($buy * $count) . " §fpièces");
+                $player->sendMessage(Util::PREFIX . "Vous venez d'acheter §9" . $count . " §f" . $name . " pour §9" . ($buy * $count) . " §fpièces");
             } else {
                 if ($count > Util::getItemCount($player, $testItem)) {
                     $player->sendMessage(Util::PREFIX . "Vous n'avez pas assez d'item dans votre inventaire");
@@ -140,11 +140,11 @@ class Shop extends BaseCommand
                     Cache::$data["bourse"][$name] += $count;
                 }
 
-                $player->sendMessage(Util::PREFIX . "Vous venez de vendre §q" . $count . " §f" . $name . " pour §q" . ($sell * $count) . " §fpièces");
+                $player->sendMessage(Util::PREFIX . "Vous venez de vendre §9" . $count . " §f" . $name . " pour §9" . ($sell * $count) . " §fpièces");
             }
         });
         $form->setTitle("Boutique");
-        $form->addLabel("Nombre de §q" . $name . " §rdans votre inventaire: §q" . $items . "\n\n§fPrix achat unité: §q" . $buy . "\n§fPrix vente unité: §q" . $sell);
+        $form->addLabel("Nombre de §9" . $name . " §rdans votre inventaire: §9" . $items . "\n\n§fPrix achat unité: §9" . $buy . "\n§fPrix vente unité: §9" . $sell);
         $form->addDropdown("Voulez vous achetez ou vendre", (intval($sell) == 0) ? ["Acheter"] : ["Acheter", "Vendre"]);
         $form->addSlider("Combien voulez vous en acheter/vendre?", 1, $limit);
         $player->sendForm($form);
