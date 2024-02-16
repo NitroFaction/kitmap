@@ -6,6 +6,7 @@ use CortexPE\Commando\BaseCommand;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
 use Kitmap\handler\Cache;
+use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
@@ -126,6 +127,7 @@ class Shop extends BaseCommand
                 $session->addValue("money", $buy * $count, true);
                 Util::addItem($player, $item);
 
+                Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient d'acheter au shop " . $name . " x" . $count . " pour " . ($sell * $count));
                 $player->sendMessage(Util::PREFIX . "Vous venez d'acheter §9" . $count . " §f" . $name . " pour §9" . ($buy * $count) . " §fpièces");
             } else {
                 if ($count > Util::getItemCount($player, $testItem)) {
@@ -140,6 +142,7 @@ class Shop extends BaseCommand
                     Cache::$data["bourse"][$name] += $count;
                 }
 
+                Main::getInstance()->getLogger()->info("Le joueur " . $player->getName() . " vient de vendre au shop " . $name . " x" . $count . " pour " . ($sell * $count));
                 $player->sendMessage(Util::PREFIX . "Vous venez de vendre §9" . $count . " §f" . $name . " pour §9" . ($sell * $count) . " §fpièces");
             }
         });

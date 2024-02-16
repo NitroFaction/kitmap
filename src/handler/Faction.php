@@ -181,7 +181,7 @@ class Faction
 
         $position = $block instanceof Position ? $block : $block->getPosition();
 
-        if ($type === "break" && $session->inCooldown("_antibuild")) {
+        if ($session->inCooldown("_antibuild")) {
             $player->sendTip(Util::PREFIX . "Veuillez attendre §9" . ($session->getCooldownData("_antibuild")[0] - time()) . " §fseconde(s) avant de construire");
             return false;
         } else if ($player->getGamemode() === GameMode::CREATIVE() && $player->hasPermission(DefaultPermissions::ROOT_OPERATOR)) {

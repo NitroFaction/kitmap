@@ -32,7 +32,7 @@ class Nexus extends BaseCommand
         $entities = [];
 
         foreach (Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld()->getEntities() as $entity) {
-            if ($entity instanceof Nexus) {
+            if ($entity instanceof NexusEntity) {
                 $entities[] = $entity;
             }
         }

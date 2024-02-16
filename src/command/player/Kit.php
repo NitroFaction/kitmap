@@ -7,12 +7,14 @@ use jojoe77777\FormAPI\SimpleForm;
 use Kitmap\handler\Rank;
 use Kitmap\Session;
 use Kitmap\Util;
+use parallel\Events\Input;
 use pocketmine\command\CommandSender;
 use pocketmine\item\Armor;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\PotionType;
 use pocketmine\item\VanillaItems;
+use pocketmine\network\mcpe\protocol\types\InputMode;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
@@ -66,7 +68,7 @@ class Kit extends BaseCommand
                         }
                     }
 
-                    if ($item->equals(VanillaItems::NAUTILUS_SHELL()) && $player->getNetworkSession()->getPlayerInfo()->getExtraData()["CurrentInputMode"] !== 2) {
+                    if ($item->equals(VanillaItems::NAUTILUS_SHELL()) && $player->getNetworkSession()->getPlayerInfo()->getExtraData()["CurrentInputMode"] === InputMode::MOUSE_KEYBOARD) {
                         $item->setCount(0);
                     }
 

@@ -7,6 +7,7 @@ use Kitmap\command\player\rank\Enderchest;
 use Kitmap\command\staff\{Ban, LastInventory, Question, Vanish};
 use Kitmap\command\util\Bienvenue;
 use Kitmap\entity\{AntiBackBall, LogoutNpc, SwitchBall};
+use Kitmap\entity\Player as CustomPlayer;
 use Kitmap\handler\{Cache, Faction, Jobs, Pack, PartnerItems, Rank, Sanction};
 use Kitmap\item\Armor;
 use Kitmap\item\ExtraVanillaItems;
@@ -15,13 +16,15 @@ use Kitmap\Session;
 use Kitmap\task\repeat\child\GamblingTask;
 use Kitmap\task\repeat\PlayerTask;
 use Kitmap\Util;
-use pocketmine\block\{Barrel,
+use pocketmine\block\{Anvil,
+    Barrel,
     Block,
     CartographyTable,
     Chest,
     CraftingTable,
     Crops,
     Door,
+    EnchantingTable,
     FenceGate,
     Fire,
     Furnace,
@@ -33,6 +36,7 @@ use pocketmine\block\{Barrel,
     SweetBerryBush,
     Trapdoor,
     VanillaBlocks};
+use pocketmine\block\tile\Chest as ChestTile;
 use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\effect\{EffectInstance, VanillaEffects};
 use pocketmine\entity\Living;
@@ -56,6 +60,7 @@ use pocketmine\event\inventory\{CraftItemEvent, InventoryOpenEvent, InventoryTra
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerBucketEvent,
     PlayerChatEvent,
+    PlayerCreationEvent,
     PlayerDataSaveEvent,
     PlayerDeathEvent,
     PlayerDropItemEvent,
@@ -64,17 +69,30 @@ use pocketmine\event\player\{PlayerBucketEvent,
     PlayerItemConsumeEvent,
     PlayerItemUseEvent,
     PlayerJoinEvent,
+    PlayerJumpEvent,
     PlayerMissSwingEvent,
     PlayerPreLoginEvent,
     PlayerQuitEvent,
-    PlayerRespawnEvent};
+    PlayerRespawnEvent,
+    PlayerToggleSneakEvent};
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketDecodeEvent;
+use pocketmine\event\world\ChunkLoadEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
-use pocketmine\item\{Axe, Bucket, Durable, Hoe, Item, PaintingItem, PotionType, Shovel, Stick, VanillaItems};
+use pocketmine\item\{Axe,
+    Bucket,
+    Durable,
+    Hoe,
+    Item,
+    PaintingItem,
+    PotionType,
+    Shovel,
+    Stick,
+    TieredTool,
+    VanillaItems};
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -90,6 +108,48 @@ use Symfony\Component\Filesystem\Path;
 
 class EventsListener implements Listener
 {
+    public function onCreation(PlayerCreationEvent $event): void
+    {
+        $event->setPlayerClass(CustomPlayer::class);
+    }
+
+    public function onChunkLoad(ChunkLoadEvent $event): void
+    {
+        if (!$event->isNewChunk()) {
+            return;
+        }
+
+        $chunkX = $event->getChunkX();
+        $chunkZ = $event->getChunkZ();
+
+        if ($chunkX !== 16 || $chunkZ !== 16 || !str_starts_with($event->getWorld()->getFolderName(), "island-")) {
+            return;
+        }
+
+        list($x, $y, $z) = explode(":", Cache::$config["islands"][$event->getWorld()->getProvider()->getWorldData()->getGenerator()]["chest"]);
+
+        $vector = new Vector3(intval($x), intval($y), intval($z));
+        $tile = $event->getWorld()->getTile($vector);
+
+        if ($tile instanceof ChestTile) {
+            return;
+        } else {
+            $chest = new ChestTile($event->getWorld(), $vector);
+
+            $chest->getInventory()->addItem(VanillaItems::WATER_BUCKET()->setCount(3));
+            $chest->getInventory()->addItem(VanillaItems::LAVA_BUCKET()->setCount(2));
+            $chest->getInventory()->addItem(VanillaBlocks::ICE()->asItem()->setCount(4));
+            $chest->getInventory()->addItem(VanillaItems::BEETROOT_SEEDS()->setCount(7));
+            $chest->getInventory()->addItem(VanillaItems::WHEAT_SEEDS()->setCount(9));
+            $chest->getInventory()->addItem(VanillaItems::POTATO()->setCount(3));
+            $chest->getInventory()->addItem(VanillaItems::BONE()->setCount(16));
+            $chest->getInventory()->addItem(VanillaItems::BAMBOO()->setCount(25));
+            $chest->getInventory()->addItem(VanillaBlocks::BARREL()->asItem()->setCount(2));
+
+            $event->getWorld()->addTile($chest);
+        }
+    }
+
     public function onInteract(PlayerInteractEvent $event): void
     {
         $player = $event->getPlayer();
@@ -100,7 +160,8 @@ class EventsListener implements Listener
         if (
             $event->getAction() === $event::RIGHT_CLICK_BLOCK &&
             (($block instanceof Door || $block instanceof Trapdoor || $block instanceof FenceGate || $block instanceof Furnace || $block instanceof SweetBerryBush || $block instanceof GlowLichen || $block instanceof CraftingTable || $block instanceof CartographyTable || $block instanceof Chest || $block instanceof Barrel || $block instanceof Hopper) || ($item instanceof Bucket || $item instanceof Hoe || $item instanceof Axe || $item instanceof Shovel || $item instanceof PaintingItem || $item instanceof Stick)) &&
-            !Faction::canBuild($player, $block, "interact")
+            !Faction::canBuild($player, $block, "interact") &&
+            !(Util::insideZone($player->getPosition(), "spawn") && ($block instanceof Anvil || $block instanceof EnchantingTable))
         ) {
             $event->cancel();
 
@@ -410,12 +471,36 @@ class EventsListener implements Listener
         ExtraVanillaItems::getItem($event->getItem())->onDamage($event);
     }
 
+    public function onJump(PlayerJumpEvent $event): void
+    {
+        $player = $event->getPlayer();
+
+        $x = $player->getPosition()->getFloorX();
+        $y = $player->getPosition()->getFloorY() - 1;
+        $z = $player->getPosition()->getFloorZ();
+
+        $block = $player->getPosition()->getWorld()->getBlockAt($x, $y, $z);
+        ExtraVanillaBlocks::getBlock($block)->onJump($event);
+    }
+
+    public function onSneak(PlayerToggleSneakEvent $event): void
+    {
+        $player = $event->getPlayer();
+
+        $x = $player->getPosition()->getFloorX();
+        $y = $player->getPosition()->getFloorY() - 1;
+        $z = $player->getPosition()->getFloorZ();
+
+        $block = $player->getPosition()->getWorld()->getBlockAt($x, $y, $z);
+        ExtraVanillaBlocks::getBlock($block)->onSneak($event);
+    }
+
     public function onDamage(EntityDamageEvent $event): void
     {
         $entity = $event->getEntity();
 
         if ($entity instanceof ItemEntity) {
-            if ($event->getCause() === $event::CAUSE_ENTITY_ATTACK && $entity->getItem()->getTypeId() === VanillaBlocks::CACTUS()->asItem()->getTypeId()) {
+            if ($event->getCause() === $event::CAUSE_CONTACT && $entity->getItem()->getTypeId() === VanillaBlocks::CACTUS()->asItem()->getTypeId()) {
                 $entity->setMotion(new Vector3(0.3, 0.3, 0.3));
                 $event->cancel();
             } else if ($event->getCause() === $event::CAUSE_VOID) {
@@ -427,12 +512,22 @@ class EventsListener implements Listener
         } else if ($event->getModifier(EntityDamageEvent::MODIFIER_PREVIOUS_DAMAGE_COOLDOWN) < 0.0) {
             $event->cancel();
             return;
-        } else if ($entity instanceof Living) {
-            Armor::applyDamageModifiers($event, $entity);
+        }
 
-            if (!$entity instanceof Player) {
+        if ($event instanceof EntityDamageByEntityEvent) {
+            $damager = $event->getDamager();
+
+            if ($damager instanceof Player && ExtraVanillaItems::getItem($damager->getInventory()->getItemInHand())->onAttack($event)) {
                 return;
             }
+        }
+
+        if ($entity instanceof Living) {
+            Armor::applyDamageModifiers($event, $entity);
+        }
+
+        if (!$entity instanceof Player) {
+            return;
         }
 
         $entitySession = Session::get($entity);
@@ -493,8 +588,6 @@ class EventsListener implements Listener
 
                 if ($event->isCancelled() || Faction::hasFaction($damager) && Faction::hasFaction($entity) && $damagerSession->data["faction"] === $entitySession->data["faction"] || $entity->isFlying() || $entity->getAllowFlight()) {
                     $event->cancel();
-                    return;
-                } else if (ExtraVanillaItems::getItem($damager->getInventory()->getItemInHand())->onAttack($event, $damager)) {
                     return;
                 }
 
@@ -807,8 +900,14 @@ class EventsListener implements Listener
         }
 
         if (ExtraVanillaItems::getItem($event->getItem())->onBreak($event)) {
+            var_dump("return1111");
             return;
         } else if (ExtraVanillaBlocks::getBlock($event->getBlock())->onBreak($event)) {
+            var_dump("return");
+            return;
+        }
+
+        if ($event->isCancelled()) {
             return;
         }
 

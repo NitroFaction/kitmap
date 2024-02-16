@@ -68,7 +68,7 @@ class Item
     }
 
     /** @noinspection PhpUnusedParameterInspection */
-    public function onAttack(EntityDamageEvent $event, Player $player): bool
+    public function onAttack(EntityDamageEvent $event, ?Player $player = null): bool
     {
         return false;
     }

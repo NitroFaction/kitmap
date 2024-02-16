@@ -3,6 +3,7 @@
 namespace Kitmap\block;
 
 use jojoe77777\FormAPI\SimpleForm;
+use Kitmap\item\Durable as CustomDurable;
 use Kitmap\Util;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Durable;
@@ -16,6 +17,8 @@ class Anvil extends Block
         $player = $event->getPlayer();
 
         if (!$player->isSneaking() && $event->getAction() === $event::RIGHT_CLICK_BLOCK) {
+            var_dump("heeeeeeee");
+
             Util::removeCurrentWindow($player);
 
             $this->openAnvil($player);
@@ -83,8 +86,8 @@ class Anvil extends Block
 
             $item->setDamage(0);
 
-            if (!is_null($item->getNamedTag()->getTag("cdt"))) {
-                $item->getNamedTag()->removeTag("cdt");
+            if (!is_null($item->getNamedTag()->getTag(CustomDurable::DAMAGE_TAG))) {
+                $item->getNamedTag()->removeTag(CustomDurable::DAMAGE_TAG);
             }
 
             $player->getInventory()->setItemInHand($item);

@@ -22,8 +22,6 @@ use pocketmine\world\sound\AmethystBlockChimeSound;
 
 class ChunkBuster extends Block
 {
-    use CooldownTrait;
-
     public function getDrops(PmBlock $block, Item $item, Player $player = null): ?array
     {
         return [];
@@ -38,7 +36,13 @@ class ChunkBuster extends Block
     {
         $player = $event->getPlayer();
 
-        if ($event->getAction() !== $event::RIGHT_CLICK_BLOCK || $this->inCooldown($player)) {
+        if ($event->getAction() !== $event::RIGHT_CLICK_BLOCK) {
+            return true;
+        }
+
+        $event->cancel();
+
+        if ($this->inCooldown($player)) {
             return true;
         }
 
@@ -101,7 +105,7 @@ class ChunkBuster extends Block
 
             $world = Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld();
 
-            if ($world->getBlock($position)->getTypeId() !== VanillaBlocks::NETHER_QUARTZ_ORE()->getTypeId()) {
+            if ($world->getBlock($position)->getTypeId() !== VanillaBlocks::SMOKER()->getTypeId()) {
                 $player->sendMessage(Util::PREFIX . "Le chunkbuster n'est plus là, il ne peut donc pas agir");
                 return;
             }

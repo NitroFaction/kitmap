@@ -21,7 +21,10 @@ class ExtraVanillaBlocks
         self::addBlock(VanillaBlocks::NETHER_WART(), new NetherWartPlant());
         self::addBlock(VanillaBlocks::WHEAT(), new Wheat());
         self::addBlock(VanillaBlocks::CHISELED_NETHER_BRICKS(), new GhostBlock());
-        self::addBlock(VanillaBlocks::NETHER_QUARTZ_ORE(), new ChunkBuster());
+        self::addBlock(VanillaBlocks::SMOKER(), new ChunkBuster());
+        self::addBlock(VanillaBlocks::STONE(), new Stone());
+        self::addBlock(VanillaBlocks::COBBLESTONE(), new Stone());
+        self::addBlock(VanillaBlocks::LAPIS_LAZULI(), new Elevator());
 
         new World();
     }

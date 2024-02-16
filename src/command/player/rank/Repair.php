@@ -13,6 +13,7 @@ use pocketmine\item\Item;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
+use Kitmap\item\Durable as CustomDurable;
 
 class Repair extends BaseCommand
 {
@@ -78,8 +79,8 @@ class Repair extends BaseCommand
         if ($item instanceof Durable) {
             $item->setDamage(0);
 
-            if (!is_null($item->getNamedTag()->getTag("cdt"))) {
-                $item->getNamedTag()->removeTag("cdt");
+            if (!is_null($item->getNamedTag()->getTag(CustomDurable::DAMAGE_TAG))) {
+                $item->getNamedTag()->removeTag(CustomDurable::DAMAGE_TAG);
             }
 
             $inventory->setItem($index, $item);

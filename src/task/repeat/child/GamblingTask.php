@@ -73,18 +73,22 @@ class GamblingTask
             $target->teleport(self::getPosition(2));
         } else if (self::$since === 0) {
             foreach ([$player, $target] as $p) {
-                if (Session::get($p)->data["night_vision"]) {
-                    $p->getEffects()->add(new EffectInstance(VanillaEffects::NIGHT_VISION(), 20 * 60 * 60 * 24, 255, false));
+                if ($player instanceof Player) {
+                    if (Session::get($p)->data["night_vision"]) {
+                        $p->getEffects()->add(new EffectInstance(VanillaEffects::NIGHT_VISION(), 20 * 60 * 60 * 24, 255, false));
+                    }
+
+                    Util::addItems($p, Gambling::getKit(self::$settings["kit"]), false);
+
+                    $p->setNoClientPredictions(false);
+                    $p->broadcastSound(new ExplodeSound());
                 }
-
-                Util::addItems($p, Gambling::getKit(self::$settings["kit"]), false);
-
-                $p->setNoClientPredictions(false);
-                $p->broadcastSound(new ExplodeSound());
             }
 
-            $player->sendTitle("§4C'est parti !!!", "§7Vous affrontez " . $player->getName());
-            $target->sendTitle("§4C'est parti !!!", "§7Vous affrontez " . $player->getName());
+            if ($player instanceof Player && $target instanceof Player) {
+                $player->sendTitle("§4C'est parti !!!", "§7Vous affrontez " . $target->getName());
+                $target->sendTitle("§4C'est parti !!!", "§7Vous affrontez " . $player->getName());
+            }
         } else {
             if (!Util::insideZone($player->getPosition(), "gambling")) {
                 $player->teleport(self::getPosition(1));

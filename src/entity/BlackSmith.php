@@ -64,8 +64,8 @@ class BlackSmith extends Villager
                         $arr[$type] += intval($number);
                     }
 
-                    $arr["iris"] = ceil($arr["iris"] * 0.75);
-                    $arr["emerald"] = ceil($arr["emerald"] * 0.75);
+                    $arr["iris"] = ceil($arr["iris"] * 0.85);
+                    $arr["emerald"] = ceil($arr["emerald"] * 0.85);
 
                     $arr["iris"] = mt_rand(0, $arr["iris"]);
                     $arr["emerald"] = mt_rand(0, $arr["emerald"]);

@@ -7,6 +7,8 @@ use pocketmine\block\Block as PmBlock;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\event\player\PlayerJumpEvent;
+use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 
@@ -19,6 +21,16 @@ class Block
     // Cancel in the function not automatic
 
     public function onInteract(PlayerInteractEvent $event): bool
+    {
+        return false;
+    }
+
+    public function onJump(PlayerJumpEvent $event): bool
+    {
+        return false;
+    }
+
+    public function onSneak(PlayerToggleSneakEvent $event): bool
     {
         return false;
     }

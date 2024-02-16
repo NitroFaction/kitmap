@@ -34,6 +34,7 @@ class PlayerInfo extends BaseCommand
 
             $format = $x . ":" . $y . ":" . $z;
 
+            var_dump($format);
             $sender->sendMessage(Util::PREFIX . $format);
         }
     }

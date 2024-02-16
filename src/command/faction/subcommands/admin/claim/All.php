@@ -34,8 +34,8 @@ class All extends BaseSubCommand
             $world = Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld();
 
             $chunks = [
-                clone $world->loadChunk($newChunkX, $newChunkZ),
-                clone $world->loadChunk($newChunkX, ($args["change"] ?? false) ? $newChunkZ + 1 : $newChunkZ)
+                $world->loadChunk($newChunkX, $newChunkZ),
+                $world->loadChunk($newChunkX, ($args["change"] ?? false) ? $newChunkZ + 1 : $newChunkZ)
             ];
 
             $i = 0;
@@ -44,7 +44,9 @@ class All extends BaseSubCommand
                 $i++;
 
                 [$chunkX, $chunkZ] = explode(":", $claim);
-                $world->setChunk(intval($chunkX), intval($chunkZ), $chunks[$i % 2]);
+                $chunk = clone $chunks[$i % 2];
+
+                $world->setChunk(intval($chunkX), intval($chunkZ), $chunk);
             }
 
             Cache::$claims = [];

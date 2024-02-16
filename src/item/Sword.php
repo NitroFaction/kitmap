@@ -11,7 +11,7 @@ class Sword extends Durable
     {
     }
 
-    public function onAttack(EntityDamageEvent $event, Player $player): bool
+    public function onAttack(EntityDamageEvent $event, ?Player $player = null): bool
     {
         if ($this->attackPoints > 0) {
             $event->setBaseDamage($this->getAttackPoints());

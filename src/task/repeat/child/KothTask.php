@@ -73,7 +73,7 @@ class KothTask
                     $session = Session::get($player);
 
                     $session->addValue("money", 25000);
-                    $session->addValue(["packs", "Classique"], 1);
+                    $session->addValue(["packs", "Classique"], 2);
 
                     if (Faction::hasFaction($player)) {
                         Faction::addPower($session->data["faction"], mt_rand(15, 25));

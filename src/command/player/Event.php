@@ -81,9 +81,9 @@ class Event extends BaseCommand
     private function tpToEvent(Player $player, string $event): void
     {
         $data = Cache::$config["events"][strtolower($event)];
-        [$x, $y, $z, $yaw, $pitch] = explode(":", $data["positions"][array_rand($data["positions"])]);
+        [$x, $y, $z] = explode(":", $data["positions"][array_rand($data["positions"])]);
 
-        $position = new Location(floatval($x), intval($y), floatval($z), Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld(), intval($yaw), intval($pitch));
+        $position = new Location(floatval($x), intval($y), floatval($z), Main::getInstance()->getServer()->getWorldManager()->getDefaultWorld(), 0, 0);
         Main::getInstance()->getScheduler()->scheduleRepeatingTask(new TeleportationTask($player, $position), 20);
     }
 

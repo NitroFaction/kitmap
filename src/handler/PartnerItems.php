@@ -4,6 +4,7 @@ namespace Kitmap\handler;
 
 use Kitmap\entity\AntiBackBall;
 use Kitmap\entity\SwitchBall;
+use Kitmap\item\Durable as CustomDurable;
 use Kitmap\Main;
 use Kitmap\Session;
 use Kitmap\task\repeat\child\GamblingTask;
@@ -95,8 +96,8 @@ class PartnerItems
                         $slot = array_search($randomItem, $armorInventory, true);
                         $randomItem = $randomItem->setDamage(0);
 
-                        if (!is_null($randomItem->getNamedTag()->getTag("cdt"))) {
-                            $randomItem->getNamedTag()->removeTag("cdt");
+                        if (!is_null($randomItem->getNamedTag()->getTag(CustomDurable::DAMAGE_TAG))) {
+                            $randomItem->getNamedTag()->removeTag(CustomDurable::DAMAGE_TAG);
                         }
 
                         $player->getArmorInventory()->setItem($slot, $randomItem);
@@ -104,8 +105,8 @@ class PartnerItems
                         $slot = array_search($randomItem, $baseInventory, true);
                         $randomItem = $randomItem->setDamage(0);
 
-                        if (!is_null($randomItem->getNamedTag()->getTag("cdt"))) {
-                            $randomItem->getNamedTag()->removeTag("cdt");
+                        if (!is_null($randomItem->getNamedTag()->getTag(CustomDurable::DAMAGE_TAG))) {
+                            $randomItem->getNamedTag()->removeTag(CustomDurable::DAMAGE_TAG);
                         }
 
                         $player->getInventory()->setItem($slot, $randomItem);
@@ -283,10 +284,10 @@ class PartnerItems
                     return;
                 } else {
                     $playerSession->setCooldown($name, 60);
-                    $targetSession->setCooldown("_" . $name, 10);
+                    $targetSession->setCooldown("_" . $name, 15);
 
                     $player->sendMessage(Util::PREFIX . "Vous venez d'utiliser un antibuild sur §9" . $target->getDisplayName());
-                    $target->sendMessage(Util::PREFIX . "Le joueur §9" . $player->getDisplayName() . " §fvous ne pouvez donc plus construire pendant 10 secondes");
+                    $target->sendMessage(Util::PREFIX . "Le joueur §9" . $player->getDisplayName() . " §fvous ne pouvez donc plus construire pendant §915 §fsecondes");
                 }
                 break;
             case "pumpkinaxe":

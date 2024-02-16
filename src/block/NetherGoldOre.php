@@ -15,7 +15,7 @@ class NetherGoldOre extends Block
     public function getDropsMine(Player $player, PmBlock $block): ?array
     {
         $items = [
-            VanillaItems::TURTLE_HELMET(), // TODO FIND
+            VanillaItems::TURTLE_HELMET(),
             VanillaItems::COOKED_FISH(),
             VanillaItems::COOKED_SALMON(),
             VanillaItems::RAW_SALMON(),
