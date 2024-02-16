@@ -8,9 +8,8 @@ class EmbedBuilder
         "username" => Discord::USERNAME,
         "embeds" => [
             [
-                "color" => 16733525,
-                "fields" => [],
-                "footer" => []
+                "color" => "16733525",
+                "description" => "Unknow"
             ]
         ]
     ];

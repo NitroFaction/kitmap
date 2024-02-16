@@ -8,11 +8,9 @@ use CortexPE\Commando\args\RawStringArgument;
 use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
 use Kitmap\handler\Cache;
-use Kitmap\Main;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
 class Addpack extends BaseCommand
@@ -30,7 +28,7 @@ class Addpack extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
-        $data = $args["valeur"];
+        $data = self::getUpperPackName($args["valeur"]);
         $amount = intval($args["montant"]);
 
         $player = Addvalue::addValue($sender, $this->getName(), $args);
@@ -40,7 +38,19 @@ class Addpack extends BaseCommand
         }
 
         $sender->sendMessage(Util::PREFIX . "Vous venez d'ajouter §9" . $amount . " §fpacks §9" . $data . " §fau joueur §9" . $player);
-        Util::addValue($sender->getName(), $player, $data, $amount);
+        Util::addValue($sender->getName(), $player, ["packs", $data], $amount);
+    }
+
+    public static function getUpperPackName(string $data): string
+    {
+        $names = array_keys(Cache::$config["default-data"]["packs"]);
+
+        foreach ($names as $name) {
+            if (strtolower($name) === strtolower($data)) {
+                return $name;
+            }
+        }
+        return $names[0];
     }
 
     protected function prepare(): void
@@ -48,6 +58,6 @@ class Addpack extends BaseCommand
         $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
         $this->registerArgument(1, new IntegerArgument("montant"));
-        $this->registerArgument(2, new OptionArgument("valeur", array_keys(array_filter(Cache::$config["default-data"]["packs"], "is_int"))));
+        $this->registerArgument(2, new OptionArgument("valeur", array_keys(array_change_key_case(Cache::$config["default-data"]["packs"]))));
     }
 }

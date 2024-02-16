@@ -121,7 +121,12 @@ class Island extends FactionCommand
                     return;
                 }
 
-                Main::getInstance()->getServer()->getWorldManager()->generateWorld($name, WorldCreationOptions::create()->setSeed(0)->setGeneratorClass($generator->getGeneratorClass()));
+                Main::getInstance()->getServer()->getWorldManager()->generateWorld($name, WorldCreationOptions::create()
+                    ->setSeed(0)
+                    ->setGeneratorClass($generator->getGeneratorClass())
+                    ->setGeneratorOptions(json_encode(Cache::$config["generators"][$data], flags: JSON_THROW_ON_ERROR))
+                );
+
                 Main::getInstance()->getServer()->getWorldManager()->loadWorld($name);
 
                 $world = Main::getInstance()->getServer()->getWorldManager()->getWorldByName($name);
@@ -141,9 +146,9 @@ class Island extends FactionCommand
 
         $form->setTitle("Ile");
         $form->setContent(Util::PREFIX . "Votre faction ne possède pas encore d'ile, veuillez choisir une ile :");
-        $form->addButton("Basique", 0, "textures/render/cherry_leaves", "basic_is");
-        $form->addButton("Generateur", 0, "textures/render/jungle_log", "cobblestone_is");
-        $form->addButton("Cave", 0, "textures/render/mud", "cave_is");
+        $form->addButton("Basique", 0, "textures/render/cherry_leaves", "basic");
+        $form->addButton("Generateur", 0, "textures/render/jungle_log", "cobblestone");
+        $form->addButton("Cave", 0, "textures/render/mud", "cave");
         $player->sendForm($form);
     }
 

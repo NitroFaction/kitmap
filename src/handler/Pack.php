@@ -92,7 +92,7 @@ class Pack
         Main::getInstance()->getServer()->broadcastTip(Util::PREFIX . "Le joueur §9" . $player->getName() . " §fvient d'ouvrir un pack §9" . $category . " §f!");
 
         $player->sendMessage(Util::PREFIX . "Vous venez d'ouvrir un pack §9" . $category . " §f! Vos lots ont été mis dans votre inventaire");
-        $session->data["packs"][$category]--;
+        $session->addValue(["packs", $category], 1, true);
     }
 
     public static function getRandomItems(int $count, $category): array
@@ -222,7 +222,7 @@ class Pack
                     return;
             }
 
-            $session->data["packs"][$category]++;
+            $session->addValue(["packs", $category], 1);
             self::openPackCategoryUI($player, $category);
         });
         $form->setTitle("Pack " . $category);

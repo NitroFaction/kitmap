@@ -120,7 +120,7 @@ class Session
         unset($this->data["cooldown"][$key]);
     }
 
-    public function addValue(array|string $path, int|float $value, bool $substraction = false): void
+    public function addValue(array|string $path, int|float $value = 1, bool $substraction = false): void
     {
         $this->data = Util::addArrayValue($this->data, $path, intval($value), $substraction);
 

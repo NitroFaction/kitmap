@@ -39,6 +39,8 @@ class ExtraVanillaItems
 
         self::addItem(VanillaItems::GOLDEN_SWORD(), new Sword(2286, 9));
         self::addItem(VanillaItems::NETHERITE_SWORD(), new Sword(3048, 10));
+
+        new Craft();
     }
 
     public static function addItem(PmItem $item, Item $replace): void

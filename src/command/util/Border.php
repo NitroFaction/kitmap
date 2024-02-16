@@ -1,6 +1,6 @@
 <?php /** @noinspection PhpUnused */
 
-namespace Kitmap\command\player;
+namespace Kitmap\command\util;
 
 use CortexPE\Commando\BaseCommand;
 use Kitmap\handler\Cache;

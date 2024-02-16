@@ -98,6 +98,12 @@ class Item
         }
     }
 
+    private function destroy(Player $player): void
+    {
+        $player->getInventory()->setItemInHand(VanillaItems::AIR());
+        $player->broadcastSound(new ItemBreakSound());
+    }
+
     public function projectileSucces(Player $player, PmItem $item, bool $pop = true): void
     {
         $player->resetItemCooldown($item);
@@ -107,11 +113,5 @@ class Item
             $newItem = $item->pop()->isNull() ? VanillaItems::AIR() : $item;
             $player->getInventory()->setItemInHand($newItem);
         }
-    }
-
-    private function destroy(Player $player): void
-    {
-        $player->getInventory()->setItemInHand(VanillaItems::AIR());
-        $player->broadcastSound(new ItemBreakSound());
     }
 }

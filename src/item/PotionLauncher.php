@@ -6,6 +6,7 @@ use Kitmap\Util;
 use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\item\PotionType;
 use pocketmine\item\VanillaItems;
+use pocketmine\network\mcpe\protocol\types\InputMode;
 
 class PotionLauncher extends Item
 {
@@ -18,8 +19,8 @@ class PotionLauncher extends Item
 
         $event->cancel();
 
-        if ($player->getNetworkSession()->getPlayerInfo()->getExtraData()["CurrentInputMode"] !== 2) {
-            $player->sendMessage(Util::PREFIX . "Le potion launcher n'est disponible que pour les tactiles");
+        if ($player->getNetworkSession()->getPlayerInfo()->getExtraData()["CurrentInputMode"] === InputMode::MOUSE_KEYBOARD) {
+            $player->sendMessage(Util::PREFIX . "Le potion launcher n'est pas disponible lorsque vous êtes clavier/souris");
             return true;
         } else if (1 > Util::getItemCount($player, VanillaItems::SPLASH_POTION()->setType(PotionType::STRONG_HEALING()))) {
             $player->sendMessage(Util::PREFIX . "Vous n'avez pas de potion dans votre inventaire");

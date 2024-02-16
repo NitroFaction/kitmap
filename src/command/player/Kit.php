@@ -4,7 +4,6 @@ namespace Kitmap\command\player;
 
 use CortexPE\Commando\BaseCommand;
 use jojoe77777\FormAPI\SimpleForm;
-use pocketmine\item\VanillaItems;
 use Kitmap\handler\Rank;
 use Kitmap\Session;
 use Kitmap\Util;
@@ -13,6 +12,7 @@ use pocketmine\item\Armor;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\PotionType;
+use pocketmine\item\VanillaItems;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;

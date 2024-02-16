@@ -8,12 +8,9 @@ use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
 use Kitmap\handler\Cache;
 use Kitmap\handler\Rank;
-use Kitmap\Main;
-use Kitmap\Session;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
 class Setrank extends BaseCommand

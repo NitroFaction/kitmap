@@ -26,20 +26,6 @@ class AddClaims extends BaseCommand
         $this->setPermissions([DefaultPermissions::ROOT_OPERATOR]);
     }
 
-    public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
-    {
-        if ($sender instanceof Player) {
-            $item = VanillaItems::STONE_AXE();
-
-            $item->setCustomName("§r§9Claims Axe");
-
-            $item->getNamedTag()->setInt("claims", 1);
-            $item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::UNBREAKING(), 10));
-
-            $sender->getInventory()->setItemInHand($item);
-        }
-    }
-
     public static function addClaim(float|int $x, float|int $z): bool
     {
         $chunkX = $x >> Chunk::COORD_BIT_SIZE;
@@ -52,6 +38,20 @@ class AddClaims extends BaseCommand
             return true;
         }
         return false;
+    }
+
+    public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
+    {
+        if ($sender instanceof Player) {
+            $item = VanillaItems::STONE_AXE();
+
+            $item->setCustomName("§r§9Claims Axe");
+
+            $item->getNamedTag()->setInt("claims", 1);
+            $item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::UNBREAKING(), 10));
+
+            $sender->getInventory()->setItemInHand($item);
+        }
     }
 
     protected function prepare(): void

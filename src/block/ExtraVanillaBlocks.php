@@ -4,7 +4,6 @@ namespace Kitmap\block;
 
 use pocketmine\block\Block as PmBlock;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\world\format\Chunk;
 
 class ExtraVanillaBlocks
 {

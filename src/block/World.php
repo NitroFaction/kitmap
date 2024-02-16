@@ -2,6 +2,9 @@
 
 namespace Kitmap\block;
 
+use Kitmap\block\generator\BasicGenerator;
+use Kitmap\block\generator\CaveGenerator;
+use Kitmap\block\generator\CobblestoneGenerator;
 use Kitmap\command\player\rank\Craft;
 use muqsit\invmenu\InvMenu;
 use muqsit\invmenu\InvMenuHandler;
@@ -14,6 +17,7 @@ use pocketmine\inventory\Inventory;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\player\Player;
+use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\Position;
 
 class World
@@ -43,7 +47,10 @@ class World
             }
         };
 
-
         InvMenuHandler::getTypeRegistry()->register(Craft::INV_MENU_TYPE_WORKBENCH, $class);
+
+        GeneratorManager::getInstance()->addGenerator(BasicGenerator::class, "basic", fn() => null);
+        GeneratorManager::getInstance()->addGenerator(CaveGenerator::class, "cave", fn() => null);
+        GeneratorManager::getInstance()->addGenerator(CobblestoneGenerator::class, "cobblestone", fn() => null);
     }
 }

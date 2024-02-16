@@ -13,22 +13,6 @@ class Armor extends Durable
     {
     }
 
-    private static function getArmorPoints(Living $player): int
-    {
-        $total = 0;
-
-        foreach ($player->getArmorInventory()->getContents() as $itemArmor) {
-            $item = ExtraVanillaItems::getItem($itemArmor);
-
-            if ($item instanceof self && $item->getDefensePoints() > 0) {
-                $total += $item->getDefensePoints();
-            } else {
-                $total += $itemArmor->getDefensePoints();
-            }
-        }
-        return $total;
-    }
-
     public static function applyDamageModifiers(EntityDamageEvent $source, Living $entity): void
     {
         $source->setModifier(0, EntityDamageEvent::MODIFIER_ARMOR);
@@ -62,6 +46,22 @@ class Armor extends Durable
         if ($cause === EntityDamageEvent::CAUSE_FALLING_BLOCK && $entity->getArmorInventory()->getHelmet() instanceof Armor) {
             $source->setModifier(-($source->getFinalDamage() / 4), EntityDamageEvent::MODIFIER_ARMOR_HELMET);
         }
+    }
+
+    private static function getArmorPoints(Living $player): int
+    {
+        $total = 0;
+
+        foreach ($player->getArmorInventory()->getContents() as $itemArmor) {
+            $item = ExtraVanillaItems::getItem($itemArmor);
+
+            if ($item instanceof self && $item->getDefensePoints() > 0) {
+                $total += $item->getDefensePoints();
+            } else {
+                $total += $itemArmor->getDefensePoints();
+            }
+        }
+        return $total;
     }
 
     public function getDefensePoints(): int

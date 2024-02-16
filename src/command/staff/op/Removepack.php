@@ -28,7 +28,7 @@ class Removepack extends BaseCommand
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
-        $data = $args["valeur"];
+        $data = Addpack::getUpperPackName($args["valeur"]);
         $amount = intval($args["montant"]);
 
         $player = Addvalue::addValue($sender, $this->getName(), $args);
@@ -38,7 +38,7 @@ class Removepack extends BaseCommand
         }
 
         $sender->sendMessage(Util::PREFIX . "Vous venez de retirer §9" . $amount . " §fpacks §9" . $data . " §fau joueur §9" . $player);
-        Util::addValue($sender->getName(), $player, $data, $amount, true);
+        Util::addValue($sender->getName(), $player, ["packs", $data], $amount, true);
     }
 
     protected function prepare(): void
@@ -46,6 +46,6 @@ class Removepack extends BaseCommand
         $this->registerArgument(0, new TargetPlayerArgument(false, "joueur"));
         $this->registerArgument(0, new RawStringArgument("joueur"));
         $this->registerArgument(1, new IntegerArgument("montant"));
-        $this->registerArgument(2, new OptionArgument("valeur", array_keys(array_filter(Cache::$config["default-data"]["packs"], "is_int"))));
+        $this->registerArgument(2, new OptionArgument("valeur", array_keys(array_change_key_case(Cache::$config["default-data"]["packs"]))));
     }
 }

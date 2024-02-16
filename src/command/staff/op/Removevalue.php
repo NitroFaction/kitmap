@@ -8,11 +8,9 @@ use CortexPE\Commando\args\RawStringArgument;
 use CortexPE\Commando\args\TargetPlayerArgument;
 use CortexPE\Commando\BaseCommand;
 use Kitmap\handler\Cache;
-use Kitmap\Main;
 use Kitmap\Util;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 
 class Removevalue extends BaseCommand

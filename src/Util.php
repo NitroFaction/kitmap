@@ -99,6 +99,45 @@ class Util
         }
     }
 
+    public static function executeCommand(string $command): void
+    {
+        $server = Main::getInstance()->getServer();
+        $server->dispatchCommand(new ConsoleCommandSender($server, $server->getLanguage()), $command);
+    }
+
+    public static function addValue(string $staff, string $player, array|string $path, int $value, bool $substraction = false): void
+    {
+        $player = Main::getInstance()->getServer()->getPlayerExact($player);
+
+        if ($player instanceof Player) {
+            Session::get($player)->addValue($path, $value, $substraction);
+            $word = is_string($path) ? $path : implode(" ", $path);
+
+            $player->sendMessage(
+                $substraction ?
+                    self::PREFIX . "Le staff §9" . $staff . " §fvient de vous retirer §9" . $value . " " . $word :
+                    self::PREFIX . "Le staff §9" . $staff . " §fvient de vous ajouter §9" . $value . " " . $word
+            );
+        } else {
+            $file = self::getFile("data/players/" . $player);
+            $data = self::addArrayValue($file->getAll(), $path, $value);
+
+            if (is_string($path) && isset(Cache::$players[$path])) {
+                Cache::$players[$path][$player] = $file->get($path) + $value;
+            }
+
+            if ($file->getAll() !== []) {
+                $file->setAll($data);
+                $file->save();
+            }
+        }
+    }
+
+    public static function getFile($name): Config
+    {
+        return new Config(Main::getInstance()->getDataFolder() . $name . ".json", Config::JSON);
+    }
+
     public static function addArrayValue(array $data, array|string $path, int $value, bool $substraction = false): array
     {
         $path = is_string($path) ? [$path] : $path;
@@ -116,45 +155,6 @@ class Util
 
         $current[$lastPart] = ($substraction ? ($current[$lastPart] ?? 0) - $value : ($current[$lastPart] ?? 0) + $value);
         return $data;
-    }
-
-    public static function addValue(string $staff, string $player, array|string $path, int $value, bool $substraction = false): void
-    {
-        $player = Main::getInstance()->getServer()->getPlayerExact($player);
-
-        if ($player instanceof Player) {
-            Session::get($player)->addValue($path, $value, $substraction);
-            $word = is_string($path) ? $path : implode(" ", $path);
-
-            $player->sendMessage(
-                $substraction ?
-                    self::PREFIX . "Le staff §9" . $staff . " §fvient de vous retirer §9" . $value . " §f" . $word :
-                    self::PREFIX . "Le staff §9" . $staff . " §fvient de vous ajouter §9" . $value . " §f" . $word
-            );
-        } else {
-            $file = self::getFile("data/players/" . $player);
-            $data = self::addArrayValue($file->getAll(), $path, $value);
-
-            if (is_string($path) && isset(Cache::$players[$path])) {
-                Cache::$players[$path][$player] = $file->get($path) + $value;
-            }
-
-            if ($file->getAll() !== []) {
-                $file->setAll($data);
-                $file->save();
-            }
-        }
-    }
-
-    public static function executeCommand(string $command): void
-    {
-        $server = Main::getInstance()->getServer();
-        $server->dispatchCommand(new ConsoleCommandSender($server, $server->getLanguage()), $command);
-    }
-
-    public static function getFile($name): Config
-    {
-        return new Config(Main::getInstance()->getDataFolder() . $name . ".json", Config::JSON);
     }
 
     public static function getItemCount(Player $player, Item $item): int
@@ -422,7 +422,7 @@ class Util
             $count = $count + 1;
 
             $sellPrice = $count * 2;
-            $buyPrice = $sellPrice * 1.3;
+            $buyPrice = ceil($sellPrice * 1.3);
 
             $bourse[] = $name . ":" . Cache::$config["bourse"][$name] . ":" . $buyPrice . ":" . floor($sellPrice);
         }

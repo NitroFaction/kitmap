@@ -99,6 +99,6 @@ class TransferAccount extends BaseCommand
         $this->registerArgument(0, new RawStringArgument("ancien"));
         $this->registerArgument(0, new TargetPlayerArgument(false, "ancien"));
         $this->registerArgument(1, new RawStringArgument("nouveau"));
-        $this->registerArgument(1, new TargetPlayerArgument(false,"nouveau"));
+        $this->registerArgument(1, new TargetPlayerArgument(false, "nouveau"));
     }
 }

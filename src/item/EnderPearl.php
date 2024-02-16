@@ -27,15 +27,19 @@ class EnderPearl extends Item
         if ($session->inCooldown("enderpearl")) {
             $player->sendMessage(Util::PREFIX . "Veuillez attendre §9" . ($session->getCooldownData("enderpearl")[0] - time()) . " §fsecondes avant de relancer une nouvelle perle");
             $event->cancel();
-            return false;
+            return true;
         } else if ($session->inCooldown("_antipearl")) {
             $player->sendTip(Util::PREFIX . "Veuillez attendre §9" . ($session->getCooldownData("_antipearl")[0] - time()) . " §fsecondes avant de relancer une nouvelle perle");
             $event->cancel();
-            return false;
+            return true;
         } else if (!is_null($item->getNamedTag()->getTag("partneritem"))) {
             $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas utiliser cette perle");
             $event->cancel();
-            return false;
+            return true;
+        } else if (Util::isPlayerAimOnAntiBack($player)) {
+            $player->sendMessage(Util::PREFIX . "Vous ne pouvez pas lancer de perle en visant un bloc antiback");
+            $event->cancel();
+            return true;
         }
 
         $projectile = new EnderPearlEntity(Location::fromObject($player->getEyePos(), $player->getWorld(), $location->yaw, $location->pitch), $player);
